@@ -1,3 +1,6 @@
+# In this tutorial we see hot to link neurons via artificial synapses and how many ways to do it there are
+
+
 from brian2 import *
 
 start_scope()
@@ -7,12 +10,15 @@ dv/dt = (I-v)/tau : 1 (unless refractory)
 I : 1
 tau : second
 '''
+
 G = NeuronGroup(3, eqs, threshold='v>1', reset='v = 0', refractory=5*ms, method='exact')
 G.I = [2, 0, 0]
 G.tau = [10, 100, 100]*ms
 
-# Creo la sinapsi, specifico la sorgente e il ricevente, specifico il peso della sinapsi
-# Nella riga successiva specifico anche il tipo di connettività, easy per piccole reti, complicato per grandi reti
+# This creates the synapse specifying the source and the receiver and the weigh of the link
+# S.connect specifies the connection typology which can be exact for very few neurons or probabilistic
+# for much more neurons, like 15+
+
 S = Synapses(G, G, 'w : 1', on_pre='v_post += w')
 S.connect(i=0, j=[1,2])
 S.w = 'j*0.2'
@@ -20,10 +26,10 @@ S.delay = 'j*2*ms'
 
 
 # S.connect(condition='i!=j', p=0.2)
-# Connette a coppie i neuroni con una probabilità di 0.2
+# This connects neurons with a probability of 0.2
 
 # S.connect(condition='abs(i-j)<4 and i!=j')
-# Connette i neuroni primi vicini, vedi abs () < 4
+# This connects neurons specifying the condition that only the neighbours shall be connected
 
 
 

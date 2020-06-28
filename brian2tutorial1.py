@@ -1,4 +1,4 @@
-#Questo è il codice usato nel tutorial di Brian2.0
+# In this tutorial we see the basic modelling of a or more neurons and how to monitorate them
 
 
 from brian2 import *
