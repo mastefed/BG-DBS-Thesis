@@ -54,6 +54,8 @@ S.connect()
 M = SpikeMonitor(G)
 # Store the current state of the network
 store()
+
+
 for tau in tau_range:
     # Restore the original state of the network and simulate it with a different time constant!
     restore()
