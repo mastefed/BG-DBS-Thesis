@@ -24,9 +24,8 @@ I : amp
 neurone = NeuronGroup(1, eqs, threshold='v>20*mV', reset='v=El;w=w+b', method='exponential_euler')
 monitor = StateMonitor(neurone, 'v', record=True)
 
-neurone.v = rand()*mV
-neurone.I = 1*nA #prova così
-#neurone.I = 50*nA
+neurone.v = El
+neurone.I = 2*nA
 
 run(30*ms)
 
