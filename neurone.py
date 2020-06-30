@@ -25,7 +25,8 @@ neurone = NeuronGroup(1, eqs, threshold='v>20*mV', reset='v=El;w=w+b', method='e
 monitor = StateMonitor(neurone, 'v', record=True)
 
 neurone.v = rand()*mV
-neurone.I = 50*nA
+neurone.I = 1*nA #prova così
+#neurone.I = 50*nA
 
 run(30*ms)
 
