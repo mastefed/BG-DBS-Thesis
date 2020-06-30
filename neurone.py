@@ -50,9 +50,10 @@ outputrates = []
 
 for l in range(10):
     neuroneexcit.I = rand()*3*nA
+    run(50 * ms)
     arrayI.append(neuroneexcit.I)
-    outputrates.append(spikesexcit.num_spikes)
-    run(50*ms)
+    outputrates.append(spikesexcit.num_spikes/duration)
+
 
 print(arrayI)
 print(outputrates)
