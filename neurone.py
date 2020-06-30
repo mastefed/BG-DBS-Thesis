@@ -46,24 +46,31 @@ S2.delay = '2*ms'
 arrayI = []
 outputrates = []
 
+
+
 for l in range(10):
     neuroneexcit.I = rand()*3*nA
     arrayI.append(neuroneexcit.I)
-    outputrates.append(spikesexcit.num_spikes/second)
+    outputrates.append(spikesexcit.num_spikes)
     run(50*ms)
+
+print(arrayI)
+print(outputrates)
 
 plt.figure("Wow")
 plt.subplot(221)
-for l in range(10):
+for l in range(11):
     axvline(l*50, ls='--', c='b')
 plt.plot(monitorinhib.t/ms, monitorinhib.v.T/mV,'b')
 ylabel("V (mV) Inhibitory")
+
 plt.subplot(223)
 plt.plot(monitorexcit.t/ms, monitorexcit.v.T/mV,'g')
-for l in range(10):
+for l in range(11):
     axvline(l*50, ls='--', c='g')
 xlabel("Tempo in ms")
 ylabel("V (mV) Excitatory")
+
 plt.subplot(224)
 plt.plot(arrayI/nA, outputrates, 'og')
 plt.show()
