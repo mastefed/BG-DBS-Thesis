@@ -44,6 +44,7 @@ numspikes = []
 numspikesintervals = []
 corrente = []
 
+# Dummy mi serve per registrare la corrente e creare l'array di riferimento
 for l in range(10):
     dummy = rand()*3*nA
     neuroneexcit.I = dummy
