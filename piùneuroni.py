@@ -138,7 +138,7 @@ plt.xticks(timespan)
 ylabel("Neuron Index")
 
 plt.subplot(212)
-plt.plot(timespan, corrente/nA, 'b')
+plt.plot(timespan, corrente/nA, 'g')
 plt.xticks(timespan)
 plt.grid(color='g', linestyle='--', linewidth=1)
 ylabel("Input current (nA)")
@@ -151,13 +151,13 @@ plt.grid(color='g', linestyle='--', linewidth=1)
 xlabel("Input current (nA)")
 ylabel("Firing rate (mHz)")
 
-
+"""
 plt.figure("Firing rate against time intervals")
 plt.plot(timeintervals, freqspikesinterval/mhertz, 'og')
 plt.xticks(timeintervals)
 plt.grid(color='g', linestyle='--', linewidth=1)
 xlabel("Time intervals (ms)")
 ylabel("Firing rate for each time interval (mHz)")
-
+"""
 
 plt.show()
