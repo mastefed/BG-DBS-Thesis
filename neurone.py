@@ -53,6 +53,8 @@ for l in range(10):
 #    print(neuroneexcit.I)
     run(50 * ms)
     numspikes.append(spikesexcit.num_spikes)
+    
+corrente.append(0*nA)
 
 print("Il numero totale di spikes durante la simulazione è:")
 print(numspikes[9])
@@ -66,12 +68,15 @@ print("La variazione di spikes per ogni intervallo di 50 ms, in conseguenza al c
 print(numspikesintervals)
 print(" ")
 
-timeintervals = arange(50,550,50)
+timeintervals = arange(50,600,50)
 # print(timeintervals)
+timespan = arange(0,550,50)
 
 freqspikesinterval = []
 for l in range(10):
     freqspikesinterval.append(numspikesintervals[l]/50*ms)
+    
+freqspikesinterval.append(0*ms)
 
 print("Quindi la frequenza di spikes per ogni intervallo di 50 ms è:")
 print(freqspikesinterval)
@@ -80,19 +85,34 @@ print(" ")
 print("Le correnti utilizzate durante la simulazione sono:")
 print(corrente)
 
-plt.figure("Potential Membrane")
+plt.figure("Potential Membrane (Inhibitory)")
 plt.subplot(211)
-for l in range(11):
-    axvline(l*50, ls='--', c='b',lw=1)
+plt.xticks(timespan)
 plt.plot(monitorinhib.t/ms, monitorinhib.v.T/mV,'b')
+plt.grid(color='b', linestyle='--', linewidth=1)
 ylabel("V (mV) Inhibitory")
 
 plt.subplot(212)
+plt.plot(timespan, corrente/nA, 'g')
+plt.xticks(timespan)
+plt.grid(color='g', linestyle='--', linewidth=1)
+ylabel("Input current (nA)")
+xlabel("Time (ms)")
+
+plt.figure("Potential Membrane (Excitatory)")
+plt.subplot(211)
 plt.plot(monitorexcit.t/ms, monitorexcit.v.T/mV,'g')
-for l in range(11):
-    axvline(l*50, ls='--', c='g',lw=1)
+plt.xticks(timespan)
+plt.grid(color='g', linestyle='--', linewidth=1)
 xlabel("Time (ms)")
 ylabel("V (mV) Excitatory")
+
+plt.subplot(212)
+plt.plot(timespan, corrente/nA, 'g')
+plt.xticks(timespan)
+plt.grid(color='g', linestyle='--', linewidth=1)
+ylabel("Input current (nA)")
+xlabel("Time (ms)")
 
 plt.figure("Firing rate against input current")
 plt.plot(corrente/nA, freqspikesinterval/mhertz, 'og')
@@ -103,8 +123,7 @@ ylabel("Firing rate (mHz)")
 plt.figure("Firing rate against time intervals")
 plt.plot(timeintervals, freqspikesinterval/mhertz, 'og')
 plt.xticks(timeintervals)
-for l in range(1,11):
-    axvline(l*50, ls='--', c='g',lw=1)
+plt.grid(color='g', linestyle='--', linewidth=1)
 xlabel("Time intervals (ms)")
 ylabel("Firing rate for each time interval (mHz)")
 plt.show()
