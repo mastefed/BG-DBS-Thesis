@@ -1,4 +1,4 @@
-# Modeling an adaptive integrate and fire neuron
+# Modeling a network of Inhibitory and Excitatory Adaptive Exponential IF neurons
 
 from brian2 import *
 import pandas as pd
