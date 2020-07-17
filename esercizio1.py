@@ -55,7 +55,7 @@ Seconda parte dell'esercizio numero 1
 frequencies = np.arange(10, 110, 10)
 amplitude = []
 x = 0
-t = linspace(0.0, 500, 5000, endpoint=False)
+t = linspace(0.0, 0.500, 5000, endpoint=False)
 dt = linspace(-t[-1], t[-1], 2*5000-1)
 phase_shift = []
 while x < 10:
@@ -86,7 +86,17 @@ while x < 10:
     # print("Il massimo della funzione di cross-correlazione è {}".format(max(corr)))
     # print("L'ascissa corrispondente è {} ms".format(dt[argmax(corr)]))
     time_shift = dt[argmax(corr)]
-    phase_shift.append(2*math.pi*(time_shift/500))
+
+    # Qua il phase shift usando le frequenze in input
+    # Secondo me però è ridondante dato che già time_shift dipende dalla frequenza in input
+    # essendo calcolato a partire da corr(v, pere), in "pere" dipendenza da f in Hz
+    phase_shift.append(2*math.pi*time_shift*frequencies[x])
+
+    # Qua il phase shift usando il periodo di input della corrente, ovvero 0.5 secondi
+    # la simulazione dura 500 ms
+    # phase_shift.append(2 * math.pi * time_shift * 1/0.5)
+
+
     # plt.plot(dt, corr/10**-8)
     # plt.title("Correlation function for {} Hz".format(frequencies[x]))
     # plot_tools.plot_voltage_and_current_traces(state_monit, current, title=" ")
@@ -95,16 +105,18 @@ while x < 10:
     x += 1
 
 plt.figure("Figura 1")
-plt.ylabel("Phase Shift da -2pi a 2pi")
-plt.xlabel("Frequenze in input")
+plt.ylabel("Phase Shift from -2pi to 2pi")
+plt.xlabel("Frequency (Hz)")
 plt.plot(frequencies, phase_shift)
 
 
-
+"""
 plt.figure("Figura 2")
 plt.plot(frequencies, amplitude)
-plt.xlabel("Frequenzy (Hz)")
+plt.xlabel("Frequency (Hz)")
 plt.ylabel("Max Volt Reached (V)")
-plt.show()
 
-print("Si tratta di Low-pass filter")
+#  Si tratta di Low-pass filter
+"""
+
+plt.show()
