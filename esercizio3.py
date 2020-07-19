@@ -17,12 +17,13 @@ SPIKE_TRIGGERED_ADAPTATION_INCREMENT_b = 7.0 * b2.pA
 
 current = input_factory.get_step_current(10, 250, 1. * b2.ms, 65.0 * b2.pA)
 # Variare l'adaptation voltage coupling influisce sul numero di spikes
-# Se lo setto in modo che sia negativo ottengo un comportamento di bursting!
-# Infatti se a<0 cambio la pendenza della nullcline dell'adaptation current, quindi cambio la posizione
-# e la natura dei punti di equilibrio del sistema
+# Il bursting si ottiene cambiando il valore del reset del potenziale, ovviamente
+# in tal modo ti posizioni in un altro punto dello spazio delle fasi
+# "a" cambia anche la posizione dei punti di equilibrio a seconda della positività o negatività
+
 state_monitor, spike_monitor = AdEx.simulate_AdEx_neuron(I_stim=current, simulation_time=400 * b2.ms,
                                                          a=-0.5*b2.nS,
-                                                         v_rest=-46*b2.mV)
+                                                         v_reset=-46*b2.mV)
 
 plt.figure(1)
 plot_tools.plot_voltage_and_current_traces(state_monitor, current)
