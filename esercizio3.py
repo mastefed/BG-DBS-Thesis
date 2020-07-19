@@ -22,9 +22,7 @@ current = input_factory.get_step_current(10, 250, 1. * b2.ms, 65.0 * b2.pA)
 # e la natura dei punti di equilibrio del sistema
 state_monitor, spike_monitor = AdEx.simulate_AdEx_neuron(I_stim=current, simulation_time=400 * b2.ms,
                                                          a=-0.5*b2.nS,
-                                                         v_rest=-46*b2.mV,
-                                                         tau_m=5*b2.ms,
-                                                         b=16*b2.pA)
+                                                         v_rest=-46*b2.mV)
 
 plt.figure(1)
 plot_tools.plot_voltage_and_current_traces(state_monitor, current)
