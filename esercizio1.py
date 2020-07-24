@@ -96,7 +96,6 @@ while x < 10:
     # la simulazione dura 500 ms
     # phase_shift.append(2 * math.pi * time_shift * 1/0.5)
 
-
     # plt.plot(dt, corr/10**-8)
     # plt.title("Correlation function for {} Hz".format(frequencies[x]))
     # plot_tools.plot_voltage_and_current_traces(state_monit, current, title=" ")
