@@ -15,17 +15,18 @@ from neurodynex.tools import input_factory
 # ma anche dalla forma dell'impulso, qui di seguito si crea una rampa
 # di corrente che cresce man mano
 
+"""
 b2.defaultclock.dt = 0.02*b2.ms
 slow_ramp_t_end = 40
 
-"""
+
 In effetti, nell'impostazione di default, t_end = 60 ms, non c'è spike,
 se però diminuisco il tempo della rampa di corrente, anche solo a 40 ms,
 ottengo uno spike del neurone. Quello che non ottengo però è un comportamento
 da tonic firing. Man mano che diminuisco il t_end della rampa, sposto verso
 sinistra lo spike del neurone, chiaramente in termini della scala temporale.
 Qui sotto un aumento lento della corrente fino ad un top di 12 miA
-"""
+
 
 slow_ramp_current = input_factory.get_ramp_current(5, slow_ramp_t_end,
     b2.ms,0.*b2.uA, 12.0*b2.uA)
@@ -44,14 +45,19 @@ idx_t_end = int(round(fast_ramp_t_end*0.1*b2.ms / b2.defaultclock.dt))
 voltage_fast = state_monitor2.vm[0,idx_t_end]
 print("voltage_fast = {} V".format(voltage_fast))
 
-"""
 Una cosa importante che cambia è lo step temporale con il quale aumenta
 la corrente. Questo dipende dal parametro dopo slow/fast_ramp_t_end.
 Questo fa in modo che la fast current vada da cinque a dieci msecondi.
 Uno si chiede "ma perché non mettere come prima b2.ms e rapportarsi a
 questa unità di misura?", misteri della fede.
-"""
 
 HH.plot_data(state_monitor1, title="Slow")
 HH.plot_data(state_monitor2, title="Fast")
+"""
+
+# Hyperpolarizing current in grado di creare uno spike
+I = -5
+corrente = input_factory.get_step_current(10, 90, b2.ms, I*b2.uA)
+state_monitor = HH.simulate_HH_neuron(corrente, 100 * b2.ms)
+HH.plot_data(state_monitor, title="Hyperpolarizing current")
 plt.show()
