@@ -41,21 +41,21 @@ j_ext_exci = 0.55*mV
 # Non ho ancora messo le delta di dirac
 
 eqs_inhi = '''
-dv/dt = 1/tm_inhi * (-v + I_a - I_g) : volt (unless refractory)
-dI_a/dt = 1/tda_inhi * (-I_a + X_a) : amp
-dX_a/dt = 1/tra_inhi * (-X_a + tm_inhi*(j_pyr_inhi + j_ext_inhi)) : weber
-dI_g/dt = 1/tdg * (-I_g + X_g) : 1
-dX_g/dt = 1/trg * (-X_g + tm_inhi*(j_int_inhi)) : 1
+dv/dt = (-v + I_a - I_g)/tm_inhi : volt (unless refractory)
+dI_a/dt = (-I_a + X_a)/tda_inhi : 1
+dX_a/dt = (-X_a + tm_inhi*(j_pyr_inhi + j_ext_inhi))/tra_inhi : 1
+dI_g/dt = (-I_g + X_g)/tdg : 1
+dX_g/dt = (-X_g + tm_inhi*j_int_inhi)/trg : 1
 '''
 
 # Non ho ancora messo le delta di dirac
 
 eqs_exci = '''
-dv/dt = 1/tm_exci * (-v + I_a - I_g) : volt (unless refractory)
-dI_a/dt = 1/tda_exci * (-I_a + X_a) : 1
-dX_a/dt = 1/tra_exci * (-X_a + tm_exci*(j_pyr_exci + j_ext_exci)) : 1
-dI_g/dt = 1/tdg * (-I_g + X_g) : 1
-dX_g/dt = 1/trg * (-X_g + tm_exci*(j_int_exci)) : 1
+dv/dt = (-v + I_a - I_g)/tm_exci : volt (unless refractory)
+dI_a/dt = (-I_a + X_a)/tda_exci : 1
+dX_a/dt = (-X_a + tm_exci*(j_pyr_exci + j_ext_exci))/tra_exci : 1
+dI_g/dt = (-I_g + X_g)/tdg : 1
+dX_g/dt = (-X_g + tm_exci*j_int_exci)/trg : 1
 '''
 
 I = NeuronGroup(N_inhi, eqs_inhi, threshold='v>v_thre', reset='v=v_rese',
