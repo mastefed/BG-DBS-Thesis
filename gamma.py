@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 N = 5000
 N_inhi = 1000
 N_exci = 4000
-duration = 10*ms
+duration = 200*ms
 
 dim_corr = 1*mV/(volt*second)
 
@@ -111,22 +111,34 @@ IE.connect(p=p)
 II.connect(p=p)
 
 # Provo a modellare il noise seguendo la guida di Brian2 sui PoissonGroup
+# La user guide di Brian2 mi dice che usare PoissonGroup è equivalente ad
+# usare NeuronGroup(N_exci, rates, threshold='rand()<ni*dt', method='euler')
+# dove threshold è basato sulla frequenza calcolata con il ser di eq
+# differenziali esplicitato in rates ed usato come modello
 
-sigma_n = 0.4*Hz
-tau_n = 16*ms
-ni_0 = 2*Hz
+sigma_n = 0.4 # Lasciando l'unità di misura Hz mi dà errori dimentionali
+tau_n = 16*ms # quindi presumo che il white noise sia adimensionale ma lo scarico qui
+ni_0 = 2.6*Hz
 
 rates = '''
 ni = ni_0 + n : Hz
 dn/dt = (-n + sigma_n*xi*sqrt(2/tau_n))/tau_n : Hz
 '''
 
-Ext = NeuronGroup(N_exci, rates, threshold='rand()<ni*dt')
-ExtE = Synapses(Ext, E, model=eqs_ext_to_exci, delay=tl, on_pre='X_ext += tm_exci*j_ext_exci*dim_corr')
-ExtI = Synapses(Ext, I, model=eqs_ext_to_inhi, delay=tl, on_pre='X_ext += tm_exci*j_ext_inhi*dim_corr')
+Ext1 = NeuronGroup(N_exci, rates, threshold='rand()<ni*dt', method='euler')
+Ext2 = NeuronGroup(N_inhi, rates, threshold='rand()<ni*dt', method='euler')
+ExtE = Synapses(Ext1, E, model=eqs_ext_to_exci, delay=tl, on_pre='X_ext += tm_exci*j_ext_exci*dim_corr')
+ExtI = Synapses(Ext2, I, model=eqs_ext_to_inhi, delay=tl, on_pre='X_ext += tm_exci*j_ext_inhi*dim_corr')
 ExtE.connect()
 ExtI.connect()
 
 M_inhi = SpikeMonitor(I)
 M_exci = SpikeMonitor(E)
 run(duration)
+
+plt.figure("Raster plots")
+plt.subplot(211)
+plt.plot(M_exci.t, M_exci.t)
+plt.subplot(212)
+plt.plot(M_inhi.t, M_inhi.t)
+plt.show()
