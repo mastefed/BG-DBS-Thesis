@@ -1,5 +1,6 @@
 from brian2 import *
 import matplotlib.pyplot as plt
+from scipy import signal
 
 N = 5000
 N_inhi = 1000
@@ -40,24 +41,25 @@ j_inhi_exci = 1.7*mV
 j_exci_exci = 0.42*mV
 j_ext_exci = 0.55*mV
 
+sigma_n = 0.4*mV/Hz
+tau_n = 16*ms
+
 # Modello le equazioni per le reti di neuroni inibitori ed eccitatori
 eqs_inhi = '''
-dv/dt = (-v + I_a - I_g)/tm_inhi : volt (unless refractory)
-dI_a/dt = (-I_a + X_a_tot + X_ext_tot)/tda_inhi : volt
+dv/dt = (-v + I_a - I_g + sigma_n*sqrt(2/tau_n)*xi)/tm_inhi : volt (unless refractory)
+dI_a/dt = (-I_a + X_a_tot)/tda_inhi : volt
 dI_g/dt = (-I_g + X_g_tot)/tdg : volt
 X_a_tot : volt
 X_g_tot : volt
-X_ext_tot : volt
 '''
 
 # La differenza me la ritrovo nelle costanti temporali
 eqs_exci = '''
-dv/dt = (-v + I_a - I_g)/tm_exci : volt (unless refractory)
-dI_a/dt = (-I_a + X_a_tot + X_ext_tot)/tda_exci : volt
+dv/dt = (-v + I_a - I_g + sigma_n*sqrt(2/tau_n)*xi)/tm_exci : volt (unless refractory)
+dI_a/dt = (-I_a + X_a_tot)/tda_exci : volt
 dI_g/dt = (-I_g + X_g_tot)/tdg : volt
 X_a_tot : volt
 X_g_tot : volt
-X_ext_tot : volt
 '''
 
 # Modello le equazioni per le correnti sinaptiche
@@ -93,11 +95,11 @@ X_ext_tot_post = X_ext : volt (summed)
 
 # Modello le reti di neuroni che mi servono
 I = NeuronGroup(N_inhi, eqs_inhi, threshold='v>v_thre', reset='v=v_rese',
-                    refractory=tr_inhi, method='exact')
+                    refractory=tr_inhi, method='euler')
 I.v = v_rest
 
 E = NeuronGroup(N_exci, eqs_exci, threshold='v>v_thre', reset='v=v_rese',
-                    refractory=tr_exci, method='exact')
+                    refractory=tr_exci, method='euler')
 E.v = v_rest
 
 EE = Synapses(E, E, model=eqs_exci_to_exci, delay=tl, on_pre='X_a += tm_exci*j_exci_exci*dim_corr')
@@ -110,6 +112,10 @@ EI.connect(p=p)
 IE.connect(p=p)
 II.connect(p=p)
 
+
+'''
+# Questa è una prova non andata a buon fine
+
 # Provo a modellare il noise seguendo la guida di Brian2 sui PoissonGroup
 # La user guide di Brian2 mi dice che usare PoissonGroup è equivalente ad
 # usare NeuronGroup(N_exci, rates, threshold='rand()<ni*dt', method='euler')
@@ -120,10 +126,10 @@ sigma_n = 0.4 # Lasciando l'unità di misura Hz mi dà errori dimentionali
 tau_n = 16*ms # quindi presumo che il white noise sia adimensionale ma lo scarico qui
 ni_0 = 2.6*Hz
 
-rates = '''
+rates = """
 ni = ni_0 + n : Hz
 dn/dt = (-n + sigma_n*xi*sqrt(2/tau_n))/tau_n : Hz
-'''
+"""
 
 Ext1 = NeuronGroup(N_exci, rates, threshold='rand()<ni*dt', method='euler')
 Ext2 = NeuronGroup(N_inhi, rates, threshold='rand()<ni*dt', method='euler')
@@ -131,14 +137,33 @@ ExtE = Synapses(Ext1, E, model=eqs_ext_to_exci, delay=tl, on_pre='X_ext += tm_ex
 ExtI = Synapses(Ext2, I, model=eqs_ext_to_inhi, delay=tl, on_pre='X_ext += tm_exci*j_ext_inhi*dim_corr')
 ExtE.connect()
 ExtI.connect()
+'''
 
 M_inhi = SpikeMonitor(I)
 M_exci = SpikeMonitor(E)
+S_inhi = StateMonitor(I, 'v', record=True)
+S_exci = StateMonitor(E, 'v', record=True)
 run(duration)
+
 
 plt.figure("Raster plots")
 plt.subplot(211)
-plt.plot(M_exci.t, M_exci.t)
+plt.ylabel("Neuron (exc) Index")
+plt.plot(M_exci.t, M_exci.i, '.', ms='1')
 plt.subplot(212)
-plt.plot(M_inhi.t, M_inhi.t)
+plt.ylabel("Neuron (inh) Index")
+plt.xlabel("Time (ms)")
+plt.plot(M_inhi.t, M_inhi.i, '.', ms='1')
+
+plt.figure("Voltage Membrane of a Single Neuron")
+plt.subplot(211)
+plt.plot(S_exci.t, S_exci.v[0])
+plt.ylabel("One exc neuron V (mV)")
+plt.subplot(212)
+plt.ylabel("One inh neuron V (mV)")
+plt.xlabel("Time (ms)")
+plt.plot(S_inhi.t, S_inhi.v[0])
+
+(freqs, psd) = signal.welch(M_exci)
+
 plt.show()
