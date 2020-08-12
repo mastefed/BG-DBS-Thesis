@@ -1,15 +1,14 @@
 from brian2 import *
 import matplotlib.pyplot as plt
 from scipy import signal
+import numpy as np
 
 N = 5000
-N_inhi = 1000
-N_exci = 4000
+N_inhi = 1
+N_exci = 1
 duration = 200*ms
 
-dim_corr = 1*mV/(volt*second)
-
-p = 0.2 # connectivity probability
+p = 1 # connectivity probability
 
 v_rest = 0*mV # resting potential
 v_thre = 18*mV # threshold potential
@@ -41,12 +40,12 @@ j_inhi_exci = 1.7*mV
 j_exci_exci = 0.42*mV
 j_ext_exci = 0.55*mV
 
-sigma_n = 0.4*mV/Hz
+sigma_n = 0.5*volt*Hz**0.5
 tau_n = 16*ms
 
 # Modello le equazioni per le reti di neuroni inibitori ed eccitatori
 eqs_inhi = '''
-dv/dt = (-v + I_a - I_g + sigma_n*sqrt(2/tau_n)*xi)/tm_inhi : volt (unless refractory)
+dv/dt = (-v + I_a - I_g)/tm_inhi + sigma_n*sqrt(2/tau_n) : volt (unless refractory)
 dI_a/dt = (-I_a + X_a_tot)/tda_inhi : volt
 dI_g/dt = (-I_g + X_g_tot)/tdg : volt
 X_a_tot : volt
@@ -55,7 +54,7 @@ X_g_tot : volt
 
 # La differenza me la ritrovo nelle costanti temporali
 eqs_exci = '''
-dv/dt = (-v + I_a - I_g + sigma_n*sqrt(2/tau_n)*xi)/tm_exci : volt (unless refractory)
+dv/dt = (-v + I_a - I_g)/tm_exci + sigma_n*sqrt(2/tau_n) : volt (unless refractory)
 dI_a/dt = (-I_a + X_a_tot)/tda_exci : volt
 dI_g/dt = (-I_g + X_g_tot)/tdg : volt
 X_a_tot : volt
@@ -102,10 +101,11 @@ E = NeuronGroup(N_exci, eqs_exci, threshold='v>v_thre', reset='v=v_rese',
                     refractory=tr_exci, method='euler')
 E.v = v_rest
 
-EE = Synapses(E, E, model=eqs_exci_to_exci, delay=tl, on_pre='X_a += tm_exci*j_exci_exci*dim_corr')
-II = Synapses(I, I, model=eqs_inhi_to_inhi, delay=tl, on_pre='X_g += tm_inhi*j_inhi_inhi*dim_corr')
-EI = Synapses(E, I, model=eqs_exci_to_inhi, delay=tl, on_pre='X_a += tm_exci*j_exci_inhi*dim_corr')
-IE = Synapses(I, E, model=eqs_inhi_to_exci, delay=tl, on_pre='X_g += tm_inhi*j_inhi_inhi*dim_corr')
+# Devo aggiungere il diviso tau_ra così torna dimensionalmente parlando
+EE = Synapses(E, E, model=eqs_exci_to_exci, delay=tl, on_pre='X_a += tm_exci*j_exci_exci/tra_exci')
+II = Synapses(I, I, model=eqs_inhi_to_inhi, delay=tl, on_pre='X_g += tm_inhi*j_inhi_inhi/tra_inhi')
+EI = Synapses(E, I, model=eqs_exci_to_inhi, delay=tl, on_pre='X_a += tm_exci*j_exci_inhi/tra_exci')
+IE = Synapses(I, E, model=eqs_inhi_to_exci, delay=tl, on_pre='X_g += tm_inhi*j_inhi_inhi/tra_inhi')
 
 EE.connect(p=p)
 EI.connect(p=p)
@@ -141,29 +141,37 @@ ExtI.connect()
 
 M_inhi = SpikeMonitor(I)
 M_exci = SpikeMonitor(E)
-S_inhi = StateMonitor(I, 'v', record=True)
-S_exci = StateMonitor(E, 'v', record=True)
+S_inhi = StateMonitor(I, ['v', 'I_a', 'I_g'], record=True)
+S_exci = StateMonitor(E, ['v', 'I_a', 'I_g'], record=True)
 run(duration)
 
-
+'''
 plt.figure("Raster plots")
 plt.subplot(211)
 plt.ylabel("Neuron (exc) Index")
-plt.plot(M_exci.t, M_exci.i, '.', ms='1')
+plt.xlim((0, duration))
+plt.plot(M_exci.t/ms, M_exci.i, '.', ms='2')
 plt.subplot(212)
 plt.ylabel("Neuron (inh) Index")
 plt.xlabel("Time (ms)")
-plt.plot(M_inhi.t, M_inhi.i, '.', ms='1')
+plt.xlim((0, duration))
+plt.plot(M_inhi.t/ms, M_inhi.i, '.', ms='2')
 
 plt.figure("Voltage Membrane of a Single Neuron")
 plt.subplot(211)
+plt.ylim((0,0.021))
 plt.plot(S_exci.t, S_exci.v[0])
 plt.ylabel("One exc neuron V (mV)")
 plt.subplot(212)
 plt.ylabel("One inh neuron V (mV)")
 plt.xlabel("Time (ms)")
+plt.ylim((0,0.021))
 plt.plot(S_inhi.t, S_inhi.v[0])
+'''
 
-(freqs, psd) = signal.welch(M_exci)
+plt.figure("Corrente I_a")
+plt.plot(S_exci.I_a, 'r')
+plt.plot(S_exci.I_g, 'b')
+plt.plot(S_exci.I_a - S_exci.I_g, 'g')
 
 plt.show()
