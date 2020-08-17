@@ -39,8 +39,6 @@ j_inhi_exci = 1.7*mV
 j_exci_exci = 0.42*mV
 j_ext_exci = 0.55*mV
 
-sigma_n = 0.5*Hz
-tau_n = 16*ms
 
 # Modello le equazioni per le reti di neuroni inibitori ed eccitatori
 eqs_inhi = '''
@@ -62,22 +60,22 @@ X_g_tot : volt
 
 # Modello le equazioni per le correnti sinaptiche
 eqs_exci_to_inhi = '''
-dX_a/dt = -X_a/tra_inhi : volt (event-driven)
+dX_a/dt = -X_a/tra_inhi : volt 
 X_a_tot_post = X_a : volt (summed)
 '''
 
 eqs_inhi_to_exci = '''
-dX_g/dt = -X_g/trg : volt (event-driven)
+dX_g/dt = -X_g/trg : volt 
 X_g_tot_post = X_g : volt (summed)
 '''
 
 eqs_exci_to_exci = '''
-dX_a/dt = -X_a/tra_exci : volt (event-driven)
+dX_a/dt = -X_a/tra_exci : volt 
 X_a_tot_post = X_a : volt (summed)
 '''
 
 eqs_inhi_to_inhi = '''
-dX_g/dt = -X_g/trg : volt (event-driven)
+dX_g/dt = -X_g/trg : volt 
 X_g_tot_post = X_g : volt (summed)
 '''
 
