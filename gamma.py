@@ -7,27 +7,27 @@ N_inhi = 1000
 N_exci = 4000
 duration = 200*ms
 
-p = 0.2 # connectivity probability
+p = 0.2  # connectivity probability
 
-v_rest = 0*mV # resting potential
-v_thre = 18*mV # threshold potential
-v_rese = 11*mV # reset potential
+v_rest = 0*mV  # resting potential
+v_thre = 18*mV  # threshold potential
+v_rese = 11*mV  # reset potential
 
-tr_inhi = 1*ms # refractory time for inhibitory group
-tr_exci = 2*ms # refractory time for excitatory group
+tr_inhi = 1*ms  # refractory time for inhibitory group
+tr_exci = 2*ms  # refractory time for excitatory group
 
-tm_inhi = 10*ms # time costant for inhibitory group
-tm_exci = 20*ms # time costant for excitatory group
+tm_inhi = 10*ms  # time costant for inhibitory group
+tm_exci = 20*ms  # time costant for excitatory group
 
-tda_inhi = 1*ms # decay time for ampa current into inhi neuron
-tda_exci = 2*ms # decay time for ampa current into exci neuron
-tra_inhi = 0.2*ms # rise time for ampa current into inhi neuron
-tra_exci = 0.4*ms # rise time for ampa current into exci neuron
+tda_inhi = 1*ms  # decay time for ampa current into inhi neuron
+tda_exci = 2*ms  # decay time for ampa current into exci neuron
+tra_inhi = 0.2*ms  # rise time for ampa current into inhi neuron
+tra_exci = 0.4*ms  # rise time for ampa current into exci neuron
 
-tl = 1*ms # latency of post-synaptic current
+tl = 1*ms  # latency of post-synaptic current
 
-tdg = 5*ms # decay time of gaba current
-trg = 0.25*ms # rise time of gaba current
+tdg = 5*ms  # decay time of gaba current
+trg = 0.25*ms  # rise time of gaba current
 
 # Synaptic efficacies inhi/exci/ext to inhi
 j_inhi_inhi = 2.7*mV
@@ -41,12 +41,11 @@ j_ext_exci = 0.55*mV
 
 sigma_n = 0.5*Hz
 tau_n = 16*ms
-v_signal = 2*Hz
 
 # Modello le equazioni per le reti di neuroni inibitori ed eccitatori
 eqs_inhi = '''
 dv/dt = (-v + I_a - I_g)/tm_inhi : volt (unless refractory)
-dI_a/dt = (-I_a + X_a_tot)/tda_inhi : volt
+dI_a/dt = -I_a/tda_inhi + X_a_tot/tda_inhi : volt
 dI_g/dt = (-I_g + X_g_tot)/tdg : volt
 X_a_tot : volt
 X_g_tot : volt
@@ -55,7 +54,7 @@ X_g_tot : volt
 # La differenza me la ritrovo nelle costanti temporali
 eqs_exci = '''
 dv/dt = (-v + I_a - I_g)/tm_exci : volt (unless refractory)
-dI_a/dt = (-I_a + X_a_tot)/tda_exci : volt
+dI_a/dt = -I_a/tda_exci + X_a_tot/tda_exci : volt
 dI_g/dt = (-I_g + X_g_tot)/tdg : volt
 X_a_tot : volt
 X_g_tot : volt
@@ -101,8 +100,8 @@ EI.connect(p=p)
 IE.connect(p=p)
 II.connect(p=p)
 
-P1 = PoissonInput(E, 'X_a_tot', N_exci, 2*Hz, 'tm_exci*j_ext_exci/tra_exci')
-P2 = PoissonInput(I, 'X_a_tot', N_inhi, 2*Hz, 'tm_exci*j_ext_inhi/tra_exci')
+P1 = PoissonInput(E, 'X_a_tot', N_exci, 2*kHz, 'tm_exci*j_ext_exci/tra_exci')
+P2 = PoissonInput(I, 'X_a_tot', N_inhi, 2*kHz, 'tm_exci*j_ext_inhi/tra_exci')
 
 M_inhi = SpikeMonitor(I)
 M_exci = SpikeMonitor(E)
@@ -126,13 +125,13 @@ plt.plot(M_inhi.t/ms, M_inhi.i, '.', ms='2')
 plt.figure("Voltage Membrane of a Single Neuron")
 plt.subplot(211)
 plt.ylim((0,0.021))
-plt.plot(S_exci.t, S_exci.v[0])
+plt.plot(S_exci.t/ms, S_exci.v[0])
 plt.ylabel("One exc neuron V (mV)")
 plt.subplot(212)
 plt.ylabel("One inh neuron V (mV)")
 plt.xlabel("Time (ms)")
 plt.ylim((0,0.021))
-plt.plot(S_inhi.t, S_inhi.v[0])
+plt.plot(S_inhi.t/ms, S_inhi.v[0])
 
 
 plt.figure("Corrente I_a")
