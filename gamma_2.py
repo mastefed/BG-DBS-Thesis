@@ -2,12 +2,12 @@ from brian2 import *
 import matplotlib.pyplot as plt
 import numpy as np
 
-N = 2
-N_inhi = 1
-N_exci = 1
-duration = 1000*ms
+N_inhi = 100
+N_exci = 400
+duration = 500*ms
 
-p = 1 # connectivity probability
+p = 0.2 # connectivity probability
+freq = 0.1*kHz
 
 v_rest = 0*mV  # resting potential
 v_thre = 18*mV  # threshold potential
@@ -44,22 +44,22 @@ j_ext_exci = 0.55*mV
 eqs_inhi = '''
 dv/dt = (-v + I_a + I_ext - I_g)/tm_inhi : volt (unless refractory)
 dI_a/dt = -I_a/tda_inhi + X_a/tda_inhi : volt
-dX_a/dt = -X_a/tra_inhi : volt 
+dX_a/dt = -X_a/tra_inhi : volt
 dI_g/dt = (-I_g + X_g)/tdg : volt
-dX_g/dt = -X_g/trg : volt 
+dX_g/dt = -X_g/trg : volt
 dI_ext/dt = (-I_ext + X_ext)/tda_inhi : volt
-dX_ext/dt = -X_ext/trg : volt 
+dX_ext/dt = -X_ext/trg : volt
 '''
 
 # La differenza me la ritrovo nelle costanti temporali
 eqs_exci = '''
 dv/dt = (-v + I_a + I_ext - I_g)/tm_exci : volt (unless refractory)
 dI_a/dt = -I_a/tda_exci + X_a/tda_exci : volt
-dX_a/dt = -X_a/tra_exci : volt 
+dX_a/dt = -X_a/tra_exci : volt
 dI_g/dt = (-I_g + X_g)/tdg : volt
-dX_g/dt = -X_g/trg : volt 
+dX_g/dt = -X_g/trg : volt
 dI_ext/dt = (-I_ext + X_ext)/tda_exci : volt
-dX_ext/dt = -X_ext/trg : volt 
+dX_ext/dt = -X_ext/trg : volt
 '''
 
 
@@ -83,8 +83,8 @@ EI.connect(p=p)
 IE.connect(p=p)
 II.connect(p=p)
 
-P1 = PoissonInput(E, 'X_ext', N_exci, 1*kHz, 'tm_exci*j_ext_exci/tra_exci')
-P2 = PoissonInput(I, 'X_ext', N_inhi, 1*kHz, 'tm_exci*j_ext_inhi/tra_exci')
+P1 = PoissonInput(E, 'X_ext', N_exci, freq, 'tm_exci*j_ext_exci/tra_exci')
+P2 = PoissonInput(I, 'X_ext', N_inhi, freq, 'tm_exci*j_ext_inhi/tra_exci')
 
 M_inhi = SpikeMonitor(I)
 M_exci = SpikeMonitor(E)
@@ -93,18 +93,17 @@ S_exci = StateMonitor(E, ['v', 'I_a', 'I_g'], record=True)
 run(duration)
 
 
-plt.figure("Raster plots")
-plt.subplot(211)
+plt.figure("Raster plot excitatory")
 plt.ylabel("Neuron (exc) Index")
-plt.xlim((0, duration))
+plt.xlabel("Time (ms)")
 plt.plot(M_exci.t/ms, M_exci.i, '.', ms='2')
-plt.subplot(212)
+
+plt.figure("Raster plot inhibitory")
 plt.ylabel("Neuron (inh) Index")
 plt.xlabel("Time (ms)")
-plt.xlim((0, duration))
 plt.plot(M_inhi.t/ms, M_inhi.i, '.', ms='2')
 
-
+'''
 plt.figure("Voltage Membrane of a Single Neuron")
 plt.subplot(211)
 plt.ylim((0,0.021))
@@ -115,7 +114,7 @@ plt.ylabel("One inh neuron V (mV)")
 plt.xlabel("Time (ms)")
 plt.ylim((0,0.021))
 plt.plot(S_inhi.t/ms, S_inhi.v[0])
-
+'''
 
 plt.figure("Corrente I_a")
 plt.plot(S_exci.I_a.T, 'r')
@@ -124,4 +123,3 @@ plt.plot(S_exci.I_a.T- S_exci.I_g.T, 'g')
 
 
 plt.show()
-
