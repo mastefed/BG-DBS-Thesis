@@ -5,6 +5,8 @@
 
 import brian2 as b2
 
+duration = 1*b2.ms
+
 N_GPe = 153
 N_STN = 45
 
@@ -13,6 +15,7 @@ N_STN = 45
     This is due to the majority of first channel
     type of neurons in STN.
 """
+
 CSTN = 23*b2.pfarad
 CGPe = 68*b2.pfarad
 v_thres_STN = -41.4*b2.mV
@@ -78,7 +81,7 @@ tau_stn_gpe = 2*b2.ms
     u is an abstract recovery variable.
 """
 eqs_STN = '''
-dv/dt = (1/CSTN)*(kSTN*(v - v_rest_STN)*(v - v_thres_STN) - u1 - w2*u2 + ISTN + CSTN*xi) : 1
+dv/dt = (1/CSTN)*(kSTN*(v - v_rest_STN1)*(v - v_thres_STN) - u1 - w2*u2 + ISTN + CSTN*xi) : volt
 du1/dt = aSTN1*(bSTN1*(v - v_rest_STN1) - u1) : 1
 du2/dt = aSTN2*(bSTN2*(v - v_rest_STN2) - u2) : 1
 U = 1/(w1*abs(u2)+1/w1) : 1
@@ -91,3 +94,32 @@ du/dt = aGPe*(bGPe*(v - v_rest_GPe) - u) : 1
 STNGroup = b2.NeuronGroup(N_STN, eqs_STN, threshold='v>v_thres_STN', reset='v=cSTN-U*u2;u1=u1+dSTN1;u2=u2+dSTN2', method='exact')
 
 GPeGroup = b2.NeuronGroup(N_GPe, eqs_GPe, threshold='v>v_thres_GPe', reset='v=cGPe;u=u+dGPe', method='exact')
+
+""" S=Synapses(input,neurons,model=w : 1
+                              p : 1,
+                         on_pre="v+=w*(rand()<p)")
+"""
+
+eqsGPeGPe = """
+dvsyn/dt = G_gpe_gpe*gsyn*(E_gpe_gpe - vsyn) : 1 (event-driven)
+dgsyn/dt = -(1/tau_gpe_gpe)*gsyn : 1 (event-driven)
+"""
+ChemicalGPeGPe = b2.Synapses(GPeGroup, GPeGroup, delay=lambda_gpe_gpe, model=eqsGPeGPe, on_pre="v+=vsyn")
+ChemicalGPeGPe.connect(True, p=p_GPe_GPe)
+
+b2.run(duration)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
