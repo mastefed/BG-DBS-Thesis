@@ -95,16 +95,11 @@ STNGroup = b2.NeuronGroup(N_STN, eqs_STN, threshold='v>v_thres_STN', reset='v=cS
 
 GPeGroup = b2.NeuronGroup(N_GPe, eqs_GPe, threshold='v>v_thres_GPe', reset='v=cGPe;u=u+dGPe', method='exact')
 
-""" S=Synapses(input,neurons,model=w : 1
-                              p : 1,
-                         on_pre="v+=w*(rand()<p)")
-"""
-
 eqsGPeGPe = """
-dvsyn/dt = G_gpe_gpe*gsyn*(E_gpe_gpe - vsyn) : 1 (event-driven)
+I_chem_GPe_GPe = G_gpe_gpe*gsyn*(E_gpe_gpe - v) : 1
 dgsyn/dt = -(1/tau_gpe_gpe)*gsyn : 1 (event-driven)
 """
-ChemicalGPeGPe = b2.Synapses(GPeGroup, GPeGroup, delay=lambda_gpe_gpe, model=eqsGPeGPe, on_pre="v+=vsyn")
+ChemicalGPeGPe = b2.Synapses(GPeGroup, GPeGroup, delay=lambda_gpe_gpe, model=eqsGPeGPe, on_pre="IGPe+=I_chem_GPe_GPe")
 ChemicalGPeGPe.connect(True, p=p_GPe_GPe)
 
 b2.run(duration)
