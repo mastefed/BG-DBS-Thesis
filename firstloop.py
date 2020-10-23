@@ -45,7 +45,7 @@ aGPe = 0.0045*(1/b2.msecond)
 bGPe = 3.895*(1/b2.Gohm)
 cGPe = -58.36*b2.mV
 dGPe = 0.353*b2.pamp
-IGPe = 64*b2.pamp
+IGPe_ext = 64*b2.pamp
 
 """ Synaptic characteristics from connectivity
     probabilities to synapses' parameters.
@@ -89,8 +89,9 @@ du2/dt = aSTN2*(bSTN2*(v - v_rest_STN2) - u2) : volt
 U = 1/(w1*abs(u2)+w3) : 1
 '''
 eqs_GPe = '''
-dv/dt = (1/CGPe)*(kGPe*(v - v_rest_GPe)*(v - v_thres_GPe) - u + IGPe + sigma*CGPe*xi) : volt
+dv/dt = (1/CGPe)*(kGPe*(v - v_rest_GPe)*(v - v_thres_GPe) - u + IGPe_ext + I_syn_GPe_GPe + sigma*CGPe*xi) : volt
 du/dt = aGPe*(bGPe*(v - v_rest_GPe) - u) : volt/ohm
+I_syn_GPe_GPe : amp
 '''
 
 STNGroup = b2.NeuronGroup(N_STN, eqs_STN, threshold='v>v_thres_STN+U*u2', reset='v=cSTN-U*u2;u1=u1+dSTN1;u2=u2+dSTN2',
@@ -99,10 +100,11 @@ STNGroup = b2.NeuronGroup(N_STN, eqs_STN, threshold='v>v_thres_STN+U*u2', reset=
 GPeGroup = b2.NeuronGroup(N_GPe, eqs_GPe, threshold='v>v_thres_GPe', reset='v=cGPe;u=u+dGPe', method='euler')
 
 eqsGPeGPe = """
-I_chem_GPe_GPe = G_gpe_gpe*gsyn*(E_gpe_gpe - v) : 1
+I_chem_GPe_GPe = G_gpe_gpe*gsyn*(E_gpe_gpe - v) : amp
 dgsyn/dt = -(1/tau_gpe_gpe)*gsyn : 1 (event-driven)
 """
-ChemicalGPeGPe = b2.Synapses(GPeGroup, GPeGroup, delay=lambda_gpe_gpe, model=eqsGPeGPe, on_pre="IGPe+=I_chem_GPe_GPe")
+ChemicalGPeGPe = b2.Synapses(GPeGroup, GPeGroup, delay=lambda_gpe_gpe, model=eqsGPeGPe,
+                             on_pre="I_syn_GPe_GPe+=I_chem_GPe_GPe")
 ChemicalGPeGPe.connect(True, p=p_GPe_GPe)
 
 b2.run(duration)
