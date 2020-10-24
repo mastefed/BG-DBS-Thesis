@@ -5,10 +5,9 @@
 
 import brian2 as b2
 
-duration = 1*b2.ms
-
 N_GPe = 153
 N_STN = 45
+duration = 100*b2.ms
 
 """ I'm gonne choose the parameters
     used by Fountas. I chose the first channel.
@@ -78,20 +77,26 @@ G_stn_gpe = 1.447*b2.nsiemens
 E_stn_gpe = 0.*b2.mV
 tau_stn_gpe = 2.*b2.ms
 
+""" Heaviside function
+"""
+H = b2.core.functions.DEFAULT_FUNCTIONS['int']
+adimvolt = 1/b2.mV # I need this to make v_rest_STN2 - v adimensional, else Dimension Mismatch error will pop up.
+
 """ The model proposed is inspired by Izhikevich 2003/2007a.
     In this model v represents the membrane voltage while
     u is an abstract recovery variable.
 """
 eqs_STN = '''
-dv/dt = (1/CSTN)*(kSTN*(v - v_rest_STN1)*(v - v_thres_STN) - u1 - w2*u2 + ISTN + sigma*CSTN*xi) : volt
+dv/dt = (1/CSTN)*(kSTN*(v - v_rest_STN1)*(v - v_thres_STN) - u1 - w2*u2 + ISTN + I_syn + sigma*CSTN*xi) : volt
 du1/dt = aSTN1*(bSTN1*(v - v_rest_STN1) - u1) : volt/ohm
-du2/dt = aSTN2*(bSTN2*(v - v_rest_STN2) - u2) : volt
+du2/dt = aSTN2*(bSTN2*H( adimvolt*(v_rest_STN2 - v) >= 0)*(v - v_rest_STN2) - u2) : volt
 U = 1/(w1*abs(u2)+w3) : 1
+I_syn : amp
 '''
 eqs_GPe = '''
-dv/dt = (1/CGPe)*(kGPe*(v - v_rest_GPe)*(v - v_thres_GPe) - u + IGPe_ext + I_syn_GPe_GPe + sigma*CGPe*xi) : volt
+dv/dt = (1/CGPe)*(kGPe*(v - v_rest_GPe)*(v - v_thres_GPe) - u + IGPe_ext + I_syn + sigma*CGPe*xi) : volt
 du/dt = aGPe*(bGPe*(v - v_rest_GPe) - u) : volt/ohm
-I_syn_GPe_GPe : amp
+I_syn : amp
 '''
 
 STNGroup = b2.NeuronGroup(N_STN, eqs_STN, threshold='v>v_thres_STN+U*u2', reset='v=cSTN-U*u2;u1=u1+dSTN1;u2=u2+dSTN2',
@@ -99,17 +104,55 @@ STNGroup = b2.NeuronGroup(N_STN, eqs_STN, threshold='v>v_thres_STN+U*u2', reset=
 
 GPeGroup = b2.NeuronGroup(N_GPe, eqs_GPe, threshold='v>v_thres_GPe', reset='v=cGPe;u=u+dGPe', method='euler')
 
+""" GPe to GPe synapses
+"""
 eqsGPeGPe = """
 I_chem_GPe_GPe = G_gpe_gpe*gsyn*(E_gpe_gpe - v) : amp
 dgsyn/dt = -(1/tau_gpe_gpe)*gsyn : 1 (event-driven)
 """
 ChemicalGPeGPe = b2.Synapses(GPeGroup, GPeGroup, delay=lambda_gpe_gpe, model=eqsGPeGPe,
-                             on_pre="I_syn_GPe_GPe+=I_chem_GPe_GPe")
+                             on_pre="I_syn+=I_chem_GPe_GPe")
 ChemicalGPeGPe.connect(True, p=p_GPe_GPe)
 
+""" GPe to STN synapses
+"""
+eqsGPeSTN = """
+I_chem_GPe_STN = G_gpe_stn*gsyn*(E_gpe_stn - v) : amp
+dgsyn/dt = -(1/tau_gpe_stn)*gsyn : 1 (event-driven)
+"""
+ChemicalGPeSTN = b2.Synapses(GPeGroup, STNGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
+                            on_pre="I_syn+=I_chem_GPe_STN")
+ChemicalGPeSTN.connect(True, p=p_GPe_STN)
+
+""" STN to GPe synapses
+"""
+eqsSTNGPe = """
+I_chem_STN_GPe = G_stn_gpe*gsyn*(E_stn_gpe - v) : amp
+dgsyn/dt = -(1/tau_stn_gpe)*gsyn : 1 (event-driven)
+"""
+ChemicalSTNGPe = b2.Synapses(STNGroup, GPeGroup,delay=lambda_stn_gpe, model=eqsSTNGPe,
+                            on_pre="I_syn+=I_chem_STN_GPe")
+ChemicalSTNGPe.connect(True, p=p_STN_GPe)
+
+""" Functions to monitor neurons' state
+"""
+spikemonitor = b2.SpikeMonitor(STNGroup, variables=['v'])
+statemonitor = b2.StateMonitor(STNGroup, 'v', record=True)
+
+""" Run the code!
+"""
 b2.run(duration)
 
+b2.plt.figure("Membrane potential")
+b2.plt.plot(statemonitor.t/b2.ms, statemonitor.v[10]/b2.mV)
 
+b2.plt.figure("Spikes")
+b2.plt.title("Raster plot degli STN")
+b2.plt.ylabel("Neuron (STN) Index")
+b2.plt.xlabel("Time (ms)")
+b2.plt.xlim((0,120))
+b2.plt.plot(spikemonitor.t/b2.ms, spikemonitor.i, '.',ms='1')
+b2.plt.show()
 
 
 
