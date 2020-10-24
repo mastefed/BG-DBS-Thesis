@@ -35,7 +35,6 @@ w1 = 0.1*(1/b2.mV)
 w2 = 0.*b2.nsiemens
 w3 = 10.
 ISTN_ext = 56.1*b2.pamp
-# ISTN_ext = 1.*b2.namp
 
 """ I'm choosing the B type among the GPe neurons.
     This is only due to them being the majority.
@@ -167,7 +166,6 @@ b2.plt.figure("Membrane potential")
 b2.plt.title("Membrane potential of one neuron (red = STN) (green = GPe)")
 b2.plt.ylabel("Neuron membrane voltage")
 b2.plt.xlabel("Time (ms)")
-b2.plt.legend()
 plotSGPe = b2.plt.plot(statemonitorGPe.t/b2.ms, statemonitorGPe.v[10]/b2.mV, 'g')
 
 b2.plt.figure("Spikes")
@@ -179,7 +177,9 @@ plotMGPe = b2.plt.plot(spikemonitorGPe.t/b2.ms, spikemonitorGPe.i, 'g.',ms='1')
 
 b2.plt.show()
 
-
+""" T = [26.31; 3.33]
+oscillazioni nella frequenza beta
+"""
 
 
 
