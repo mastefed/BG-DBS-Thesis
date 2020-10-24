@@ -7,7 +7,7 @@ import brian2 as b2
 
 N_GPe = 153
 N_STN = 45
-duration = 100*b2.ms
+duration = 1000*b2.ms
 
 """ I'm gonne choose the parameters
     used by Fountas. I chose the first channel.
@@ -34,7 +34,8 @@ dSTN2 = -68.4*b2.mV
 w1 = 0.1*(1/b2.mV)
 w2 = 0.*b2.nsiemens
 w3 = 10.
-ISTN = 56.1*b2.pamp
+ISTN_ext = 56.1*b2.pamp
+# ISTN_ext = 1.*b2.namp
 
 """ I'm choosing the B type among the GPe neurons.
     This is only due to them being the majority.
@@ -87,7 +88,7 @@ adimvolt = 1/b2.mV # I need this to make v_rest_STN2 - v adimensional, else Dime
     u is an abstract recovery variable.
 """
 eqs_STN = '''
-dv/dt = (1/CSTN)*(kSTN*(v - v_rest_STN1)*(v - v_thres_STN) - u1 - w2*u2 + ISTN + I_syn + sigma*CSTN*xi) : volt
+dv/dt = (1/CSTN)*(kSTN*(v - v_rest_STN1)*(v - v_thres_STN) - u1 - w2*u2 + ISTN_ext + I_syn + sigma*CSTN*xi) : volt
 du1/dt = aSTN1*(bSTN1*(v - v_rest_STN1) - u1) : volt/ohm
 du2/dt = aSTN2*(bSTN2*H( adimvolt*(v_rest_STN2 - v) >= 0)*(v - v_rest_STN2) - u2) : volt
 U = 1/(w1*abs(u2)+w3) : 1
@@ -136,22 +137,46 @@ ChemicalSTNGPe.connect(True, p=p_STN_GPe)
 
 """ Functions to monitor neurons' state
 """
-spikemonitor = b2.SpikeMonitor(STNGroup, variables=['v'])
-statemonitor = b2.StateMonitor(STNGroup, 'v', record=True)
+spikemonitorSTN = b2.SpikeMonitor(STNGroup, variables=['v'])
+statemonitorSTN = b2.StateMonitor(STNGroup, 'v', record=True)
+spikemonitorGPe = b2.SpikeMonitor(GPeGroup, variables=['v'])
+statemonitorGPe = b2.StateMonitor(GPeGroup, 'v', record=True)
 
 """ Run the code!
 """
 b2.run(duration)
 
+""" Plotting STN stuff
+"""
 b2.plt.figure("Membrane potential")
-b2.plt.plot(statemonitor.t/b2.ms, statemonitor.v[10]/b2.mV)
+b2.plt.title("Membrane potential of one neuron (red = STN) (green = GPe)")
+b2.plt.ylabel("Neuron membrane voltage")
+b2.plt.xlabel("Time (ms)")
+plotSSTN = b2.plt.plot(statemonitorSTN.t/b2.ms, statemonitorSTN.v[10]/b2.mV, 'r')
 
 b2.plt.figure("Spikes")
-b2.plt.title("Raster plot degli STN")
-b2.plt.ylabel("Neuron (STN) Index")
+b2.plt.title("Raster plot (red = STN) (green = GPe)")
+b2.plt.ylabel("Neuron Index")
 b2.plt.xlabel("Time (ms)")
-b2.plt.xlim((0,120))
-b2.plt.plot(spikemonitor.t/b2.ms, spikemonitor.i, '.',ms='1')
+# b2.plt.xlim((0,120))
+plotMSTN = b2.plt.plot(spikemonitorSTN.t/b2.ms, spikemonitorSTN.i, 'r.',ms='1')
+
+""" Plotting GPe stuff
+"""
+b2.plt.figure("Membrane potential")
+b2.plt.title("Membrane potential of one neuron (red = STN) (green = GPe)")
+b2.plt.ylabel("Neuron membrane voltage")
+b2.plt.xlabel("Time (ms)")
+b2.plt.legend()
+plotSGPe = b2.plt.plot(statemonitorGPe.t/b2.ms, statemonitorGPe.v[10]/b2.mV, 'g')
+
+b2.plt.figure("Spikes")
+b2.plt.title("Raster plot (red = STN) (green = GPe)")
+b2.plt.ylabel("Neuron Index")
+b2.plt.xlabel("Time (ms)")
+# b2.plt.xlim((0,120))
+plotMGPe = b2.plt.plot(spikemonitorGPe.t/b2.ms, spikemonitorGPe.i, 'g.',ms='1')
+
 b2.plt.show()
 
 
