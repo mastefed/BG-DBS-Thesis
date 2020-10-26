@@ -264,7 +264,6 @@ on_pre="I_syn+=I_chem_GPe_GPe")
 ChemicalGPeCGPeA.connect(True, p=p_GPe_GPe)
 
 
-
 """ GPe to STN synapses
 """
 eqsGPeSTN = """
@@ -280,11 +279,11 @@ ChemicalGPeASTNLLRS = b2.Synapses(GPeAGroup, STNLLRSGroup, delay=lambda_gpe_stn,
 on_pre="I_syn+=I_chem_GPe_STN")
 ChemicalGPeASTNLLRS.connect(True, p=p_GPe_STN)
 
-ChemicalGPeASTNNR = b2.Synapses(GPeAGroup, STNRBGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
+ChemicalGPeASTNNR = b2.Synapses(GPeAGroup, STNNRGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
 on_pre="I_syn+=I_chem_GPe_STN")
 ChemicalGPeASTNNR.connect(True, p=p_GPe_STN)
 
-# A to RB/LLRS/NR
+# B to RB/LLRS/NR
 ChemicalGPeBSTNRB = b2.Synapses(GPeBGroup, STNRBGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
 on_pre="I_syn+=I_chem_GPe_STN")
 ChemicalGPeBSTNRB.connect(True, p=p_GPe_STN)
@@ -293,7 +292,7 @@ ChemicalGPeBSTNLLRS = b2.Synapses(GPeBGroup, STNLLRSGroup, delay=lambda_gpe_stn,
 on_pre="I_syn+=I_chem_GPe_STN")
 ChemicalGPeBSTNLLRS.connect(True, p=p_GPe_STN)
 
-ChemicalGPeBSTNNR = b2.Synapses(GPeBGroup, STNRBGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
+ChemicalGPeBSTNNR = b2.Synapses(GPeBGroup, STNNRGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
 on_pre="I_syn+=I_chem_GPe_STN")
 ChemicalGPeBSTNNR.connect(True, p=p_GPe_STN)
 
@@ -306,11 +305,9 @@ ChemicalGPeCSTNLLRS = b2.Synapses(GPeCGroup, STNLLRSGroup, delay=lambda_gpe_stn,
 on_pre="I_syn+=I_chem_GPe_STN")
 ChemicalGPeCSTNLLRS.connect(True, p=p_GPe_STN)
 
-ChemicalGPeCSTNNR = b2.Synapses(GPeCGroup, STNRBGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
+ChemicalGPeCSTNNR = b2.Synapses(GPeCGroup, STNNRGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
 on_pre="I_syn+=I_chem_GPe_STN")
 ChemicalGPeCSTNNR.connect(True, p=p_GPe_STN)
-
-
 
 
 """ STN to GPe synapses
@@ -403,7 +400,6 @@ b2.plt.ylim((0,45))
 plotMSTNRB = b2.plt.plot(spikemonitorSTNRB.t/b2.ms, spikemonitorSTNRB.i, 'r.',ms='2')
 plotMSTNLLRS = b2.plt.plot(spikemonitorSTNLLRS.t/b2.ms, spikemonitorSTNLLRS.i, 'g.',ms='2')
 plotMSTNNR = b2.plt.plot(spikemonitorSTNNR.t/b2.ms, spikemonitorSTNNR.i, 'b.',ms='2')
-
 
 
 
