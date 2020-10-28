@@ -4,6 +4,9 @@
 """
 
 import brian2 as b2
+import random as ran
+
+deft = b2.defaultclock.dt
 
 N_GPe = 153
 N_GPe_A = N_GPe * 0.85
@@ -11,10 +14,15 @@ N_GPe_B = N_GPe * 0.0405
 N_GPe_C = N_GPe * 0.1095
 N_STN = 45
 N_STN_RB = N_STN * 0.6
-N_STN_LLRS = N_STN * 0.6
-N_STN_NR = N_STN * 0.6
+N_STN_LLRS = N_STN * 0.25
+N_STN_NR = N_STN * 0.15
+N_input = 1000
+
 duration = 1000*b2.ms
 sigma = 1.*b2.mV/b2.msecond**0.5
+
+t_recorded = b2.arange(int(duration/deft))*deft
+
 
 """ STN RB Neurons 
 """
@@ -120,6 +128,21 @@ IGPe_ext_C = 237.5*b2.pamp
 p_GPe_GPe = 0.1
 p_GPe_STN = 0.1
 p_STN_GPe = 0.3
+p_CTX_STN = 0.03
+
+
+""" Cortical Input
+"""
+freq = 0.1*1/b2.ms
+amplit = 7.*b2.Hz
+f_spon = 3.*b2.Hz
+phi = ran.uniform(0,2.*b2.pi)
+input_rates = b2.TimedArray(amplit*b2.cos(2.*b2.pi*freq*t_recorded + phi) + f_spon, dt = deft)
+lambda_ctx_stn = 2.5*b2.ms
+G_ctx_stn = 0.388*b2.nsiemens
+E_ctx_stn = 0*b2.mV
+tau_ctx_stn_ampa = 2.*b2.ms
+tau_ctx_stn_nmda = 100.*b2.ms
 
 """ GPe to GPe
     Chemical
@@ -143,7 +166,8 @@ tau_gpe_stn = 8.*b2.ms
 lambda_stn_gpe = 2.*b2.ms
 G_stn_gpe = 1.447*b2.nsiemens
 E_stn_gpe = 0.*b2.mV
-tau_stn_gpe = 2.*b2.ms
+tau_stn_gpe_ampa = 2.*b2.ms
+tau_stn_gpe_nmda = 100.*b2.ms
 
 """ Heaviside function
 """
@@ -202,7 +226,8 @@ I_syn : amp
 '''
 
 
-""" All the populations' NeuronGroup, first the STN ones and then the GPe ones
+""" All the populations' NeuronGroup, first the STN ones and then the GPe ones and finally
+    the Cortical Poisson Group
 """
 STNRBGroup = b2.NeuronGroup(N_STN_RB, eqs_STN_RB, threshold='v>v_peak_STN_RB+U*u2', 
 reset='v=cSTN_RB-U*u2;u1=u1+dSTN1_RB;u2=u2+dSTN2_RB', method='euler')
@@ -219,6 +244,28 @@ GPeBGroup = b2.NeuronGroup(N_GPe_B, eqs_GPe_B, threshold='v>v_peak_GPe_B', reset
 
 GPeCGroup = b2.NeuronGroup(N_GPe_C, eqs_GPe_C, threshold='v>v_peak_GPe_C', reset='v=cGPe_C;u=u+dGPe_C', method='euler')
 
+CorticalGroup = b2.PoissonGroup(N_input, rates='input_rates(t)')
+
+
+""" Cortex to STN synapse
+"""
+eqsCTXSTN = """
+I_chem_CTX_STN = G_ctx_stn*gsyn_ampa*(E_ctx_stn - v) + G_ctx_stn*0.6*gsyn_nmda*(E_ctx_stn - v) : amp
+dgsyn_ampa/dt = -(1/tau_ctx_stn_ampa)*gsyn_ampa : 1 (event-driven)
+dgsyn_nmda/dt = -(1/tau_ctx_stn_nmda)*gsyn_nmda : 1 (event-driven)
+"""
+
+ChemicalCTXSTNRB = b2.Synapses(CorticalGroup, STNRBGroup, delay=lambda_ctx_stn, model=eqsCTXSTN,
+on_pre="I_syn+=I_chem_CTX_STN")
+ChemicalCTXSTNRB.connect(True, p=p_CTX_STN)
+
+ChemicalCTXSTNLLRS = b2.Synapses(CorticalGroup, STNLLRSGroup, delay=lambda_ctx_stn, model=eqsCTXSTN,
+on_pre="I_syn+=I_chem_CTX_STN")
+ChemicalCTXSTNLLRS.connect(True, p=p_CTX_STN)
+
+ChemicalCTXSTNNR = b2.Synapses(CorticalGroup, STNNRGroup, delay=lambda_ctx_stn, model=eqsCTXSTN,
+on_pre="I_syn+=I_chem_CTX_STN")
+ChemicalCTXSTNNR.connect(True, p=p_CTX_STN)
 
 """ GPe to GPe synapses
 """
@@ -313,8 +360,9 @@ ChemicalGPeCSTNNR.connect(True, p=p_GPe_STN)
 """ STN to GPe synapses
 """
 eqsSTNGPe = """
-I_chem_STN_GPe = G_stn_gpe*gsyn*(E_stn_gpe - v) : amp
-dgsyn/dt = -(1/tau_stn_gpe)*gsyn : 1 (event-driven)
+I_chem_STN_GPe = G_stn_gpe*gsyn_ampa*(E_stn_gpe - v) + G_stn_gpe*0.36*gsyn_nmda*(E_stn_gpe - v) : amp
+dgsyn_ampa/dt = -(1/tau_stn_gpe_ampa)*gsyn_ampa : 1 (event-driven)
+dgsyn_nmda/dt = -(1/tau_stn_gpe_nmda)*gsyn_nmda : 1 (event-driven)
 """
 
 # RB to A/B/C
