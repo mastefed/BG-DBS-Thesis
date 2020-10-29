@@ -329,7 +329,6 @@ ChemicalCTXSTNNR.connect(True, p=p_CTX_STN)
 
 """ GPe to GPe synapses
 """
-
 # Self connections
 ChemicalGPeAGPeA = b2.Synapses(GPeAGroup, GPeAGroup, delay=lambda_gpe_gpe, model='w:volt', on_pre="gsyn_gaba_gpe_gpe+=g")
 ChemicalGPeAGPeA.connect(True, p=p_GPe_GPe)
@@ -393,7 +392,6 @@ ChemicalGPeCSTNLLRS.connect(True, p=p_GPe_STN)
 ChemicalGPeCSTNNR = b2.Synapses(GPeCGroup, STNNRGroup, delay=lambda_gpe_stn, model='w:volt', on_pre="gsyn_gaba_gpe_stn+=g")
 ChemicalGPeCSTNNR.connect(True, p=p_GPe_STN)
 
-
 """ STN to GPe synapses
 """
 # RB to A/B/C
@@ -435,43 +433,77 @@ ChemicalSTNNRGPeC = b2.Synapses(STNNRGroup, GPeCGroup,delay=lambda_stn_gpe, mode
 on_pre="gsyn_ampa_stn_gpe+=g;gsyn_nmda_stn_gpe+=g")
 ChemicalSTNNRGPeC.connect(True, p=p_STN_GPe)
 
-
 """ Functions to monitor neurons' state
 """
 spikemonitorSTNRB = b2.SpikeMonitor(STNRBGroup, variables=['v'])
-statemonitorSTNRB = b2.StateMonitor(STNRBGroup, ['v','I_syn_tot'], record=True)
+statemonitorSTNRB = b2.StateMonitor(STNRBGroup, ['v','I_syn_tot','I_chem_CTX_STN','I_chem_GPe_STN'], record=True)
 
 spikemonitorSTNLLRS = b2.SpikeMonitor(STNLLRSGroup, variables=['v'])
-statemonitorSTNLLRS = b2.StateMonitor(STNLLRSGroup, ['v','I_syn_tot'], record=True)
+statemonitorSTNLLRS = b2.StateMonitor(STNLLRSGroup, ['v','I_syn_tot','I_chem_CTX_STN','I_chem_GPe_STN'], record=True)
 
 spikemonitorSTNNR = b2.SpikeMonitor(STNNRGroup, variables=['v'])
-statemonitorSTNNR = b2.StateMonitor(STNNRGroup, ['v','I_syn_tot'], record=True)
+statemonitorSTNNR = b2.StateMonitor(STNNRGroup, ['v','I_syn_tot','I_chem_CTX_STN','I_chem_GPe_STN'], record=True)
 
 spikemonitorGPeA = b2.SpikeMonitor(GPeAGroup, variables=['v'])
-statemonitorGPeA = b2.StateMonitor(GPeAGroup, 'v', record=True)
+statemonitorGPeA = b2.StateMonitor(GPeAGroup, ['v','I_syn_tot','I_chem_STN_GPe','I_chem_GPe_GPe'], record=True)
 
 spikemonitorGPeB = b2.SpikeMonitor(GPeBGroup, variables=['v'])
-statemonitorGPeB = b2.StateMonitor(GPeBGroup, 'v', record=True)
+statemonitorGPeB = b2.StateMonitor(GPeBGroup, ['v','I_syn_tot','I_chem_STN_GPe','I_chem_GPe_GPe'], record=True)
 
 spikemonitorGPeC = b2.SpikeMonitor(GPeCGroup, variables=['v'])
-statemonitorGPeC = b2.StateMonitor(GPeCGroup, 'v', record=True)
+statemonitorGPeC = b2.StateMonitor(GPeCGroup, ['v','I_syn_tot','I_chem_STN_GPe','I_chem_GPe_GPe'], record=True)
 
 """ Run the code!
 """
 b2.run(duration)
 
 
+mean_I_chem_GPe_GPe = np.add(np.mean(statemonitorGPeA.I_chem_GPe_GPe,0),np.mean(statemonitorGPeB.I_chem_GPe_GPe,0),np.mean(statemonitorGPeC.I_chem_GPe_GPe,0))
+mean_I_chem_CTX_STN = np.add(np.mean(statemonitorSTNRB.I_chem_CTX_STN,0),np.mean(statemonitorSTNLLRS.I_chem_CTX_STN,0),np.mean(statemonitorSTNNR.I_chem_CTX_STN,0))
+mean_I_chem_STN_GPe = np.add(np.mean(statemonitorGPeA.I_chem_STN_GPe,0),np.mean(statemonitorGPeB.I_chem_STN_GPe,0),np.mean(statemonitorGPeC.I_chem_STN_GPe,0))
+mean_I_chem_GPe_STN = np.add(np.mean(statemonitorSTNRB.I_chem_GPe_STN,0),np.mean(statemonitorSTNLLRS.I_chem_GPe_STN,0),np.mean(statemonitorSTNNR.I_chem_GPe_STN,0))
+
+mean_I_exci = np.add(mean_I_chem_CTX_STN,mean_I_chem_STN_GPe)
+mean_I_inhi = np.add(mean_I_chem_GPe_GPe,mean_I_chem_GPe_STN)
+
+'''
+print(mean_I_exci)
+print(mean_I_inhi)
+'''
 mean_I_to_STNRB = np.mean(statemonitorSTNRB.I_syn_tot, 0)
 mean_I_to_STNLLRS = np.mean(statemonitorSTNLLRS.I_syn_tot, 0)
 mean_I_to_STNNR = np.mean(statemonitorSTNNR.I_syn_tot, 0)
-print(mean_I_to_STNLLRS)
-print(mean_I_to_STNRB)
-print(mean_I_to_STNNR)
+mean_I_to_GPeA = np.mean(statemonitorGPeA.I_syn_tot, 0)
+mean_I_to_GPeB = np.mean(statemonitorGPeB.I_syn_tot, 0)
+mean_I_to_GPeC = np.mean(statemonitorGPeC.I_syn_tot, 0)
 
+tot_curr_to_STN = np.add(mean_I_to_STNRB,mean_I_to_STNNR,mean_I_to_STNLLRS)
+tot_curr_to_GPe = np.add(mean_I_to_GPeA,mean_I_to_GPeB,mean_I_to_GPeC)
+'''
+print(tot_curr_to_STN)
+print(tot_curr_to_GPe)
+'''
+
+""" Plotting Excitatory and Inhibitory currents in my loop
+"""
+b2.plt.figure("Exci-Inhi")
+b2.plt.title("Excitatory (green) and Inhibitory (red) Currents in the STN-GPe loop")
+b2.plt.ylabel("Currents (pA)")
+b2.plt.xlabel("Time (ms)")
+plotExciCurrent = b2.plt.plot(statemonitorGPeB.t/b2.ms,mean_I_exci/b2.pamp, 'g')
+plotInhiCurrent = b2.plt.plot(statemonitorGPeB.t/b2.ms,mean_I_inhi/b2.pamp, 'r')
+
+b2.plt.figure("Currents in STN and GPe")
+b2.plt.title("Currents arriving at STN (green) and GPe (blue)")
+b2.plt.ylabel("Currents (pA)")
+b2.plt.xlabel("Time (ms)")
+plotExciCurrent = b2.plt.plot(statemonitorGPeB.t/b2.ms,tot_curr_to_STN/b2.pamp, 'g')
+plotInhiCurrent = b2.plt.plot(statemonitorGPeB.t/b2.ms,tot_curr_to_GPe/b2.pamp, 'b')
+
+'''
 
 """ Plotting STN stuff
 """
-
 b2.plt.figure("Membrane potential STN")
 b2.plt.title("Membrane potential of one neuron (red = STN RB) (green = STN LLRS) (blue = STN NR)")
 b2.plt.ylabel("Neuron membrane voltage")
@@ -512,6 +544,7 @@ plotMGPeA = b2.plt.plot(spikemonitorGPeA.t/b2.ms, spikemonitorGPeA.i, 'r.',ms='2
 plotMGPeB = b2.plt.plot(spikemonitorGPeB.t/b2.ms, spikemonitorGPeB.i, 'g.',ms='2')
 plotMGPeC = b2.plt.plot(spikemonitorGPeC.t/b2.ms, spikemonitorGPeC.i, 'b.',ms='2')
 
+'''
 
 b2.plt.show()
 
