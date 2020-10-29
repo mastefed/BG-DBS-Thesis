@@ -453,11 +453,26 @@ statemonitorGPeB = b2.StateMonitor(GPeBGroup, ['v','I_syn_tot','I_chem_STN_GPe',
 spikemonitorGPeC = b2.SpikeMonitor(GPeCGroup, variables=['v'])
 statemonitorGPeC = b2.StateMonitor(GPeCGroup, ['v','I_syn_tot','I_chem_STN_GPe','I_chem_GPe_GPe'], record=True)
 
+populationSTNRB = b2.PopulationRateMonitor(STNRBGroup)
+populationSTNLLRS = b2.PopulationRateMonitor(STNLLRSGroup)
+populationSTNNR = b2.PopulationRateMonitor(STNNRGroup)
+populationGPeA = b2.PopulationRateMonitor(GPeAGroup)
+populationGPeB = b2.PopulationRateMonitor(GPeBGroup)
+populationGPeC = b2.PopulationRateMonitor(GPeCGroup)
+
 """ Run the code!
 """
 b2.run(duration)
 
+""" Calculating the Population firing rate over time for STN and GPe
+"""
+populationSTN1 = np.add(populationSTNRB.smooth_rate(width=5 * b2.ms), populationSTNNR.smooth_rate(width=5 * b2.ms))
+populationSTN = np.add(populationSTN1, populationSTNNR.smooth_rate(width=5 * b2.ms))
+populationGPe1 = np.add(populationGPeA.smooth_rate(width=5 * b2.ms), populationGPeB.smooth_rate(width=5 * b2.ms))
+populationGPe = np.add(populationGPe1, populationGPeC.smooth_rate(width=5 * b2.ms))
 
+""" Calculating meaning currents: mean excitatory and inhibitory current and mean currents to STN and GPe
+"""
 mean_I_chem_GPe_GPe = np.add(np.mean(statemonitorGPeA.I_chem_GPe_GPe,0),np.mean(statemonitorGPeB.I_chem_GPe_GPe,0),np.mean(statemonitorGPeC.I_chem_GPe_GPe,0))
 mean_I_chem_CTX_STN = np.add(np.mean(statemonitorSTNRB.I_chem_CTX_STN,0),np.mean(statemonitorSTNLLRS.I_chem_CTX_STN,0),np.mean(statemonitorSTNNR.I_chem_CTX_STN,0))
 mean_I_chem_STN_GPe = np.add(np.mean(statemonitorGPeA.I_chem_STN_GPe,0),np.mean(statemonitorGPeB.I_chem_STN_GPe,0),np.mean(statemonitorGPeC.I_chem_STN_GPe,0))
@@ -484,6 +499,17 @@ print(tot_curr_to_STN)
 print(tot_curr_to_GPe)
 '''
 
+""" Plotting the Population Rate over time during simulation
+"""
+b2.plt.figure("Pop Rate")
+b2.plt.title("Population firing rate for STN (green) and GPe (blue) populations ")
+b2.plt.ylabel("Firing Rate (Hz)")
+b2.plt.xlabel("Time (ms)")
+b2.plt.plot(populationSTNRB.t/b2.ms, populationSTN/b2.Hz, 'g')
+b2.plt.plot(populationGPeB.t/b2.ms, populationGPe/b2.Hz, 'b')
+
+
+'''
 """ Plotting Excitatory and Inhibitory currents in my loop
 """
 b2.plt.figure("Exci-Inhi")
@@ -500,7 +526,7 @@ b2.plt.xlabel("Time (ms)")
 plotExciCurrent = b2.plt.plot(statemonitorGPeB.t/b2.ms,tot_curr_to_STN/b2.pamp, 'g')
 plotInhiCurrent = b2.plt.plot(statemonitorGPeB.t/b2.ms,tot_curr_to_GPe/b2.pamp, 'b')
 
-'''
+
 
 """ Plotting STN stuff
 """
