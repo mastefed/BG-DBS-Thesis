@@ -5,6 +5,7 @@
 
 import brian2 as b2
 import random as ran
+import numpy as np
 
 deft = b2.defaultclock.dt
 
@@ -163,6 +164,7 @@ tau_gpe_stn = 8.*b2.ms
 """ STN to GPe
     Chemical
 """
+
 lambda_stn_gpe = 2.*b2.ms
 G_stn_gpe = 1.447*b2.nsiemens
 E_stn_gpe = 0.*b2.mV
@@ -182,47 +184,110 @@ adimvolt = 1/b2.mV # I need this to make v_rest_STN2 - v adimensional, else Dime
 """ RB, LLRS and NR populations of STN
 """
 eqs_STN_RB = '''
-dv/dt = (1/CSTN_RB)*(kSTN_RB*(v - v_rest_STN1_RB)*(v - v_thres_STN_RB) - u1 - w2_RB*u2 + ISTN_ext_RB + I_syn + sigma*CSTN_RB*xi) : volt
+dv/dt = (1/CSTN_RB)*(kSTN_RB*(v - v_rest_STN1_RB)*(v - v_thres_STN_RB) - u1 - w2_RB*u2 + I_tot + sigma*CSTN_RB*xi) : volt
 du1/dt = aSTN1_RB*(bSTN1_RB*(v - v_rest_STN1_RB) - u1) : volt/ohm
 du2/dt = aSTN2_RB*(bSTN2_RB*H( adimvolt*(v_rest_STN2_RB - v) >= 0)*(v - v_rest_STN2_RB) - u2) : volt
+
 U = 1/(w1_RB*abs(u2)+w3_RB) : 1
-I_syn : amp
+
+I_tot = I_syn_tot + ISTN_ext_RB : amp
+
+I_syn_tot = I_chem_CTX_STN + I_chem_GPe_STN : amp
+
+I_chem_CTX_STN = G_ctx_stn*gsyn_ampa_ctx_stn*(E_ctx_stn - v) + G_ctx_stn*0.6*gsyn_nmda_ctx_stn*(E_ctx_stn - v) : amp
+dgsyn_ampa_ctx_stn/dt = -(1/tau_ctx_stn_ampa)*gsyn_ampa_ctx_stn : 1
+dgsyn_nmda_ctx_stn/dt = -(1/tau_ctx_stn_nmda)*gsyn_nmda_ctx_stn : 1
+
+I_chem_GPe_STN = G_gpe_stn*gsyn_gaba_gpe_stn*(E_gpe_stn - v) : amp
+dgsyn_gaba_gpe_stn/dt = -(1/tau_gpe_stn)*gsyn_gaba_gpe_stn : 1
 '''
 
 eqs_STN_LLRS = '''
-dv/dt = (1/CSTN_LLRS)*(kSTN_LLRS*(v - v_rest_STN1_LLRS)*(v - v_thres_STN_LLRS) - u1 - w2_LLRS*u2 + ISTN_ext_LLRS + I_syn + sigma*CSTN_LLRS*xi) : volt
+dv/dt = (1/CSTN_LLRS)*(kSTN_LLRS*(v - v_rest_STN1_LLRS)*(v - v_thres_STN_LLRS) - u1 - w2_LLRS*u2 + I_tot + sigma*CSTN_LLRS*xi) : volt
 du1/dt = aSTN1_LLRS*(bSTN1_LLRS*(v - v_rest_STN1_LLRS) - u1) : volt/ohm
 du2/dt = aSTN2_LLRS*(bSTN2_LLRS*H( adimvolt*(v_rest_STN2_LLRS - v) >= 0)*(v - v_rest_STN2_LLRS) - u2) : volt
+
 U = 1/(w1_LLRS*abs(u2)+w3_LLRS) : 1
-I_syn : amp
+
+I_tot = I_syn_tot + ISTN_ext_LLRS : amp
+
+I_syn_tot = I_chem_CTX_STN + I_chem_GPe_STN : amp
+
+I_chem_CTX_STN = G_ctx_stn*gsyn_ampa_ctx_stn*(E_ctx_stn - v) + G_ctx_stn*0.6*gsyn_nmda_ctx_stn*(E_ctx_stn - v) : amp
+dgsyn_ampa_ctx_stn/dt = -(1/tau_ctx_stn_ampa)*gsyn_ampa_ctx_stn : 1
+dgsyn_nmda_ctx_stn/dt = -(1/tau_ctx_stn_nmda)*gsyn_nmda_ctx_stn : 1
+
+I_chem_GPe_STN = G_gpe_stn*gsyn_gaba_gpe_stn*(E_gpe_stn - v) : amp
+dgsyn_gaba_gpe_stn/dt = -(1/tau_gpe_stn)*gsyn_gaba_gpe_stn : 1
 '''
 
 eqs_STN_NR = '''
-dv/dt = (1/CSTN_NR)*(kSTN_NR*(v - v_rest_STN1_NR)*(v - v_thres_STN_NR) - u1 - w2_NR*u2 + ISTN_ext_NR + I_syn + sigma*CSTN_NR*xi) : volt
+dv/dt = (1/CSTN_NR)*(kSTN_NR*(v - v_rest_STN1_NR)*(v - v_thres_STN_NR) - u1 - w2_NR*u2 + I_tot + sigma*CSTN_NR*xi) : volt
 du1/dt = aSTN1_NR*(bSTN1_NR*(v - v_rest_STN1_NR) - u1) : volt/ohm
 du2/dt = aSTN2_NR*(bSTN2_NR*H( adimvolt*(v_rest_STN2_NR - v) >= 0)*(v - v_rest_STN2_NR) - u2) : volt
+
 U = 1/(w1_NR*abs(u2)+w3_NR) : 1
-I_syn : amp
+
+I_tot = I_syn_tot + ISTN_ext_NR : amp
+
+I_syn_tot = I_chem_CTX_STN + I_chem_GPe_STN : amp
+
+I_chem_CTX_STN = G_ctx_stn*gsyn_ampa_ctx_stn*(E_ctx_stn - v) + G_ctx_stn*0.6*gsyn_nmda_ctx_stn*(E_ctx_stn - v) : amp
+dgsyn_ampa_ctx_stn/dt = -(1/tau_ctx_stn_ampa)*gsyn_ampa_ctx_stn : 1
+dgsyn_nmda_ctx_stn/dt = -(1/tau_ctx_stn_nmda)*gsyn_nmda_ctx_stn : 1
+
+I_chem_GPe_STN = G_gpe_stn*gsyn_gaba_gpe_stn*(E_gpe_stn - v) : amp
+dgsyn_gaba_gpe_stn/dt = -(1/tau_gpe_stn)*gsyn_gaba_gpe_stn : 1
 '''
 
 """ A,B and C populations of GPe
 """
 eqs_GPe_A = '''
-dv/dt = (1/CGPe_A)*(kGPe_A*(v - v_rest_GPe_A)*(v - v_thres_GPe_A) - u + IGPe_ext_A + I_syn + sigma*CGPe_A*xi) : volt
+dv/dt = (1/CGPe_A)*(kGPe_A*(v - v_rest_GPe_A)*(v - v_thres_GPe_A) - u + I_tot + sigma*CGPe_A*xi) : volt
 du/dt = aGPe_A*(bGPe_A*(v - v_rest_GPe_A) - u) : volt/ohm
-I_syn : amp
+
+I_tot = I_syn_tot + IGPe_ext_A : amp
+
+I_syn_tot = I_chem_GPe_GPe + I_chem_STN_GPe : amp
+
+I_chem_GPe_GPe = G_gpe_gpe*gsyn_gaba_gpe_gpe*(E_gpe_gpe - v) : amp
+dgsyn_gaba_gpe_gpe/dt = -(1/tau_gpe_gpe)*gsyn_gaba_gpe_gpe : 1
+
+I_chem_STN_GPe = G_stn_gpe*gsyn_ampa_stn_gpe*(E_stn_gpe - v) + G_stn_gpe*0.36*gsyn_nmda_stn_gpe*(E_stn_gpe - v) : amp
+dgsyn_ampa_stn_gpe/dt = -(1/tau_stn_gpe_ampa)*gsyn_ampa_stn_gpe : 1 
+dgsyn_nmda_stn_gpe/dt = -(1/tau_stn_gpe_nmda)*gsyn_nmda_stn_gpe : 1
 '''
 
 eqs_GPe_B = '''
-dv/dt = (1/CGPe_B)*(kGPe_B*(v - v_rest_GPe_B)*(v - v_thres_GPe_B) - u + IGPe_ext_B + I_syn + sigma*CGPe_B*xi) : volt
+dv/dt = (1/CGPe_B)*(kGPe_B*(v - v_rest_GPe_B)*(v - v_thres_GPe_B) - u + I_tot + sigma*CGPe_B*xi) : volt
 du/dt = aGPe_B*(bGPe_B*(v - v_rest_GPe_B) - u) : volt/ohm
-I_syn : amp
+
+I_tot = I_syn_tot + IGPe_ext_B : amp
+
+I_syn_tot = I_chem_GPe_GPe + I_chem_STN_GPe : amp
+
+I_chem_GPe_GPe = G_gpe_gpe*gsyn_gaba_gpe_gpe*(E_gpe_gpe - v) : amp
+dgsyn_gaba_gpe_gpe/dt = -(1/tau_gpe_gpe)*gsyn_gaba_gpe_gpe : 1
+
+I_chem_STN_GPe = G_stn_gpe*gsyn_ampa_stn_gpe*(E_stn_gpe - v) + G_stn_gpe*0.36*gsyn_nmda_stn_gpe*(E_stn_gpe - v) : amp
+dgsyn_ampa_stn_gpe/dt = -(1/tau_stn_gpe_ampa)*gsyn_ampa_stn_gpe : 1 
+dgsyn_nmda_stn_gpe/dt = -(1/tau_stn_gpe_nmda)*gsyn_nmda_stn_gpe : 1
 '''
 
 eqs_GPe_C = '''
-dv/dt = (1/CGPe_C)*(kGPe_C*(v - v_rest_GPe_C)*(v - v_thres_GPe_C) - u + IGPe_ext_C + I_syn + sigma*CGPe_C*xi) : volt
+dv/dt = (1/CGPe_C)*(kGPe_C*(v - v_rest_GPe_C)*(v - v_thres_GPe_C) - u + I_tot + sigma*CGPe_C*xi) : volt
 du/dt = aGPe_C*(bGPe_C*(v - v_rest_GPe_C) - u) : volt/ohm
-I_syn : amp
+
+I_tot = I_syn_tot + IGPe_ext_C : amp
+
+I_syn_tot = I_chem_GPe_GPe + I_chem_STN_GPe : amp
+
+I_chem_GPe_GPe = G_gpe_gpe*gsyn_gaba_gpe_gpe*(E_gpe_gpe - v) : amp
+dgsyn_gaba_gpe_gpe/dt = -(1/tau_gpe_gpe)*gsyn_gaba_gpe_gpe : 1
+
+I_chem_STN_GPe = G_stn_gpe*gsyn_ampa_stn_gpe*(E_stn_gpe - v) + G_stn_gpe*0.36*gsyn_nmda_stn_gpe*(E_stn_gpe - v) : amp
+dgsyn_ampa_stn_gpe/dt = -(1/tau_stn_gpe_ampa)*gsyn_ampa_stn_gpe : 1 
+dgsyn_nmda_stn_gpe/dt = -(1/tau_stn_gpe_nmda)*gsyn_nmda_stn_gpe : 1
 '''
 
 
@@ -249,172 +314,137 @@ CorticalGroup = b2.PoissonGroup(N_input, rates='input_rates(t)')
 
 """ Cortex to STN synapse
 """
-eqsCTXSTN = """
-I_chem_CTX_STN = G_ctx_stn*gsyn_ampa*(E_ctx_stn - v) + G_ctx_stn*0.6*gsyn_nmda*(E_ctx_stn - v) : amp
-dgsyn_ampa/dt = -(1/tau_ctx_stn_ampa)*gsyn_ampa : 1 (event-driven)
-dgsyn_nmda/dt = -(1/tau_ctx_stn_nmda)*gsyn_nmda : 1 (event-driven)
-"""
-
-ChemicalCTXSTNRB = b2.Synapses(CorticalGroup, STNRBGroup, delay=lambda_ctx_stn, model=eqsCTXSTN,
-on_pre="I_syn+=I_chem_CTX_STN")
+ChemicalCTXSTNRB = b2.Synapses(CorticalGroup, STNRBGroup, delay=lambda_ctx_stn, 
+on_pre="gsyn_ampa_ctx_stn+=1.;gsyn_nmda_ctx_stn+=1.")
 ChemicalCTXSTNRB.connect(True, p=p_CTX_STN)
 
-ChemicalCTXSTNLLRS = b2.Synapses(CorticalGroup, STNLLRSGroup, delay=lambda_ctx_stn, model=eqsCTXSTN,
-on_pre="I_syn+=I_chem_CTX_STN")
+ChemicalCTXSTNLLRS = b2.Synapses(CorticalGroup, STNLLRSGroup, delay=lambda_ctx_stn, 
+on_pre="gsyn_ampa_ctx_stn+=1.;gsyn_nmda_ctx_stn+=1.")
 ChemicalCTXSTNLLRS.connect(True, p=p_CTX_STN)
 
-ChemicalCTXSTNNR = b2.Synapses(CorticalGroup, STNNRGroup, delay=lambda_ctx_stn, model=eqsCTXSTN,
-on_pre="I_syn+=I_chem_CTX_STN")
+ChemicalCTXSTNNR = b2.Synapses(CorticalGroup, STNNRGroup, delay=lambda_ctx_stn, 
+on_pre="gsyn_ampa_ctx_stn+=1.;gsyn_nmda_ctx_stn+=1.")
 ChemicalCTXSTNNR.connect(True, p=p_CTX_STN)
 
 """ GPe to GPe synapses
 """
-eqsGPeGPe = """
-I_chem_GPe_GPe = G_gpe_gpe*gsyn*(E_gpe_gpe - v) : amp
-dgsyn/dt = -(1/tau_gpe_gpe)*gsyn : 1 (event-driven)
-"""
 
-ChemicalGPeAGPeA = b2.Synapses(GPeAGroup, GPeAGroup, delay=lambda_gpe_gpe, model=eqsGPeGPe,
-on_pre="I_syn+=I_chem_GPe_GPe")
+# Self connections
+ChemicalGPeAGPeA = b2.Synapses(GPeAGroup, GPeAGroup, delay=lambda_gpe_gpe, model='w:volt', on_pre="gsyn_gaba_gpe_gpe+=1.")
 ChemicalGPeAGPeA.connect(True, p=p_GPe_GPe)
 
-ChemicalGPeBGPeB = b2.Synapses(GPeBGroup, GPeBGroup, delay=lambda_gpe_gpe, model=eqsGPeGPe,
-on_pre="I_syn+=I_chem_GPe_GPe")
+ChemicalGPeBGPeB = b2.Synapses(GPeBGroup, GPeBGroup, delay=lambda_gpe_gpe, model='w:volt', on_pre="gsyn_gaba_gpe_gpe+=1.")
 ChemicalGPeBGPeB.connect(True, p=p_GPe_GPe)
 
-ChemicalGPeCGPeC = b2.Synapses(GPeCGroup, GPeCGroup, delay=lambda_gpe_gpe, model=eqsGPeGPe,
-on_pre="I_syn+=I_chem_GPe_GPe")
+ChemicalGPeCGPeC = b2.Synapses(GPeCGroup, GPeCGroup, delay=lambda_gpe_gpe, model='w:volt', on_pre="gsyn_gaba_gpe_gpe+=1.")
 ChemicalGPeCGPeC.connect(True, p=p_GPe_GPe)
 
-ChemicalGPeAGPeB = b2.Synapses(GPeAGroup, GPeBGroup, delay=lambda_gpe_gpe, model=eqsGPeGPe,
-on_pre="I_syn+=I_chem_GPe_GPe")
+# A to others
+ChemicalGPeAGPeB = b2.Synapses(GPeAGroup, GPeBGroup, delay=lambda_gpe_gpe, model='w:volt', on_pre="gsyn_gaba_gpe_gpe+=1.")
 ChemicalGPeAGPeB.connect(True, p=p_GPe_GPe)
 
-ChemicalGPeAGPeC = b2.Synapses(GPeAGroup, GPeCGroup, delay=lambda_gpe_gpe, model=eqsGPeGPe,
-on_pre="I_syn+=I_chem_GPe_GPe")
+ChemicalGPeAGPeC = b2.Synapses(GPeAGroup, GPeCGroup, delay=lambda_gpe_gpe, model='w:volt', on_pre="gsyn_gaba_gpe_gpe+=1.")
 ChemicalGPeAGPeC.connect(True, p=p_GPe_GPe)
 
-ChemicalGPeBGPeC = b2.Synapses(GPeBGroup, GPeCGroup, delay=lambda_gpe_gpe, model=eqsGPeGPe,
-on_pre="I_syn+=I_chem_GPe_GPe")
+# B to others
+ChemicalGPeBGPeC = b2.Synapses(GPeBGroup, GPeCGroup, delay=lambda_gpe_gpe, model='w:volt', on_pre="gsyn_gaba_gpe_gpe+=1.")
 ChemicalGPeBGPeC.connect(True, p=p_GPe_GPe)
 
-ChemicalGPeCGPeB = b2.Synapses(GPeCGroup, GPeBGroup, delay=lambda_gpe_gpe, model=eqsGPeGPe,
-on_pre="I_syn+=I_chem_GPe_GPe")
-ChemicalGPeCGPeB.connect(True, p=p_GPe_GPe)
-
-ChemicalGPeBGPeA = b2.Synapses(GPeBGroup, GPeAGroup, delay=lambda_gpe_gpe, model=eqsGPeGPe,
-on_pre="I_syn+=I_chem_GPe_GPe")
+ChemicalGPeBGPeA = b2.Synapses(GPeBGroup, GPeAGroup, delay=lambda_gpe_gpe, model='w:volt', on_pre="gsyn_gaba_gpe_gpe+=1.")
 ChemicalGPeBGPeA.connect(True, p=p_GPe_GPe)
 
-ChemicalGPeCGPeA = b2.Synapses(GPeCGroup, GPeAGroup, delay=lambda_gpe_gpe, model=eqsGPeGPe,
-on_pre="I_syn+=I_chem_GPe_GPe")
+# C to others
+ChemicalGPeCGPeA = b2.Synapses(GPeCGroup, GPeAGroup, delay=lambda_gpe_gpe, model='w:volt', on_pre="gsyn_gaba_gpe_gpe+=1.")
 ChemicalGPeCGPeA.connect(True, p=p_GPe_GPe)
 
+ChemicalGPeCGPeB = b2.Synapses(GPeCGroup, GPeBGroup, delay=lambda_gpe_gpe, model='w:volt', on_pre="gsyn_gaba_gpe_gpe+=1.")
+ChemicalGPeCGPeB.connect(True, p=p_GPe_GPe)
 
 """ GPe to STN synapses
 """
-eqsGPeSTN = """
-I_chem_GPe_STN = G_gpe_stn*gsyn*(E_gpe_stn - v) : amp
-dgsyn/dt = -(1/tau_gpe_stn)*gsyn : 1 (event-driven)
-"""
 # A to RB/LLRS/NR
-ChemicalGPeASTNRB = b2.Synapses(GPeAGroup, STNRBGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
-on_pre="I_syn+=I_chem_GPe_STN")
+ChemicalGPeASTNRB = b2.Synapses(GPeAGroup, STNRBGroup, delay=lambda_gpe_stn, model='w:volt', on_pre="gsyn_gaba_gpe_stn+=1.")
 ChemicalGPeASTNRB.connect(True, p=p_GPe_STN)
 
-ChemicalGPeASTNLLRS = b2.Synapses(GPeAGroup, STNLLRSGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
-on_pre="I_syn+=I_chem_GPe_STN")
+ChemicalGPeASTNLLRS = b2.Synapses(GPeAGroup, STNLLRSGroup, delay=lambda_gpe_stn, model='w:volt', on_pre="gsyn_gaba_gpe_stn+=1.")
 ChemicalGPeASTNLLRS.connect(True, p=p_GPe_STN)
 
-ChemicalGPeASTNNR = b2.Synapses(GPeAGroup, STNNRGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
-on_pre="I_syn+=I_chem_GPe_STN")
+ChemicalGPeASTNNR = b2.Synapses(GPeAGroup, STNNRGroup, delay=lambda_gpe_stn, model='w:volt', on_pre="gsyn_gaba_gpe_stn+=1.")
 ChemicalGPeASTNNR.connect(True, p=p_GPe_STN)
 
 # B to RB/LLRS/NR
-ChemicalGPeBSTNRB = b2.Synapses(GPeBGroup, STNRBGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
-on_pre="I_syn+=I_chem_GPe_STN")
+ChemicalGPeBSTNRB = b2.Synapses(GPeBGroup, STNRBGroup, delay=lambda_gpe_stn, model='w:volt', on_pre="gsyn_gaba_gpe_stn+=1.")
 ChemicalGPeBSTNRB.connect(True, p=p_GPe_STN)
 
-ChemicalGPeBSTNLLRS = b2.Synapses(GPeBGroup, STNLLRSGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
-on_pre="I_syn+=I_chem_GPe_STN")
+ChemicalGPeBSTNLLRS = b2.Synapses(GPeBGroup, STNLLRSGroup, delay=lambda_gpe_stn, model='w:volt', on_pre="gsyn_gaba_gpe_stn+=1.")
 ChemicalGPeBSTNLLRS.connect(True, p=p_GPe_STN)
 
-ChemicalGPeBSTNNR = b2.Synapses(GPeBGroup, STNNRGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
-on_pre="I_syn+=I_chem_GPe_STN")
+ChemicalGPeBSTNNR = b2.Synapses(GPeBGroup, STNNRGroup, delay=lambda_gpe_stn, model='w:volt', on_pre="gsyn_gaba_gpe_stn+=1.")
 ChemicalGPeBSTNNR.connect(True, p=p_GPe_STN)
 
 # C to RB/LLRS/NR
-ChemicalGPeCSTNRB = b2.Synapses(GPeCGroup, STNRBGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
-on_pre="I_syn+=I_chem_GPe_STN")
+ChemicalGPeCSTNRB = b2.Synapses(GPeCGroup, STNRBGroup, delay=lambda_gpe_stn, model='w:volt', on_pre="gsyn_gaba_gpe_stn+=1.")
 ChemicalGPeCSTNRB.connect(True, p=p_GPe_STN)
 
-ChemicalGPeCSTNLLRS = b2.Synapses(GPeCGroup, STNLLRSGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
-on_pre="I_syn+=I_chem_GPe_STN")
+ChemicalGPeCSTNLLRS = b2.Synapses(GPeCGroup, STNLLRSGroup, delay=lambda_gpe_stn, model='w:volt', on_pre="gsyn_gaba_gpe_stn+=1.")
 ChemicalGPeCSTNLLRS.connect(True, p=p_GPe_STN)
 
-ChemicalGPeCSTNNR = b2.Synapses(GPeCGroup, STNNRGroup, delay=lambda_gpe_stn, model=eqsGPeSTN,
-on_pre="I_syn+=I_chem_GPe_STN")
+ChemicalGPeCSTNNR = b2.Synapses(GPeCGroup, STNNRGroup, delay=lambda_gpe_stn, model='w:volt', on_pre="gsyn_gaba_gpe_stn+=1.")
 ChemicalGPeCSTNNR.connect(True, p=p_GPe_STN)
 
 
 """ STN to GPe synapses
 """
-eqsSTNGPe = """
-I_chem_STN_GPe = G_stn_gpe*gsyn_ampa*(E_stn_gpe - v) + G_stn_gpe*0.36*gsyn_nmda*(E_stn_gpe - v) : amp
-dgsyn_ampa/dt = -(1/tau_stn_gpe_ampa)*gsyn_ampa : 1 (event-driven)
-dgsyn_nmda/dt = -(1/tau_stn_gpe_nmda)*gsyn_nmda : 1 (event-driven)
-"""
-
 # RB to A/B/C
-ChemicalSTNRBGPeA = b2.Synapses(STNRBGroup, GPeAGroup,delay=lambda_stn_gpe, model=eqsSTNGPe,
-on_pre="I_syn+=I_chem_STN_GPe")
+ChemicalSTNRBGPeA = b2.Synapses(STNRBGroup, GPeAGroup,delay=lambda_stn_gpe, model='w:volt',
+on_pre="gsyn_ampa_stn_gpe+=1.;gsyn_nmda_stn_gpe+=1.")
 ChemicalSTNRBGPeA.connect(True, p=p_STN_GPe)
 
-ChemicalSTNRBGPeB = b2.Synapses(STNRBGroup, GPeBGroup,delay=lambda_stn_gpe, model=eqsSTNGPe,
-on_pre="I_syn+=I_chem_STN_GPe")
+ChemicalSTNRBGPeB = b2.Synapses(STNRBGroup, GPeBGroup,delay=lambda_stn_gpe, model='w:volt',  
+on_pre="gsyn_ampa_stn_gpe+=1.;gsyn_nmda_stn_gpe+=1.")
 ChemicalSTNRBGPeB.connect(True, p=p_STN_GPe)
 
-ChemicalSTNRBGPeC = b2.Synapses(STNRBGroup, GPeCGroup,delay=lambda_stn_gpe, model=eqsSTNGPe,
-on_pre="I_syn+=I_chem_STN_GPe")
+ChemicalSTNRBGPeC = b2.Synapses(STNRBGroup, GPeCGroup,delay=lambda_stn_gpe, model='w:volt', 
+on_pre="gsyn_ampa_stn_gpe+=1.;gsyn_nmda_stn_gpe+=1.")
 ChemicalSTNRBGPeC.connect(True, p=p_STN_GPe)
 
 # LLRS to A/B/C
-ChemicalSTNLLRSGPeA = b2.Synapses(STNLLRSGroup, GPeAGroup,delay=lambda_stn_gpe, model=eqsSTNGPe,
-on_pre="I_syn+=I_chem_STN_GPe")
+ChemicalSTNLLRSGPeA = b2.Synapses(STNLLRSGroup, GPeAGroup,delay=lambda_stn_gpe, model='w:volt', 
+on_pre="gsyn_ampa_stn_gpe+=1.;gsyn_nmda_stn_gpe+=1.")
 ChemicalSTNLLRSGPeA.connect(True, p=p_STN_GPe)
 
-ChemicalSTNLLRSGPeB = b2.Synapses(STNLLRSGroup, GPeBGroup,delay=lambda_stn_gpe, model=eqsSTNGPe,
-on_pre="I_syn+=I_chem_STN_GPe")
+ChemicalSTNLLRSGPeB = b2.Synapses(STNLLRSGroup, GPeBGroup,delay=lambda_stn_gpe, model='w:volt', 
+on_pre="gsyn_ampa_stn_gpe+=1.;gsyn_nmda_stn_gpe+=1.")
 ChemicalSTNLLRSGPeB.connect(True, p=p_STN_GPe)
 
-ChemicalSTNLLRSGPeC = b2.Synapses(STNLLRSGroup, GPeCGroup,delay=lambda_stn_gpe, model=eqsSTNGPe,
-on_pre="I_syn+=I_chem_STN_GPe")
+ChemicalSTNLLRSGPeC = b2.Synapses(STNLLRSGroup, GPeCGroup,delay=lambda_stn_gpe, model='w:volt', 
+on_pre="gsyn_ampa_stn_gpe+=1.;gsyn_nmda_stn_gpe+=1.")
 ChemicalSTNLLRSGPeC.connect(True, p=p_STN_GPe)
 
 # NR to A/B/C
-ChemicalSTNNRGPeA = b2.Synapses(STNNRGroup, GPeAGroup,delay=lambda_stn_gpe, model=eqsSTNGPe,
-on_pre="I_syn+=I_chem_STN_GPe")
+ChemicalSTNNRGPeA = b2.Synapses(STNNRGroup, GPeAGroup,delay=lambda_stn_gpe, model='w:volt', 
+on_pre="gsyn_ampa_stn_gpe+=1.;gsyn_nmda_stn_gpe+=1.")
 ChemicalSTNNRGPeA.connect(True, p=p_STN_GPe)
 
-ChemicalSTNNRGPeB = b2.Synapses(STNNRGroup, GPeBGroup,delay=lambda_stn_gpe, model=eqsSTNGPe,
-on_pre="I_syn+=I_chem_STN_GPe")
+ChemicalSTNNRGPeB = b2.Synapses(STNNRGroup, GPeBGroup,delay=lambda_stn_gpe, model='w:volt', 
+on_pre="gsyn_ampa_stn_gpe+=1.;gsyn_nmda_stn_gpe+=1.")
 ChemicalSTNNRGPeB.connect(True, p=p_STN_GPe)
 
-ChemicalSTNNRGPeC = b2.Synapses(STNNRGroup, GPeCGroup,delay=lambda_stn_gpe, model=eqsSTNGPe,
-on_pre="I_syn+=I_chem_STN_GPe")
+ChemicalSTNNRGPeC = b2.Synapses(STNNRGroup, GPeCGroup,delay=lambda_stn_gpe, model='w:volt', 
+on_pre="gsyn_ampa_stn_gpe+=1.;gsyn_nmda_stn_gpe+=1.")
 ChemicalSTNNRGPeC.connect(True, p=p_STN_GPe)
 
 
 """ Functions to monitor neurons' state
 """
 spikemonitorSTNRB = b2.SpikeMonitor(STNRBGroup, variables=['v'])
-statemonitorSTNRB = b2.StateMonitor(STNRBGroup, 'v', record=True)
+statemonitorSTNRB = b2.StateMonitor(STNRBGroup, ['v','I_syn_tot'], record=True)
 
 spikemonitorSTNLLRS = b2.SpikeMonitor(STNLLRSGroup, variables=['v'])
-statemonitorSTNLLRS = b2.StateMonitor(STNLLRSGroup, 'v', record=True)
+statemonitorSTNLLRS = b2.StateMonitor(STNLLRSGroup, ['v','I_syn_tot'], record=True)
 
 spikemonitorSTNNR = b2.SpikeMonitor(STNNRGroup, variables=['v'])
-statemonitorSTNNR = b2.StateMonitor(STNNRGroup, 'v', record=True)
+statemonitorSTNNR = b2.StateMonitor(STNNRGroup, ['v','I_syn_tot'], record=True)
 
 spikemonitorGPeA = b2.SpikeMonitor(GPeAGroup, variables=['v'])
 statemonitorGPeA = b2.StateMonitor(GPeAGroup, 'v', record=True)
@@ -425,13 +455,22 @@ statemonitorGPeB = b2.StateMonitor(GPeBGroup, 'v', record=True)
 spikemonitorGPeC = b2.SpikeMonitor(GPeCGroup, variables=['v'])
 statemonitorGPeC = b2.StateMonitor(GPeCGroup, 'v', record=True)
 
-
 """ Run the code!
 """
 b2.run(duration)
 
+
+mean_I_to_STNRB = np.mean(statemonitorSTNRB.I_syn_tot, 0)
+mean_I_to_STNLLRS = np.mean(statemonitorSTNLLRS.I_syn_tot, 0)
+mean_I_to_STNNR = np.mean(statemonitorSTNNR.I_syn_tot, 0)
+print(mean_I_to_STNLLRS)
+print(mean_I_to_STNRB)
+print(mean_I_to_STNNR)
+
+
 """ Plotting STN stuff
 """
+
 b2.plt.figure("Membrane potential STN")
 b2.plt.title("Membrane potential of one neuron (red = STN RB) (green = STN LLRS) (blue = STN NR)")
 b2.plt.ylabel("Neuron membrane voltage")
@@ -440,7 +479,7 @@ plotSSTNNR = b2.plt.plot(statemonitorSTNNR.t/b2.ms, statemonitorSTNNR.v[0]/b2.mV
 plotSSTNLLRS = b2.plt.plot(statemonitorSTNLLRS.t/b2.ms, statemonitorSTNLLRS.v[0]/b2.mV, 'g')
 plotSSTNRB = b2.plt.plot(statemonitorSTNRB.t/b2.ms, statemonitorSTNRB.v[0]/b2.mV, 'r')
 
-'''
+
 b2.plt.figure("Spikes STN")
 b2.plt.title("Raster plot (red = STN RB) (green = STN LLRS) (blue = STN NR)")
 b2.plt.ylabel("Neuron Index")
@@ -449,7 +488,7 @@ b2.plt.ylim((0,45))
 plotMSTNRB = b2.plt.plot(spikemonitorSTNRB.t/b2.ms, spikemonitorSTNRB.i, 'r.',ms='2')
 plotMSTNLLRS = b2.plt.plot(spikemonitorSTNLLRS.t/b2.ms, spikemonitorSTNLLRS.i, 'g.',ms='2')
 plotMSTNNR = b2.plt.plot(spikemonitorSTNNR.t/b2.ms, spikemonitorSTNNR.i, 'b.',ms='2')
-'''
+
 
 
 """ Plotting GPe stuff
@@ -462,7 +501,7 @@ plotSGPeA = b2.plt.plot(statemonitorGPeA.t/b2.ms, statemonitorGPeA.v[0]/b2.mV, '
 plotSGPeB = b2.plt.plot(statemonitorGPeB.t/b2.ms, statemonitorGPeB.v[0]/b2.mV, 'g')
 plotSGPeC = b2.plt.plot(statemonitorGPeC.t/b2.ms, statemonitorGPeC.v[0]/b2.mV, 'b')
 
-'''
+
 b2.plt.figure("Spikes GPe")
 b2.plt.title("Raster plot (red = GPe A) (green = GPe B) (blue = GPe C)")
 b2.plt.ylabel("Neuron Index")
@@ -471,7 +510,7 @@ b2.plt.ylim((0,153))
 plotMGPeA = b2.plt.plot(spikemonitorGPeA.t/b2.ms, spikemonitorGPeA.i, 'r.',ms='2')
 plotMGPeB = b2.plt.plot(spikemonitorGPeB.t/b2.ms, spikemonitorGPeB.i, 'g.',ms='2')
 plotMGPeC = b2.plt.plot(spikemonitorGPeC.t/b2.ms, spikemonitorGPeC.i, 'b.',ms='2')
-'''
+
 
 b2.plt.show()
 
