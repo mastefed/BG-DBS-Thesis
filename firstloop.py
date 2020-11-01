@@ -7,16 +7,23 @@
     and it has been modified by Z. Fountas for a take on Action Selection modelling.
 """
 
-""" Functions I'll need later in the code
+""" 
+    T = [26.31; 83.33] secondi
+    oscillazioni nella frequenza beta
+"""
+
+""" 
+    Functions I'll need later in the code
 """
 def firingrate(sim_time, num_pop, count_funct):
-    time_intervals = sim_time/(100.*b2.ms)
+    delta_time = 100.*b2.ms
+    time_intervals = sim_time/delta_time
     int_time_inter = int(time_intervals)
     range_of_sim = range(int_time_inter)
     spikes_per_intervals = np.zeros(num_pop)
     for trial in range_of_sim:
         b2.restore()
-        b2.run(sim_time/100.)
+        b2.run(delta_time)
         spikes_for_neurons = []
         for neuron in range(num_pop):
             spikes_for_neurons.append(count_funct[neuron])
@@ -35,7 +42,6 @@ from scipy import signal
 from parameters import *
 from equations import *
 from groupsandsynapses import *
-
 
 """ Functions to monitor neurons' state
 """
@@ -90,6 +96,7 @@ firingrateGPeC, spikesGPeC = firingrate(duration, N_GPe_C, countGPeC)
 firingrateSTNRB, spikesSTNRB = firingrate(duration, N_STN_RB, countSTNRB)
 firingrateSTNLLRS, spikesSTNLLRS = firingrate(duration, N_STN_LLRS, countSTNLLRS)
 firingrateSTNNR, spikesSTNNR = firingrate(duration, N_STN_NR, countSTNNR)
+firingrateCTX, spikesCTX = firingrate(duration, N_input, countCTX)
 
 mean_over_intervals_fr_GPeA = np.mean(firingrateGPeA, 0)
 mean_over_intervals_fr_GPeB = np.mean(firingrateGPeB, 0)
@@ -97,6 +104,7 @@ mean_over_intervals_fr_GPeC = np.mean(firingrateGPeC, 0)
 mean_over_intervals_fr_STNRB = np.mean(firingrateSTNRB, 0)
 mean_over_intervals_fr_STNLLRS = np.mean(firingrateSTNLLRS, 0)
 mean_over_intervals_fr_STNNR = np.mean(firingrateSTNNR, 0)
+mean_over_intervals_fr_CTX = np.mean(firingrateCTX, 0)
 
 b2.plt.figure("Mean firing rate over 100 milliseconds")
 b2.plt.title("Mean firing rate of GPe B neurons")
@@ -134,7 +142,3 @@ tot_curr_to_GPe = np.add(mean_I_to_GPeA, mean_I_to_GPeB, mean_I_to_GPeC)
 
 
 b2.plt.show()
-
-""" T = [26.31; 83.33] secondi
-oscillazioni nella frequenza beta
-"""

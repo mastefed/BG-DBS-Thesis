@@ -3,8 +3,6 @@
 import brian2 as b2
 import random as ran
 
-deft = b2.defaultclock.dt
-
 N_GPe = 153 # In realtà 152
 N_GPe_B = int(N_GPe * 0.85)
 N_GPe_A = int(N_GPe * 0.0405)
@@ -15,9 +13,9 @@ N_STN_LLRS = int(N_STN * 0.25)
 N_STN_NR = int(N_STN * 0.15)
 N_input = 1000
 
+deft = b2.defaultclock.dt
 duration = 1000*b2.ms
 sigma = 1.*b2.mV/b2.msecond**0.5
-
 
 """ STN RB Neurons 
 """
