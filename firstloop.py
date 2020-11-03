@@ -138,11 +138,10 @@ plt.hist(mean_over_intervals_fr_GPeC/Hz, bins='auto')
 """ Calculating the Population firing rate over time for STN and GPe
 """
 width = 2.*ms
-populationSTN1 = np.add(populationSTNRB.smooth_rate(width=width), populationSTNNR.smooth_rate(width=width))
-populationSTN = np.add(populationSTN1, populationSTNNR.smooth_rate(width=width))
-populationGPe1 = np.add(populationGPeA.smooth_rate(width=width), populationGPeB.smooth_rate(width=width))
-populationGPe = np.add(populationGPe1, populationGPeC.smooth_rate(width=width))
+populationSTN = np.mean([populationSTNRB.smooth_rate(width=width), populationSTNNR.smooth_rate(width=width), populationSTNLLRS.smooth_rate(width=width)], 0)
+populationGPe = np.mean([populationGPeA.smooth_rate(width=width), populationGPeB.smooth_rate(width=width), populationGPeC.smooth_rate(width=width)], 0)
 
+'''
 """ Calculating meaning currents: mean excitatory and inhibitory current and mean currents to STN and GPe
 """
 mean_I_chem_GPe_GPe = np.add(np.mean(statemonitorGPeA.I_chem_GPe_GPe,0), np.mean(statemonitorGPeB.I_chem_GPe_GPe,0), np.mean(statemonitorGPeC.I_chem_GPe_GPe,0))
@@ -162,7 +161,7 @@ mean_I_to_GPeC = np.mean(statemonitorGPeC.I_syn_tot, 0)
 
 tot_curr_to_STN = np.add(mean_I_to_STNRB, mean_I_to_STNNR, mean_I_to_STNLLRS)
 tot_curr_to_GPe = np.add(mean_I_to_GPeA, mean_I_to_GPeB, mean_I_to_GPeC)
-
+'''
 
 ############################
 # I like to print stuff
@@ -174,6 +173,7 @@ plt.xlabel("Time (ms)")
 plt.plot(populationSTNRB.t/ms, populationSTN/Hz, 'g')
 plt.plot(populationGPeB.t/ms, populationGPe/Hz, 'b')
 
+'''
 """ Plotting Excitatory and Inhibitory currents in my loop
 """
 plt.figure("Exci-Inhi")
@@ -233,5 +233,5 @@ plt.ylim((0,153))
 plotMGPeA = plt.plot(spikemonitorGPeA.t/ms, spikemonitorGPeA.i, 'r.',ms='2')
 plotMGPeB = plt.plot(spikemonitorGPeB.t/ms, spikemonitorGPeB.i, 'g.',ms='2')
 plotMGPeC = plt.plot(spikemonitorGPeC.t/ms, spikemonitorGPeC.i, 'b.',ms='2')
-
+'''
 plt.show()
