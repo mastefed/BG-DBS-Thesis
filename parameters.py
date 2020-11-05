@@ -14,7 +14,7 @@ N_STN_NR = int(N_STN * 0.15)
 N_input = 1000
 
 deft = defaultclock.dt
-duration = 1000*ms
+duration = 10000*ms
 sigma = 1.
 
 """ STN RB Neurons 
@@ -124,7 +124,7 @@ p_CTX_STN = 0.03
 """ Cortical Input
 """
 t_recorded = arange(int(duration/deft))*deft
-freq = 0.02*1/ms
+freq = 0.03*1/ms
 amplit = 7.*Hz
 f_spon = 3.*Hz
 phi = ran.uniform(0,2.*pi)

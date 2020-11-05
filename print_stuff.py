@@ -1,7 +1,5 @@
+""" Plotting useful stuff down here!
 """
-Plotting useful stuff down here!
-"""
-from brian2 import *
 
 """ Plotting the Population Rate over time during simulation
 """
@@ -9,10 +7,8 @@ plt.figure("Pop Rate")
 plt.title("Population firing rate for STN (green) and GPe (blue) populations ")
 plt.ylabel("Firing Rate (Hz)")
 plt.xlabel("Time (ms)")
-plt.plot(populationSTNRB.t/ms, populationSTN/Hz, 'g')
-plt.plot(populationGPeB.t/ms, populationGPe/Hz, 'b')
-
-
+plt.plot(populationSTNRB.t/ms, populationSTNfr/Hz, 'g')
+plt.plot(populationGPeB.t/ms, populationGPefr/Hz, 'b')
 
 """ Plotting Excitatory and Inhibitory currents in my loop
 """
@@ -29,8 +25,6 @@ plt.ylabel("Currents (pA)")
 plt.xlabel("Time (ms)")
 plotExciCurrent = plt.plot(statemonitorGPeB.t/ms,tot_curr_to_STN/pamp, 'g')
 plotInhiCurrent = plt.plot(statemonitorGPeB.t/ms,tot_curr_to_GPe/pamp, 'b')
-
-
 
 """ Plotting STN stuff
 """
@@ -52,8 +46,6 @@ plotMSTNRB = plt.plot(spikemonitorSTNRB.t/ms, spikemonitorSTNRB.i, 'r.',ms='2')
 plotMSTNLLRS = plt.plot(spikemonitorSTNLLRS.t/ms, spikemonitorSTNLLRS.i, 'g.',ms='2')
 plotMSTNNR = plt.plot(spikemonitorSTNNR.t/ms, spikemonitorSTNNR.i, 'b.',ms='2')
 
-
-
 """ Plotting GPe stuff
 """
 plt.figure("Membrane potential GPe")
@@ -73,4 +65,3 @@ plt.ylim((0,153))
 plotMGPeA = plt.plot(spikemonitorGPeA.t/ms, spikemonitorGPeA.i, 'r.',ms='2')
 plotMGPeB = plt.plot(spikemonitorGPeB.t/ms, spikemonitorGPeB.i, 'g.',ms='2')
 plotMGPeC = plt.plot(spikemonitorGPeC.t/ms, spikemonitorGPeC.i, 'b.',ms='2')
-
