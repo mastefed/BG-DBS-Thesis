@@ -17,7 +17,7 @@ from scipy import signal
 from parameters import *
 from equations import *
 from groupsandsynapses import *
-from testfunctions import firingrate, isi_mean_std
+from testfunctions import *
 
 """ Functions to monitor neurons' state
 """
