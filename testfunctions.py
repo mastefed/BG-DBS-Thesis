@@ -5,6 +5,8 @@ from parameters import *
 import numpy as np
 
 def firingrate2(sim_time, num_pop, count_funct):
+    """ Roba molto convoluta, la tengo solo per modificarla in seguito
+    """
     delta_time = 100.*ms
     time_intervals = sim_time/delta_time
     int_time_inter = int(time_intervals)
@@ -24,10 +26,17 @@ def firingrate2(sim_time, num_pop, count_funct):
     return frequencies_per_intervals, spikes_per_intervals
 
 def firingrate(spikemonitor, sim_time):
+    """ Calculte the firing rate over the
+        entire simulation time.
+    """
     fr = spikemonitor.count/sim_time
     return fr
 
 def isi_mean_std(spikemonitor, whichneuron):
+    """ Calculate the ISI distribution, its
+        mean and its standard deviation.
+        Useful to calculate CV. 
+    """
     spiketrains = spikemonitor.spike_trains()
     isi = []
     x = whichneuron
@@ -40,7 +49,7 @@ def isi_mean_std(spikemonitor, whichneuron):
     return mean_isi, std_isi
 
 def printpoprate(title, poprates, colors):
-    """ This prints a plot of some Population Rates.
+    """ This plots some Population Rates.
         Input: poprates and colors are lists, for each poprate
         in poprates a color in colors is associated.
     """
@@ -53,6 +62,9 @@ def printpoprate(title, poprates, colors):
     
 
 def printexciinhicurrents(excicurrent, inhicurrent):
+    """ Plots the mean excitatory and inhibitory
+        currents in my loops.
+    """
     plt.figure("Exci-Inhi")
     plt.title("Excitatory (green) and Inhibitory (red) Currents in the STN-GPe loop")
     plt.ylabel("Currents (pA)")
@@ -62,6 +74,9 @@ def printexciinhicurrents(excicurrent, inhicurrent):
     
 
 def printstngpecurrents(totcurrstn, totcurrgpe):
+    """ Plots the mean currents incoming
+        to STN and GPe.
+    """
     plt.figure("Currents in STN and GPe")
     plt.title("Currents arriving at STN (green) and GPe (blue)")
     plt.ylabel("Currents (pA)")
@@ -71,6 +86,9 @@ def printstngpecurrents(totcurrstn, totcurrgpe):
     
 
 def printpotential(title, statemonitors, colors, whichneuron):
+    """ Let you choose for which neuron it should plot
+        its membrane potential during the simulation.
+    """
     plt.figure("Membrane potential")
     plt.title(title)
     plt.ylabel("Neuron membrane voltage")
@@ -80,6 +98,8 @@ def printpotential(title, statemonitors, colors, whichneuron):
 
 
 def printspikes(title, spikemonitors, colors):
+    """ Plots the Raster Plot of a specific population
+    """
     plt.figure("Spikes")
     plt.title(title)
     plt.ylabel("Neuron Index")

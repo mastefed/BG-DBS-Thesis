@@ -91,7 +91,6 @@ width = 2.*ms
 populationSTNfr = np.mean([populationSTNRB.smooth_rate(width=width), populationSTNNR.smooth_rate(width=width), populationSTNLLRS.smooth_rate(width=width)], 0)
 populationGPefr = np.mean([populationGPeA.smooth_rate(width=width), populationGPeB.smooth_rate(width=width), populationGPeC.smooth_rate(width=width)], 0)
 
-
 """ Calculating meaning currents: mean excitatory and inhibitory current and mean currents to STN and GPe
 """
 mean_I_chem_GPe_GPe = np.add(np.mean(statemonitorGPeA.I_chem_GPe_GPe,0), np.mean(statemonitorGPeB.I_chem_GPe_GPe,0), np.mean(statemonitorGPeC.I_chem_GPe_GPe,0))
