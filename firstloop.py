@@ -22,22 +22,22 @@ from testfunctions import *
 """ Functions to monitor neurons' state
 """
 spikemonitorSTNRB = SpikeMonitor(STNRBGroup, variables=['v'])
-statemonitorSTNRB = StateMonitor(STNRBGroup, ['v','I_syn_tot','I_chem_CTX_STN','I_chem_GPe_STN'], record=True)
+statemonitorSTNRB = StateMonitor(STNRBGroup, ['v','I_lfp_stnrb'], record=True)
 
 spikemonitorSTNLLRS = SpikeMonitor(STNLLRSGroup, variables=['v'])
-statemonitorSTNLLRS = StateMonitor(STNLLRSGroup, ['v','I_syn_tot','I_chem_CTX_STN','I_chem_GPe_STN'], record=True)
+statemonitorSTNLLRS = StateMonitor(STNLLRSGroup, ['v','I_lfp_stnllrs'], record=True)
 
 spikemonitorSTNNR = SpikeMonitor(STNNRGroup, variables=['v'])
-statemonitorSTNNR = StateMonitor(STNNRGroup, ['v','I_syn_tot','I_chem_CTX_STN','I_chem_GPe_STN'], record=True)
+statemonitorSTNNR = StateMonitor(STNNRGroup, ['v','I_lfp_stnnr'], record=True)
 
 spikemonitorGPeA = SpikeMonitor(GPeAGroup, variables=['v'])
-statemonitorGPeA = StateMonitor(GPeAGroup, ['v','I_syn_tot','I_chem_STN_GPe','I_chem_GPe_GPe'], record=True)
+statemonitorGPeA = StateMonitor(GPeAGroup, ['v','I_lfp_gpea'], record=True)
 
 spikemonitorGPeB = SpikeMonitor(GPeBGroup, variables=['v'])
-statemonitorGPeB = StateMonitor(GPeBGroup, ['v','I_syn_tot','I_chem_STN_GPe','I_chem_GPe_GPe'], record=True)
+statemonitorGPeB = StateMonitor(GPeBGroup, ['v','I_lfp_gpeb'], record=True)
 
 spikemonitorGPeC = SpikeMonitor(GPeCGroup, variables=['v'])
-statemonitorGPeC = StateMonitor(GPeCGroup, ['v','I_syn_tot','I_chem_STN_GPe','I_chem_GPe_GPe'], record=True)
+statemonitorGPeC = StateMonitor(GPeCGroup, ['v','I_lfp_gpec'], record=True)
 
 spikemonitorCTX = SpikeMonitor(CorticalGroup)
 
@@ -93,22 +93,21 @@ populationGPefr = np.mean([populationGPeA.smooth_rate(width=width), populationGP
 
 """ Calculating meaning currents: mean excitatory and inhibitory current and mean currents to STN and GPe
 """
-mean_I_chem_GPe_GPe = np.add(np.mean(statemonitorGPeA.I_chem_GPe_GPe,0), np.mean(statemonitorGPeB.I_chem_GPe_GPe,0), np.mean(statemonitorGPeC.I_chem_GPe_GPe,0))
-mean_I_chem_CTX_STN = np.add(np.mean(statemonitorSTNRB.I_chem_CTX_STN,0), np.mean(statemonitorSTNLLRS.I_chem_CTX_STN,0), np.mean(statemonitorSTNNR.I_chem_CTX_STN,0))
-mean_I_chem_STN_GPe = np.add(np.mean(statemonitorGPeA.I_chem_STN_GPe,0), np.mean(statemonitorGPeB.I_chem_STN_GPe,0), np.mean(statemonitorGPeC.I_chem_STN_GPe,0))
-mean_I_chem_GPe_STN = np.add(np.mean(statemonitorSTNRB.I_chem_GPe_STN,0), np.mean(statemonitorSTNLLRS.I_chem_GPe_STN,0), np.mean(statemonitorSTNNR.I_chem_GPe_STN,0))
+# Qua calcolare LFP e poi Welch nelle bande spettrali
+mean_I_lfp_STNRB = np.mean(statemonitorSTNRB.I_lfp_stnrb, 0)
+mean_I_lfp_STNLLRS = np.mean(statemonitorSTNLLRS.I_lfp_stnllrs, 0)
+mean_I_lfp_STNNR = np.mean(statemonitorSTNNR.I_lfp_stnnr, 0)
+mean_I_lfp_GPeA = np.mean(statemonitorGPeA.I_lfp_gpea, 0)
+mean_I_lfp_GPeB = np.mean(statemonitorGPeB.I_lfp_gpeb, 0)
+mean_I_lfp_GPeC = np.mean(statemonitorGPeC.I_lfp_gpec, 0)
 
-mean_I_exci = np.add(mean_I_chem_CTX_STN,mean_I_chem_STN_GPe)
-mean_I_inhi = np.add(mean_I_chem_GPe_GPe,mean_I_chem_GPe_STN)
+mean_I_lfp_STN = np.vstack((mean_I_lfp_STNRB, mean_I_lfp_STNLLRS, mean_I_lfp_STNNR))
+mean_I_lfp_STN = np.mean(mean_I_lfp_STN, 0)
+mean_I_lfp_GPe = np.vstack((mean_I_lfp_GPeA, mean_I_lfp_GPeB, mean_I_lfp_GPeC))
+mean_I_lfp_GPe = np.mean(mean_I_lfp_GPe, 0)
 
-mean_I_to_STNRB = np.mean(statemonitorSTNRB.I_syn_tot, 0)
-mean_I_to_STNLLRS = np.mean(statemonitorSTNLLRS.I_syn_tot, 0)
-mean_I_to_STNNR = np.mean(statemonitorSTNNR.I_syn_tot, 0)
-mean_I_to_GPeA = np.mean(statemonitorGPeA.I_syn_tot, 0)
-mean_I_to_GPeB = np.mean(statemonitorGPeB.I_syn_tot, 0)
-mean_I_to_GPeC = np.mean(statemonitorGPeC.I_syn_tot, 0)
-
-tot_curr_to_STN = np.add(mean_I_to_STNRB, mean_I_to_STNNR, mean_I_to_STNLLRS)
-tot_curr_to_GPe = np.add(mean_I_to_GPeA, mean_I_to_GPeB, mean_I_to_GPeC)
+printcurrents(1, "LFP STN RB (red) STN LLRS (green) STN NR (blue)", [mean_I_lfp_STNRB, mean_I_lfp_STNLLRS, mean_I_lfp_STNNR], ['r', 'g', 'b'])
+printcurrents(2, "LFP GPe A (red) GPe B (green) GPeC (blue)", [mean_I_lfp_GPeA, mean_I_lfp_GPeB, mean_I_lfp_GPeC], ['r', 'g', 'b'])
+printcurrents(3, "LFP STN (red) GPe (green)", [mean_I_lfp_STN, mean_I_lfp_GPe], ['r', 'g'])
 
 plt.show()

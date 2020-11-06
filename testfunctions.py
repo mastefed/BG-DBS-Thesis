@@ -61,29 +61,18 @@ def printpoprate(title, poprates, colors):
         plt.plot(t_recorded/ms, poprate/Hz, color)
     
 
-def printexciinhicurrents(excicurrent, inhicurrent):
+def printcurrents(figure, title, currents, colors):
     """ Plots the mean excitatory and inhibitory
         currents in my loops.
     """
-    plt.figure("Exci-Inhi")
-    plt.title("Excitatory (green) and Inhibitory (red) Currents in the STN-GPe loop")
+    plt.figure(figure)
+    plt.title(title)
     plt.ylabel("Currents (pA)")
     plt.xlabel("Time (ms)")
-    plt.plot(t_recorded/ms, excicurrent/pamp, 'g')
-    plt.plot(t_recorded/ms, inhicurrent/pamp, 'r')
+    for current, color in zip(currents, colors):
+        plt.plot(t_recorded/ms, current/pamp, color)
     
 
-def printstngpecurrents(totcurrstn, totcurrgpe):
-    """ Plots the mean currents incoming
-        to STN and GPe.
-    """
-    plt.figure("Currents in STN and GPe")
-    plt.title("Currents arriving at STN (green) and GPe (blue)")
-    plt.ylabel("Currents (pA)")
-    plt.xlabel("Time (ms)")
-    plt.plot(t_recorded/ms, totcurrstn/pamp, 'g')
-    plt.plot(t_recorded/ms, totcurrgpe/pamp, 'b')
-    
 
 def printpotential(title, statemonitors, colors, whichneuron):
     """ Let you choose for which neuron it should plot

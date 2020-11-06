@@ -17,6 +17,8 @@ du2/dt = aSTN2_RB*(bSTN2_RB*H( adimvolt*(v_rest_STN2_RB - v) >= 0)*(v - v_rest_S
 
 U = 1/(w1_RB*abs(u2)*second/volt + 1/w1_RB) : 1
 
+I_lfp_stnrb = abs(I_chem_CTX_STN) + abs(I_chem_GPe_STN) : amp
+
 I_tot = I_syn_tot + ISTN_ext_RB : amp
 
 I_syn_tot = I_chem_CTX_STN + I_chem_GPe_STN : amp
@@ -35,6 +37,8 @@ du1/dt = aSTN1_LLRS*(bSTN1_LLRS*(v - v_rest_STN1_LLRS) - u1) : volt/second
 du2/dt = aSTN2_LLRS*(bSTN2_LLRS*H( adimvolt*(v_rest_STN2_LLRS - v) >= 0)*(v - v_rest_STN2_LLRS) - u2) : volt/second
 
 U = 1/(w1_LLRS*abs(u2)*second/volt+1/w1_LLRS) : 1
+
+I_lfp_stnllrs = abs(I_chem_CTX_STN) + abs(I_chem_GPe_STN) : amp
 
 I_tot = I_syn_tot + ISTN_ext_LLRS : amp
 
@@ -55,6 +59,8 @@ du2/dt = aSTN2_NR*(bSTN2_NR*H( adimvolt*(v_rest_STN2_NR - v) >= 0)*(v - v_rest_S
 
 U = 1/(w1_NR*abs(u2)*second/volt+1/w1_NR) : 1
 
+I_lfp_stnnr = abs(I_chem_CTX_STN) + abs(I_chem_GPe_STN) : amp
+
 I_tot = I_syn_tot + ISTN_ext_NR : amp
 
 I_syn_tot = I_chem_CTX_STN + I_chem_GPe_STN : amp
@@ -73,6 +79,8 @@ eqs_GPe_A = '''
 dv/dt = (1/CGPe_A)*(kGPe_A*pF/ms/mV*(v - v_rest_GPe_A)*(v - v_thres_GPe_A) - u*pF + I_tot) + sigma*xi*mV/ms**.5 : volt
 du/dt = aGPe_A*(bGPe_A*(v - v_rest_GPe_A) - u) : volt/second
 
+I_lfp_gpea = abs(I_chem_GPe_GPe) + abs(I_chem_STN_GPe) : amp
+
 I_tot = I_syn_tot + IGPe_ext_A : amp
 
 I_syn_tot = I_chem_GPe_GPe + I_chem_STN_GPe : amp
@@ -89,6 +97,8 @@ eqs_GPe_B = '''
 dv/dt = (1/CGPe_B)*(kGPe_B*pF/ms/mV*(v - v_rest_GPe_B)*(v - v_thres_GPe_B) - u*pF + I_tot) + sigma*xi*mV/ms**.5 : volt
 du/dt = aGPe_B*(bGPe_B*(v - v_rest_GPe_B) - u) : volt/second
 
+I_lfp_gpeb = abs(I_chem_GPe_GPe) + abs(I_chem_STN_GPe) : amp
+
 I_tot = I_syn_tot + IGPe_ext_B : amp
 
 I_syn_tot = I_chem_GPe_GPe + I_chem_STN_GPe : amp
@@ -104,6 +114,8 @@ dgsyn_nmda_stn_gpe/dt = -(1/tau_stn_gpe_nmda)*gsyn_nmda_stn_gpe : 1
 eqs_GPe_C = '''
 dv/dt = (1/CGPe_C)*(kGPe_C*pF/ms/mV*(v - v_rest_GPe_C)*(v - v_thres_GPe_C) - u*pF + I_tot) + sigma*xi*mV/ms**.5 : volt
 du/dt = aGPe_C*(bGPe_C*(v - v_rest_GPe_C) - u) : volt/second
+
+I_lfp_gpec = abs(I_chem_GPe_GPe) + abs(I_chem_STN_GPe) : amp
 
 I_tot = I_syn_tot + IGPe_ext_C : amp
 
