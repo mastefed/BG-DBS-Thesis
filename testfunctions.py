@@ -3,6 +3,20 @@
 from brian2 import *
 from parameters import *
 import numpy as np
+from scipy.signal import welch, filtfilt, butter
+
+def butter_bandpass(lowcut, highcut, fs, order=5):
+    nyq = 0.5 * fs
+    low = lowcut / nyq
+    high = highcut / nyq
+    b, a = butter(order, [low, high], btype='band')
+    return b, a
+
+
+def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
+    b, a = butter_bandpass(lowcut, highcut, fs, order=order)
+    y = filtfilt(b, a, data)
+    return y
 
 def firingrate2(sim_time, num_pop, count_funct):
     """ Roba molto convoluta, la tengo solo per modificarla in seguito

@@ -13,11 +13,13 @@
 from brian2 import *
 import random as ran
 import numpy as np
-from scipy import signal
+from scipy.signal import butter, welch, filtfilt
 from parameters import *
 from equations import *
 from groupsandsynapses import *
 from testfunctions import *
+
+run(300*ms)
 
 """ Functions to monitor neurons' state
 """
@@ -78,12 +80,12 @@ mean_isiSTNLLRS, std_isiSTNLLRS = isi_mean_std(spikemonitorSTNLLRS, 0)
 mean_isiSTNNR, std_isiSTNNR = isi_mean_std(spikemonitorSTNNR, 1)
 
 print("Il coefficiente di variazione (in percentuale) per ISI per un neurone di:\n")
-print(f"GPe A {std_isiGPeA/mean_isiGPeA*100}%\n")
-print(f"GPe B {std_isiGPeB/mean_isiGPeB*100}%\n")
-print(f"GPe C {std_isiGPeC/mean_isiGPeC*100}%\n")
-print(f"STN RB {std_isiSTNRB/mean_isiSTNRB*100}%\n")
-print(f"STN LLRS {std_isiSTNLLRS/mean_isiSTNLLRS*100}%\n")
-print(f"STN NR {std_isiSTNNR/mean_isiSTNNR*100}%\n")
+print(f"GPe A {std_isiGPeA/mean_isiGPeA}\n")
+print(f"GPe B {std_isiGPeB/mean_isiGPeB}\n")
+print(f"GPe C {std_isiGPeC/mean_isiGPeC}\n")
+print(f"STN RB {std_isiSTNRB/mean_isiSTNRB}\n")
+print(f"STN LLRS {std_isiSTNLLRS/mean_isiSTNLLRS}\n")
+print(f"STN NR {std_isiSTNNR/mean_isiSTNNR}\n")
 
 """ Calculating the Population firing rate over time for STN and GPe
 """
@@ -106,8 +108,21 @@ mean_I_lfp_STN = np.mean(mean_I_lfp_STN, 0)
 mean_I_lfp_GPe = np.vstack((mean_I_lfp_GPeA, mean_I_lfp_GPeB, mean_I_lfp_GPeC))
 mean_I_lfp_GPe = np.mean(mean_I_lfp_GPe, 0)
 
-printcurrents(1, "LFP STN RB (red) STN LLRS (green) STN NR (blue)", [mean_I_lfp_STNRB, mean_I_lfp_STNLLRS, mean_I_lfp_STNNR], ['r', 'g', 'b'])
-printcurrents(2, "LFP GPe A (red) GPe B (green) GPeC (blue)", [mean_I_lfp_GPeA, mean_I_lfp_GPeB, mean_I_lfp_GPeC], ['r', 'g', 'b'])
-printcurrents(3, "LFP STN (red) GPe (green)", [mean_I_lfp_STN, mean_I_lfp_GPe], ['r', 'g'])
+filtered_lfp_STN = butter_bandpass_filter(mean_I_lfp_STN, 1, 100, 1/deft, order=3)
+filtered_lfp_GPe = butter_bandpass_filter(mean_I_lfp_GPe, 1, 100, 1/deft, order=3)
+
+#printcurrents(1, "LFP STN RB (red) STN LLRS (green) STN NR (blue)", [mean_I_lfp_STNRB, mean_I_lfp_STNLLRS, mean_I_lfp_STNNR], ['r', 'g', 'b'])
+#printcurrents(2, "LFP GPe A (red) GPe B (green) GPeC (blue)", [mean_I_lfp_GPeA, mean_I_lfp_GPeB, mean_I_lfp_GPeC], ['r', 'g', 'b'])
+printcurrents(3, "LFP STN (red) GPe (green)", [filtered_lfp_STN, filtered_lfp_GPe], ['r', 'g'])
+#printcurrents(4, "LFP STN (red) GPe (green)", [mean_I_lfp_STN, mean_I_lfp_GPe], ['r', 'g'])
+
+f1, specstn = welch(filtered_lfp_STN, fs=1/deft)
+f2, specgpe = welch(filtered_lfp_GPe, fs=1/deft)
+plt.figure(5)
+plt.title("Spectral density LFP STN (green) LFP GPe (red)")
+plt.xlabel("Frequencies (Hz)")
+plt.xlim(0,150)
+plt.plot(f2, specgpe, 'r')
+plt.plot(f1, specstn, 'g')
 
 plt.show()
