@@ -22,10 +22,26 @@ GPeBGroup = NeuronGroup(N_GPe_B, eqs_GPe_B, threshold='v>v_peak_GPe_B', reset='v
 
 GPeCGroup = NeuronGroup(N_GPe_C, eqs_GPe_C, threshold='v>v_peak_GPe_C', reset='v=cGPe_C;u=u+dGPe_C', method='euler')
 
-CorticalGroup = PoissonGroup(N_input, rates='input_rates(t)')
+CorticalGroup = PoissonGroup(N_input_CTX, rates=rate_CTX)
+
+StriatalGroup = PoissonGroup(N_input_STR, rates=rate_STR)
 
 # g is the synapses' efficacy
 g = 0.001
+
+""" Striatum to GPe synapse
+"""
+ChemicalSTRGPeA = Synapses(StriatalGroup, GPeAGroup, delay=lambda_str_gpe,
+on_pre="gsyn_gaba_str_gpe+=g")
+ChemicalSTRGPeA.connect(True, p=p_STR_GPe)
+
+ChemicalSTRGPeB = Synapses(StriatalGroup, GPeBGroup, delay=lambda_str_gpe,
+on_pre="gsyn_gaba_str_gpe+=g")
+ChemicalSTRGPeB.connect(True, p=p_STR_GPe)
+
+ChemicalSTRGPeC = Synapses(StriatalGroup, GPeCGroup, delay=lambda_str_gpe,
+on_pre="gsyn_gaba_str_gpe+=g")
+ChemicalSTRGPeC.connect(True, p=p_STR_GPe)
 
 """ Cortex to STN synapse
 """

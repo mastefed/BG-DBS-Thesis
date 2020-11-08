@@ -11,7 +11,7 @@ adimvolt = 1/mV # I need this to make v_rest_STN2 - v adimensional, else Dimensi
 """ RB, LLRS and NR populations of STN
 """
 eqs_STN_RB = '''
-dv/dt = (1/CSTN_RB)*(kSTN_RB*(v - v_rest_STN1_RB)*(v - v_thres_STN_RB)*nS/mV - u1*pF - w2_RB*u2*pF + I_tot) + sigma*xi*mV/ms**.5 : volt
+dv/dt = (1/CSTN_RB)*(kSTN_RB*(v - v_rest_STN1_RB)*(v - v_thres_STN_RB)*nS/mV - u1*pF - w2_RB*u2*pF + I_tot) + sigma_stn*xi*mV/ms**.5 : volt
 du1/dt = aSTN1_RB*(bSTN1_RB*(v - v_rest_STN1_RB) - u1) : volt/second
 du2/dt = aSTN2_RB*(bSTN2_RB*H( adimvolt*(v_rest_STN2_RB - v) >= 0)*(v - v_rest_STN2_RB) - u2) : volt/second
 
@@ -32,7 +32,7 @@ dgsyn_gaba_gpe_stn/dt = -(1/tau_gpe_stn)*gsyn_gaba_gpe_stn : 1
 '''
 
 eqs_STN_LLRS = '''
-dv/dt = (1/CSTN_LLRS)*(kSTN_LLRS*(v - v_rest_STN1_LLRS)*(v - v_thres_STN_LLRS)*nS/mV - u1*pF - w2_LLRS*u2*pF + I_tot) + sigma*xi*mV/ms**.5 : volt
+dv/dt = (1/CSTN_LLRS)*(kSTN_LLRS*(v - v_rest_STN1_LLRS)*(v - v_thres_STN_LLRS)*nS/mV - u1*pF - w2_LLRS*u2*pF + I_tot) + sigma_stn*xi*mV/ms**.5 : volt
 du1/dt = aSTN1_LLRS*(bSTN1_LLRS*(v - v_rest_STN1_LLRS) - u1) : volt/second
 du2/dt = aSTN2_LLRS*(bSTN2_LLRS*H( adimvolt*(v_rest_STN2_LLRS - v) >= 0)*(v - v_rest_STN2_LLRS) - u2) : volt/second
 
@@ -53,7 +53,7 @@ dgsyn_gaba_gpe_stn/dt = -(1/tau_gpe_stn)*gsyn_gaba_gpe_stn : 1
 '''
 
 eqs_STN_NR = '''
-dv/dt = (1/CSTN_NR)*(kSTN_NR*(v - v_rest_STN1_NR)*(v - v_thres_STN_NR)*nS/mV - u1*pF - w2_NR*u2*pF + I_tot) + sigma*xi*mV/ms**.5 : volt
+dv/dt = (1/CSTN_NR)*(kSTN_NR*(v - v_rest_STN1_NR)*(v - v_thres_STN_NR)*nS/mV - u1*pF - w2_NR*u2*pF + I_tot) + sigma_stn*xi*mV/ms**.5 : volt
 du1/dt = aSTN1_NR*(bSTN1_NR*(v - v_rest_STN1_NR) - u1) : volt/second
 du2/dt = aSTN2_NR*(bSTN2_NR*H( adimvolt*(v_rest_STN2_NR - v) >= 0)*(v - v_rest_STN2_NR) - u2) : volt/second
 
@@ -76,14 +76,17 @@ dgsyn_gaba_gpe_stn/dt = -(1/tau_gpe_stn)*gsyn_gaba_gpe_stn : 1
 """ A,B and C populations of GPe
 """
 eqs_GPe_A = '''
-dv/dt = (1/CGPe_A)*(kGPe_A*pF/ms/mV*(v - v_rest_GPe_A)*(v - v_thres_GPe_A) - u*pF + I_tot) + sigma*xi*mV/ms**.5 : volt
+dv/dt = (1/CGPe_A)*(kGPe_A*pF/ms/mV*(v - v_rest_GPe_A)*(v - v_thres_GPe_A) - u*pF + I_tot) + sigma_gpe*xi*mV/ms**.5 : volt
 du/dt = aGPe_A*(bGPe_A*(v - v_rest_GPe_A) - u) : volt/second
 
-I_lfp_gpea = abs(I_chem_GPe_GPe) + abs(I_chem_STN_GPe) : amp
+I_lfp_gpea = abs(I_chem_GPe_GPe) + abs(I_chem_STN_GPe) + abs(I_chem_STR_GPe) : amp
 
 I_tot = I_syn_tot + IGPe_ext_A : amp
 
-I_syn_tot = I_chem_GPe_GPe + I_chem_STN_GPe : amp
+I_syn_tot = I_chem_GPe_GPe + I_chem_STN_GPe + I_chem_STR_GPe : amp
+
+I_chem_STR_GPe = G_str_gpe*gsyn_gaba_str_gpe*(E_str_gpe - v) : amp
+dgsyn_gaba_str_gpe/dt = -(1/tau_str_gpe)*gsyn_gaba_str_gpe : 1
 
 I_chem_GPe_GPe = G_gpe_gpe*gsyn_gaba_gpe_gpe*(E_gpe_gpe - v) : amp
 dgsyn_gaba_gpe_gpe/dt = -(1/tau_gpe_gpe)*gsyn_gaba_gpe_gpe : 1
@@ -94,14 +97,17 @@ dgsyn_nmda_stn_gpe/dt = -(1/tau_stn_gpe_nmda)*gsyn_nmda_stn_gpe : 1
 '''
 
 eqs_GPe_B = '''
-dv/dt = (1/CGPe_B)*(kGPe_B*pF/ms/mV*(v - v_rest_GPe_B)*(v - v_thres_GPe_B) - u*pF + I_tot) + sigma*xi*mV/ms**.5 : volt
+dv/dt = (1/CGPe_B)*(kGPe_B*pF/ms/mV*(v - v_rest_GPe_B)*(v - v_thres_GPe_B) - u*pF + I_tot) + sigma_gpe*xi*mV/ms**.5 : volt
 du/dt = aGPe_B*(bGPe_B*(v - v_rest_GPe_B) - u) : volt/second
 
-I_lfp_gpeb = abs(I_chem_GPe_GPe) + abs(I_chem_STN_GPe) : amp
+I_lfp_gpeb = abs(I_chem_GPe_GPe) + abs(I_chem_STN_GPe) + abs(I_chem_STR_GPe) : amp
 
 I_tot = I_syn_tot + IGPe_ext_B : amp
 
-I_syn_tot = I_chem_GPe_GPe + I_chem_STN_GPe : amp
+I_syn_tot = I_chem_GPe_GPe + I_chem_STN_GPe + I_chem_STR_GPe : amp
+
+I_chem_STR_GPe = G_str_gpe*gsyn_gaba_str_gpe*(E_str_gpe - v) : amp
+dgsyn_gaba_str_gpe/dt = -(1/tau_str_gpe)*gsyn_gaba_str_gpe : 1
 
 I_chem_GPe_GPe = G_gpe_gpe*gsyn_gaba_gpe_gpe*(E_gpe_gpe - v) : amp
 dgsyn_gaba_gpe_gpe/dt = -(1/tau_gpe_gpe)*gsyn_gaba_gpe_gpe : 1
@@ -112,14 +118,17 @@ dgsyn_nmda_stn_gpe/dt = -(1/tau_stn_gpe_nmda)*gsyn_nmda_stn_gpe : 1
 '''
 
 eqs_GPe_C = '''
-dv/dt = (1/CGPe_C)*(kGPe_C*pF/ms/mV*(v - v_rest_GPe_C)*(v - v_thres_GPe_C) - u*pF + I_tot) + sigma*xi*mV/ms**.5 : volt
+dv/dt = (1/CGPe_C)*(kGPe_C*pF/ms/mV*(v - v_rest_GPe_C)*(v - v_thres_GPe_C) - u*pF + I_tot) + sigma_gpe*xi*mV/ms**.5 : volt
 du/dt = aGPe_C*(bGPe_C*(v - v_rest_GPe_C) - u) : volt/second
 
-I_lfp_gpec = abs(I_chem_GPe_GPe) + abs(I_chem_STN_GPe) : amp
+I_lfp_gpec = abs(I_chem_GPe_GPe) + abs(I_chem_STN_GPe) + abs(I_chem_STR_GPe) : amp
 
 I_tot = I_syn_tot + IGPe_ext_C : amp
 
-I_syn_tot = I_chem_GPe_GPe + I_chem_STN_GPe : amp
+I_syn_tot = I_chem_GPe_GPe + I_chem_STN_GPe + I_chem_STR_GPe : amp
+
+I_chem_STR_GPe = G_str_gpe*gsyn_gaba_str_gpe*(E_str_gpe - v) : amp
+dgsyn_gaba_str_gpe/dt = -(1/tau_str_gpe)*gsyn_gaba_str_gpe : 1
 
 I_chem_GPe_GPe = G_gpe_gpe*gsyn_gaba_gpe_gpe*(E_gpe_gpe - v) : amp
 dgsyn_gaba_gpe_gpe/dt = -(1/tau_gpe_gpe)*gsyn_gaba_gpe_gpe : 1

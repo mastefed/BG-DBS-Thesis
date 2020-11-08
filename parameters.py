@@ -2,6 +2,13 @@
 """
 from brian2 import *
 import random as ran
+import numpy as np
+
+rate_CTX = 0*Hz
+rate_STR = 0*Hz
+
+rates_CTX = np.arange(1, 40, 1)
+rates_STR = np.arange(1, 40, 1)
 
 N_GPe = 153 # In realtà 152
 N_GPe_B = int(N_GPe * 0.85)
@@ -11,12 +18,13 @@ N_STN = 45 # In realtà 44
 N_STN_RB = int(N_STN * 0.6)
 N_STN_LLRS = int(N_STN * 0.25)
 N_STN_NR = int(N_STN * 0.15)
-N_input = 1000
+N_input_CTX = 1000
+N_input_STR = 9207
 
 deft = defaultclock.dt
 duration = 10000*ms
-sigma = 1.
 
+sigma_stn = 0.5
 """ STN RB Neurons 
 """
 CSTN_RB = 23.*pfarad
@@ -34,7 +42,6 @@ dSTN1_RB = 17.1*mV/ms
 dSTN2_RB = -68.4*mV/ms
 w1_RB = 0.1
 w2_RB = 0.
-#w3_RB = 10.
 ISTN_ext_RB = 56.1*pamp
 
 """ STN LLRS Neurons 
@@ -54,7 +61,6 @@ dSTN1_LLRS = 1*mV/ms
 dSTN2_LLRS = 10*mV/ms
 w1_LLRS = 0.01
 w2_LLRS = 0.
-#w3_LLRS = 100.
 ISTN_ext_LLRS = 8.*pamp
 
 """ STN NR Neurons 
@@ -74,11 +80,12 @@ dSTN1_NR = 17.65*mV/ms
 dSTN2_NR = 92*mV/ms
 w1_NR = 0.001
 w2_NR = 1.
-#w3_NR = 1000.
 ISTN_ext_NR = -18.*pamp
 
 """ The three populations of GPe
 """
+sigma_gpe = 3.
+
 CGPe_A = 55.*pfarad
 v_thres_GPe_A = -42.*mV
 v_peak_GPe_A = 38.*mV
@@ -119,6 +126,7 @@ p_GPe_GPe = 0.1
 p_GPe_STN = 0.1
 p_STN_GPe = 0.3
 p_CTX_STN = 0.03
+p_STR_GPe = 0.033
 
 
 """ Cortical Input
@@ -134,6 +142,13 @@ G_ctx_stn = 0.388*nsiemens
 E_ctx_stn = 0*mV
 tau_ctx_stn_ampa = 2.*ms
 tau_ctx_stn_nmda = 100.*ms
+
+""" Striatal Input
+"""
+lambda_str_gpe = 5.*ms
+G_str_gpe = 5.435*nsiemens
+E_str_gpe = -65.*mV
+tau_str_gpe = 6.*ms
 
 """ GPe to GPe
     Chemical
