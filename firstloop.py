@@ -112,22 +112,32 @@ mean_I_lfp_GPe = np.mean(mean_I_lfp_GPe, 0)
 filtered_lfp_STN = butter_bandpass_filter(mean_I_lfp_STN, 1, 100, 1/deft, order=3)
 filtered_lfp_GPe = butter_bandpass_filter(mean_I_lfp_GPe, 1, 100, 1/deft, order=3)
 
-printcurrents(3, "LFP STN (red) GPe (green)", [filtered_lfp_STN, filtered_lfp_GPe], ['r', 'g'])
+#printcurrents(3, "LFP STN (red) GPe (green)", [filtered_lfp_STN, filtered_lfp_GPe], ['r', 'g'])
 
-f1, specstn = welch(filtered_lfp_STN, fs=1/deft, nperseg=2/deft)
-f2, specgpe = welch(filtered_lfp_GPe, fs=1/deft, nperseg=2/deft)
+fstn, specstn = welch(filtered_lfp_STN, fs=1/deft, nperseg=2/deft, nfft=2**18)
+fgpe, specgpe = welch(filtered_lfp_GPe, fs=1/deft, nperseg=2/deft, nfft=2**18)
 low = 12*Hz
 high = 38*Hz
-idx_beta1 = np.logical_and(f1 >= low, f1 <= high)
-idx_beta2 = np.logical_and(f2 >= low, f2 <= high)
+idx_beta_stn = np.logical_and(fstn >= low, fstn <= high)
+idx_beta_gpe = np.logical_and(fgpe >= low, fgpe <= high)
+
+freq_res_stn = fstn[1] - fstn[0]
+freq_res_gpe = fgpe[1] - fgpe[0]
+total_power_stn = simps(specstn, dx=freq_res_stn)
+total_power_gpe = simps(specgpe, dx=freq_res_gpe)
+beta_power_stn = simps(specstn[idx_beta_stn], dx=freq_res_stn)
+beta_power_gpe = simps(specgpe[idx_beta_gpe], dx=freq_res_gpe)
+
+print(f"Normalized Beta Power for STN {beta_power_stn/total_power_stn}\n")
+print(f"Normalized Beta Power for GPe {beta_power_gpe/total_power_gpe}\n")
 
 plt.figure(5)
 plt.title("Spectral density LFP STN (green) LFP GPe (red)")
 plt.xlabel("Frequencies (Hz)")
-plt.xlim(0,150)
-plt.fill_between(f1, specstn, where=idx_beta1, color='c')
-plt.fill_between(f2, specgpe, where=idx_beta2, color='m')
-plt.plot(f2, specgpe, 'r')
-plt.plot(f1, specstn, 'g')
+plt.xlim(0,50)
+plt.fill_between(fstn, specstn, where=idx_beta_stn, color='c')
+plt.fill_between(fgpe, specgpe, where=idx_beta_gpe, color='m')
+plt.plot(fgpe, specgpe, 'r')
+plt.plot(fstn, specstn, 'g')
 
 plt.show()
