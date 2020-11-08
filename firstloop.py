@@ -121,10 +121,6 @@ high = 38*Hz
 idx_beta1 = np.logical_and(f1 >= low, f1 <= high)
 idx_beta2 = np.logical_and(f2 >= low, f2 <= high)
 
-print(f1[1])
-print(f1[0])
-
-"""
 plt.figure(5)
 plt.title("Spectral density LFP STN (green) LFP GPe (red)")
 plt.xlabel("Frequencies (Hz)")
@@ -133,5 +129,5 @@ plt.fill_between(f1, specstn, where=idx_beta1, color='c')
 plt.fill_between(f2, specgpe, where=idx_beta2, color='m')
 plt.plot(f2, specgpe, 'r')
 plt.plot(f1, specstn, 'g')
-"""
+
 plt.show()
