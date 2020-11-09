@@ -24,7 +24,7 @@ GPeCGroup = NeuronGroup(N_GPe_C, eqs_GPe_C, threshold='v>v_peak_GPe_C', reset='v
 
 CorticalGroup = PoissonGroup(N_input_CTX, rates=rate_CTX)
 
-StriatalGroup = PoissonGroup(N_input_STR, rates=rate_STR)
+StriatalGroup = PoissonGroup(N_input_MSN2, rates=rate_STR)
 
 # g is the synapses' efficacy
 g = 0.001

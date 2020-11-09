@@ -6,10 +6,6 @@
     and it has been modified by Z. Fountas for a take on Action Selection modelling.
 """
 
-""" T = [26.31; 83.33] secondi
-    oscillazioni nella frequenza beta
-"""
-
 from brian2 import *
 import random as ran
 import numpy as np
@@ -47,13 +43,13 @@ def main():
 
     spikemonitorCTX = SpikeMonitor(CorticalGroup)
 
-    #populationSTNRB = PopulationRateMonitor(STNRBGroup)
-    #populationSTNLLRS = PopulationRateMonitor(STNLLRSGroup)
-    #populationSTNNR = PopulationRateMonitor(STNNRGroup)
+    populationSTNRB = PopulationRateMonitor(STNRBGroup)
+    populationSTNLLRS = PopulationRateMonitor(STNLLRSGroup)
+    populationSTNNR = PopulationRateMonitor(STNNRGroup)
 
-    #populationGPeA = PopulationRateMonitor(GPeAGroup)
-    #populationGPeB = PopulationRateMonitor(GPeBGroup)
-    #populationGPeC = PopulationRateMonitor(GPeCGroup)
+    populationGPeA = PopulationRateMonitor(GPeAGroup)
+    populationGPeB = PopulationRateMonitor(GPeBGroup)
+    populationGPeC = PopulationRateMonitor(GPeCGroup)
 
     run(duration) # Run boy, run!
 
@@ -108,9 +104,9 @@ def main():
     '''
     """ Calculating the Population firing rate over time for STN and GPe
     """
-    #width = 2.*ms
-    #populationSTNfr = np.mean([populationSTNRB.smooth_rate(width=width), populationSTNNR.smooth_rate(width=width), populationSTNLLRS.smooth_rate(width=width)], 0)
-    #populationGPefr = np.mean([populationGPeA.smooth_rate(width=width), populationGPeB.smooth_rate(width=width), populationGPeC.smooth_rate(width=width)], 0)
+    width = 2.*ms
+    populationSTNfr = np.mean([populationSTNRB.smooth_rate(width=width), populationSTNNR.smooth_rate(width=width), populationSTNLLRS.smooth_rate(width=width)], 0)
+    populationGPefr = np.mean([populationGPeA.smooth_rate(width=width), populationGPeB.smooth_rate(width=width), populationGPeC.smooth_rate(width=width)], 0)
 
     """ Calculating meaning currents: mean excitatory and inhibitory current and mean currents to STN and GPe
     """
@@ -173,10 +169,10 @@ data = np.asarray(['Rate CTX','Rate STR','F.R. GPe A','F.R. GPe B','F.R. GPe C',
 'CV STN RB','CV STN LLRS','CV STN NR', 'Beta % STN', 'Beta % GPe'])
 
 
-#for y in rates_STR:
-rate_STR = 0*Hz
-for x in rates_CTX:
-    rate_CTX = x*Hz
-    main()
+for y in rates_STR:
+    rate_STR = y*Hz
+    for x in rates_CTX:
+        rate_CTX = x*Hz
+        main()
 
 print(data)

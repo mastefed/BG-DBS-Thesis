@@ -19,7 +19,7 @@ N_STN_RB = int(N_STN * 0.6)
 N_STN_LLRS = int(N_STN * 0.25)
 N_STN_NR = int(N_STN * 0.15)
 N_input_CTX = 1000
-N_input_STR = 9207
+N_input_MSN2 = 9207/2
 
 deft = defaultclock.dt
 duration = 10000*ms
@@ -175,3 +175,7 @@ G_stn_gpe = 1.447*nsiemens
 E_stn_gpe = 0.*mV
 tau_stn_gpe_ampa = 2.*ms
 tau_stn_gpe_nmda = 100.*ms
+
+""" Other Synaptic Parameters
+"""
+Dop1 = Dop2 = 0.8
