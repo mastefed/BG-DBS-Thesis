@@ -141,6 +141,12 @@ def main():
     beta_power_stn = simps(specstn[idx_beta_stn], dx=freq_res_stn)
     beta_power_gpe = simps(specgpe[idx_beta_gpe], dx=freq_res_gpe)
 
+    pdf_stn = beta_power_stn/total_power_stn
+    pdf_gpe = beta_power_gpe/total_power_gpe
+
+    specentropy_stn = - pdf_stn * np.log(pdf_stn)
+    specentropy_gpe = - pdf_gpe * np.log(pdf_gpe)
+
     print(f"Normalized Beta Power for STN {beta_power_stn/total_power_stn}\n")
     print(f"Normalized Beta Power for GPe {beta_power_gpe/total_power_gpe}\n")
         
@@ -157,7 +163,8 @@ def main():
 
     data_provv = [rate_CTX, rate_STR, frGPeA, frGPeB, frGPeC, 
     frSTNRB, frSTNLLRS, frSTNNR, cv_gpea, cv_gpeb, cv_gpec, cv_stnrb, 
-    cv_stnllrs, cv_stnnr, beta_power_stn/total_power_stn, beta_power_gpe/total_power_gpe]
+    cv_stnllrs, cv_stnnr, beta_power_stn/total_power_stn, beta_power_gpe/total_power_gpe,
+    specentropy_stn, specentropy_gpe]
 
     data_provv = np.asarray(data_provv)
     data = np.vstack(data_provv)
@@ -166,7 +173,8 @@ def main():
     
 data = np.asarray(['Rate CTX','Rate STR','F.R. GPe A','F.R. GPe B','F.R. GPe C',
 'F.R. STN RB','F.R. STN LLRS','F.R. STN RB','CV GPe A','CV GPe B','CV GPe C',
-'CV STN RB','CV STN LLRS','CV STN NR', 'Beta % STN', 'Beta % GPe'])
+'CV STN RB','CV STN LLRS','CV STN NR', 'Beta % STN', 'Beta % GPe', 'Spec Entropy STN', 
+'Spec Entropy GPe'])
 
 
 for y in rates_STR:
