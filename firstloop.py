@@ -144,12 +144,12 @@ def main():
     pdf_stn = beta_power_stn/total_power_stn
     pdf_gpe = beta_power_gpe/total_power_gpe
 
-    specentropy_stn = - pdf_stn * np.log(pdf_stn)
-    specentropy_gpe = - pdf_gpe * np.log(pdf_gpe)
-
+    #specentropy_stn = - pdf_stn * np.log(pdf_stn)
+    #specentropy_gpe = - pdf_gpe * np.log(pdf_gpe)
+    '''
     print(f"Normalized Beta Power for STN {beta_power_stn/total_power_stn}\n")
     print(f"Normalized Beta Power for GPe {beta_power_gpe/total_power_gpe}\n")
-        
+    
     plt.figure(x)
     plt.title("Spectral density LFP STN (green) LFP GPe (red)")
     plt.xlabel("Frequencies (Hz)")
@@ -160,11 +160,10 @@ def main():
     plt.plot(fstn, specstn, 'g')
         
     plt.show()
-
+    '''
     data_provv = [rate_CTX, rate_STR, frGPeA, frGPeB, frGPeC, 
     frSTNRB, frSTNLLRS, frSTNNR, cv_gpea, cv_gpeb, cv_gpec, cv_stnrb, 
-    cv_stnllrs, cv_stnnr, beta_power_stn/total_power_stn, beta_power_gpe/total_power_gpe,
-    specentropy_stn, specentropy_gpe]
+    cv_stnllrs, cv_stnnr, beta_power_stn/total_power_stn, beta_power_gpe/total_power_gpe]
 
     data_provv = np.asarray(data_provv)
     data = np.vstack(data_provv)
@@ -173,8 +172,7 @@ def main():
     
 data = np.asarray(['Rate CTX','Rate STR','F.R. GPe A','F.R. GPe B','F.R. GPe C',
 'F.R. STN RB','F.R. STN LLRS','F.R. STN RB','CV GPe A','CV GPe B','CV GPe C',
-'CV STN RB','CV STN LLRS','CV STN NR', 'Beta % STN', 'Beta % GPe', 'Spec Entropy STN', 
-'Spec Entropy GPe'])
+'CV STN RB','CV STN LLRS','CV STN NR', 'Beta % STN', 'Beta % GPe'])
 
 
 for y in rates_STR:
@@ -184,3 +182,4 @@ for y in rates_STR:
         main()
 
 print(data)
+np.savetxt(output, data)
