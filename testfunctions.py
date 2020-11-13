@@ -109,3 +109,36 @@ def printspikes(title, spikemonitors, colors):
     plt.xlabel("Time (ms)")
     for spikemonitor, color in zip(spikemonitors, colors):
         plt.plot(spikemonitor.t/ms, spikemonitor.i, color, ms='2')
+
+def variance_time_fluctuations_v(stmonit):
+    mean_v_pop = np.mean(stmonit.v, 0)
+    sigma_2v = np.mean(mean_v_pop**2) - (np.mean(mean_v_pop))**2
+    return sigma_2v
+
+def variance_time_flu_v_norm(N_neur, stmonit):
+    sigma_2v_tot = 0
+    for i in range(N_neur):
+        sigma_2v = np.mean(stmonit.v[i]**2) - (np.mean(stmonit.v[i]))**2
+        sigma_2v_tot += sigma_2v
+    norm = sigma_2v_tot / N_neur
+    return norm
+
+def variance_time_fluctuations_v_3pop(stmonit1, stmonit2, stmonit3):
+    v_pop = stmonit1.v
+    v_pop = np.vstack((v_pop, stmonit2.v))
+    v_pop = np.vstack((v_pop, stmonit3.v))
+    mean_v_pop = np.mean(v_pop, 0)
+    sigma_2v = np.mean(mean_v_pop**2) - (np.mean(mean_v_pop))**2
+    return sigma_2v
+
+def variance_time_flu_v_norm_3pop(N_neurs, stmonits):
+    sigma_2v_tot = 0
+    for j in range(3):
+        for i in range(N_neurs[j]):
+            sigma_2v = np.mean(stmonits[j].v[i]**2) - (np.mean(stmonits[j].v[i]))**2
+            sigma_2v_tot += sigma_2v
+    N_3pop = 0
+    for N_neur in N_neurs:
+        N_3pop += N_neur
+    norm = sigma_2v_tot / N_3pop
+    return norm
