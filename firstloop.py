@@ -11,12 +11,14 @@ import random as ran
 import numpy as np
 from scipy.signal import butter, welch, filtfilt
 from scipy.integrate import simps
+from pandas import DataFrame
 from parameters import *
 from equations import *
 from groupsandsynapses import *
 from testfunctions import *
+from entropy import spectral_entropy
 
-def main():
+def getdata():
     run(300*ms)
 
     print(f"Freq input STR = {rate_STR}, Freq input CTX = {rate_CTX}\n")
@@ -141,17 +143,16 @@ def main():
     beta_power_stn = simps(specstn[idx_beta_stn], dx=freq_res_stn)
     beta_power_gpe = simps(specgpe[idx_beta_gpe], dx=freq_res_gpe)
 
-    pdf_stn = beta_power_stn/total_power_stn
-    pdf_gpe = beta_power_gpe/total_power_gpe
-
-    #specentropy_stn = - pdf_stn * np.log(pdf_stn)
-    #specentropy_gpe = - pdf_gpe * np.log(pdf_gpe)
-    '''
+    specentropy_stn = spectral_entropy(filtered_lfp_STN, sf=1/deft, method='welch', nperseg=2/deft, normalize=True)
+    specentropy_gpe = spectral_entropy(filtered_lfp_GPe, sf=1/deft, method='welch', nperseg=2/deft, normalize=True)
+    
     print(f"Normalized Beta Power for STN {beta_power_stn/total_power_stn}\n")
     print(f"Normalized Beta Power for GPe {beta_power_gpe/total_power_gpe}\n")
+    print(f"Spectral Entropy for STN is {specentropy_stn}\n")
+    print(f"Spectral Entropy for GPe is {specentropy_gpe}\n")
     
-    plt.figure(x)
-    plt.title("Spectral density LFP STN (green) LFP GPe (red)")
+    plt.figure(x+y)
+    plt.title(f"PSD LFP STN (g) LFP GPe (r) FR CTX = {rate_CTX} FR STR = {rate_STR}")
     plt.xlabel("Frequencies (Hz)")
     plt.xlim(0,50)
     plt.fill_between(fstn, specstn, where=idx_beta_stn, color='c')
@@ -159,27 +160,30 @@ def main():
     plt.plot(fgpe, specgpe, 'r')
     plt.plot(fstn, specstn, 'g')
         
-    plt.show()
-    '''
+    plt.savefig(f"/home/fvm/Scrivania/RateCTX{int(x)}RateSTR{int(y)}.png")
+    
     data_provv = [rate_CTX, rate_STR, frGPeA, frGPeB, frGPeC, 
     frSTNRB, frSTNLLRS, frSTNNR, cv_gpea, cv_gpeb, cv_gpec, cv_stnrb, 
-    cv_stnllrs, cv_stnnr, beta_power_stn/total_power_stn, beta_power_gpe/total_power_gpe]
+    cv_stnllrs, cv_stnnr, beta_power_stn/total_power_stn, beta_power_gpe/total_power_gpe,
+    specentropy_stn, specentropy_gpe]
 
     data_provv = np.asarray(data_provv)
-    data = np.vstack(data_provv)
-
-
+    return data_provv
     
 data = np.asarray(['Rate CTX','Rate STR','F.R. GPe A','F.R. GPe B','F.R. GPe C',
 'F.R. STN RB','F.R. STN LLRS','F.R. STN RB','CV GPe A','CV GPe B','CV GPe C',
-'CV STN RB','CV STN LLRS','CV STN NR', 'Beta % STN', 'Beta % GPe'])
+'CV STN RB','CV STN LLRS','CV STN NR', 'Beta % STN', 'Beta % GPe', 'Spectral Entropy STN', 'Spectral Entropy GPe'])
 
+rates_CTX = np.arange(0.,2.,1.)
+rates_STR = rates_CTX
 
-for y in rates_STR:
-    rate_STR = y*Hz
-    for x in rates_CTX:
-        rate_CTX = x*Hz
-        main()
+for x in rates_CTX:
+    rate_CTX = x*Hz
+    for y in rates_STR:
+        rate_STR = y*Hz
+        data_provv = getdata()
+        data = np.vstack((data,data_provv))
 
-print(data)
-np.savetxt(output, data)
+dataframe = DataFrame(data=data[1:], columns=data[0,:])
+print(dataframe)
+dataframe.to_csv('/home/fvm/Scrivania/data.csv', index=False)
