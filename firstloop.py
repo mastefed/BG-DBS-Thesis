@@ -168,23 +168,17 @@ def getdata():
     norm_STN = variance_time_flu_v_norm_3pop([N_STN_RB, N_STN_LLRS, N_STN_NR], [statemonitorSTNRB, statemonitorSTNLLRS, statemonitorSTNNR])
     sync_par_STN = var_time_v_STN / norm_STN
     #print(f"Il parametro di sincronizzazione per l'intero STN è {sync_par_STN}\n")
-
-    
-    print(f"Normalized Beta Power for STN {beta_power_stn/total_power_stn}\n")
-    print(f"Normalized Beta Power for GPe {beta_power_gpe/total_power_gpe}\n")
-    print(f"Spectral Entropy for STN is {specentropy_stn}\n")
-    print(f"Spectral Entropy for GPe is {specentropy_gpe}\n")
     
     plt.figure(int(x))
     plt.title(f"PSD LFP STN (g) LFP GPe (r) FR CTX = {rate_CTX} FR STR = {rate_STR}")
     plt.xlabel("Frequencies (Hz)")
-    plt.xlim(0,50)
+    plt.xlim(0,100)
     plt.fill_between(fstn, specstn, where=idx_beta_stn, color='c')
     plt.fill_between(fgpe, specgpe, where=idx_beta_gpe, color='m')
     plt.plot(fgpe, specgpe, 'r')
     plt.plot(fstn, specstn, 'g')
         
-    plt.savefig(f"/home/fvm/Scrivania/RateCTX{int(x)}RateSTR{int(y)}.png")
+    plt.savefig(f"/home/fvm/Scrivania/CaratCTX/RateCTX{int(x)}HzRateSTR1Hz.png")
     
     data_provv = [rate_CTX, rate_STR, frGPeA, frGPeB, frGPeC, 
     frSTNRB, frSTNLLRS, frSTNNR, cv_gpea, cv_gpeb, cv_gpec, cv_stnrb, 
@@ -202,15 +196,13 @@ data = np.asarray(['Rate CTX','Rate STR','F.R. GPe A','F.R. GPe B','F.R. GPe C',
 'Sync. Param. STN RB', 'Sync. Param. STN LLRS', 'Sync. Param. STN NR', 'Sync. Param. STN',
 'Sync. Param. GPe A', 'Sync. Param. GPe B', 'Sync. Param. GPe C', 'Sync. Param. GPe'])
 
-""" Lascia STR a 1 Hz e fai simulazione per 0-40 Hz Corteccia
-"""
-
 for x in rates_CTX:
     rate_CTX = x*Hz
     rate_STR = 1.*Hz
     data_provv = getdata()
     data = np.vstack((data,data_provv))
+    print(f"Process {int(x)} finished.")
 
 dataframe = DataFrame(data=data[1:], columns=data[0,:])
-print(dataframe)
 dataframe.to_csv('/home/fvm/Scrivania/data.csv', index=False)
+print("Process finished successfully.")
