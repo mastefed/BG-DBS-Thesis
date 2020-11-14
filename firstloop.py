@@ -12,11 +12,12 @@ import numpy as np
 from scipy.signal import butter, welch, filtfilt
 from scipy.integrate import simps
 from pandas import DataFrame
+from entropy import spectral_entropy
 from parameters import *
 from equations import *
 from groupsandsynapses import *
 from testfunctions import *
-from entropy import spectral_entropy
+
 
 def getdata():
     run(300*ms)
@@ -52,6 +53,9 @@ def getdata():
     populationGPeA = PopulationRateMonitor(GPeAGroup)
     populationGPeB = PopulationRateMonitor(GPeBGroup)
     populationGPeC = PopulationRateMonitor(GPeCGroup)
+
+    populationCTX = PopulationRateMonitor(CorticalGroup)
+    populationSTR = PopulationRateMonitor(StriatalGroup)
 
     run(duration) # Run boy, run!
     
@@ -91,6 +95,9 @@ def getdata():
     width = 2.*ms
     populationSTNfr = np.mean([populationSTNRB.smooth_rate(width=width), populationSTNNR.smooth_rate(width=width), populationSTNLLRS.smooth_rate(width=width)], 0)
     populationGPefr = np.mean([populationGPeA.smooth_rate(width=width), populationGPeB.smooth_rate(width=width), populationGPeC.smooth_rate(width=width)], 0)
+
+    print(f"Cortical Pop. Rate over time --> {populationCTX.smooth_rate(width=width)}\n")
+    print(f"Striatal Pop. Rate over time --> {populationSTR.smooth_rate(width=width)}\n")
 
     """ Calculating meaning currents: mean excitatory and inhibitory current and mean currents to STN and GPe
     """
@@ -178,7 +185,8 @@ def getdata():
     plt.plot(fgpe, specgpe, 'r')
     plt.plot(fstn, specstn, 'g')
         
-    plt.savefig(f"/home/fvm/Scrivania/CaratCTX/RateCTX{int(x)}HzRateSTR1Hz.png")
+    plt.savefig(f"/home/fvm/Scrivania/CaratCTX/RateCTX{rate_CTX}RateSTR{rate_STR}.png")
+    plt.close(fig='all')
     
     data_provv = [rate_CTX, rate_STR, frGPeA, frGPeB, frGPeC, 
     frSTNRB, frSTNLLRS, frSTNNR, cv_gpea, cv_gpeb, cv_gpec, cv_stnrb, 
@@ -199,6 +207,8 @@ data = np.asarray(['Rate CTX','Rate STR','F.R. GPe A','F.R. GPe B','F.R. GPe C',
 for x in rates_CTX:
     rate_CTX = x*Hz
     rate_STR = 1.*Hz
+    CorticalGroup.rates = rate_CTX
+    StriatalGroup.rates = rate_STR
     data_provv = getdata()
     data = np.vstack((data,data_provv))
     print(f"Process {int(x)} finished.")

@@ -2,8 +2,6 @@ from brian2 import *
 from parameters import *
 from equations import *
 
-
-
 """ All the populations' NeuronGroup, first the STN ones and then the GPe ones and finally
     the Cortical Poisson Group
 """
