@@ -185,7 +185,7 @@ def getdata():
     plt.plot(fgpe, specgpe, 'r')
     plt.plot(fstn, specstn, 'g')
         
-    plt.savefig(f"/home/fvm/Scrivania/CaratSTR/RateCTX{rate_CTX}RateSTR{rate_STR}.png")
+    plt.savefig(f"/home/f_mastellone/Images/RateCTX{rate_CTX}RateSTR{rate_STR}.png")
     plt.close(fig='all')
     
     data_provv = [rate_CTX, rate_STR, frGPeA, frGPeB, frGPeC, 
@@ -221,5 +221,5 @@ for i in rates_CTX:
         k += 1
 
 dataframe = DataFrame(data=data[1:], columns=data[0,:])
-dataframe.to_csv('/home/fvm/Scrivania/data.csv', index=False)
+dataframe.to_csv('/home/f_mastellone/Data/data.csv', index=False)
 print("Process finished successfully.")
