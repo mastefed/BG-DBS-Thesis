@@ -205,20 +205,20 @@ data = np.asarray(['Rate CTX','Rate STR','F.R. GPe A','F.R. GPe B','F.R. GPe C',
 'Sync. Param. GPe A', 'Sync. Param. GPe B', 'Sync. Param. GPe C', 'Sync. Param. GPe'])
 
 rates_CTX = np.arange(0., 41., 1.)
-rates_STR = np.arange(17., 48., 1.)
+rates_STR = np.arange(0., 48., 1.)
 
 k = 0
 
-for j in rates_STR:
-    i = 5
-    rate_CTX = i*Hz
-    rate_STR = j*Hz
-    CorticalGroup.rates = rate_CTX
-    StriatalGroup.rates = rate_STR
-    data_provv = getdata()
-    data = np.vstack((data,data_provv))
-    print(f"Process {k} finished.\n")
-    k += 1
+for i in rates_CTX:
+    for j in rates_STR:
+        rate_CTX = i*Hz
+        rate_STR = j*Hz
+        CorticalGroup.rates = rate_CTX
+        StriatalGroup.rates = rate_STR
+        data_provv = getdata()
+        data = np.vstack((data,data_provv))
+        print(f"Process {k} finished.\n")
+        k += 1
 
 dataframe = DataFrame(data=data[1:], columns=data[0,:])
 dataframe.to_csv('/home/fvm/Scrivania/data.csv', index=False)
