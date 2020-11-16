@@ -176,7 +176,7 @@ def getdata():
     sync_par_STN = var_time_v_STN / norm_STN
     #print(f"Il parametro di sincronizzazione per l'intero STN è {sync_par_STN}\n")
     
-    plt.figure(int(x))
+    plt.figure(f"{rate_CTX} + {rate_STR}")
     plt.title(f"PSD LFP STN (g) LFP GPe (r) FR CTX = {rate_CTX} FR STR = {rate_STR}")
     plt.xlabel("Frequencies (Hz)")
     plt.xlim(0,100)
@@ -185,7 +185,7 @@ def getdata():
     plt.plot(fgpe, specgpe, 'r')
     plt.plot(fstn, specstn, 'g')
         
-    plt.savefig(f"/home/fvm/Scrivania/CaratCTX/RateCTX{rate_CTX}RateSTR{rate_STR}.png")
+    plt.savefig(f"/home/fvm/Scrivania/CaratSTR/RateCTX{rate_CTX}RateSTR{rate_STR}.png")
     plt.close(fig='all')
     
     data_provv = [rate_CTX, rate_STR, frGPeA, frGPeB, frGPeC, 
@@ -199,19 +199,26 @@ def getdata():
     
     
 data = np.asarray(['Rate CTX','Rate STR','F.R. GPe A','F.R. GPe B','F.R. GPe C',
-'F.R. STN RB','F.R. STN LLRS','F.R. STN RB','CV GPe A','CV GPe B','CV GPe C',
+'F.R. STN RB','F.R. STN LLRS','F.R. STN NR','CV GPe A','CV GPe B','CV GPe C',
 'CV STN RB','CV STN LLRS','CV STN NR', 'Beta % STN', 'Beta % GPe', 'Spectral Entropy STN', 'Spectral Entropy GPe',
 'Sync. Param. STN RB', 'Sync. Param. STN LLRS', 'Sync. Param. STN NR', 'Sync. Param. STN',
 'Sync. Param. GPe A', 'Sync. Param. GPe B', 'Sync. Param. GPe C', 'Sync. Param. GPe'])
 
-for x in rates_CTX:
-    rate_CTX = x*Hz
-    rate_STR = 1.*Hz
+rates_CTX = np.arange(0., 41., 1.)
+rates_STR = np.arange(17., 48., 1.)
+
+k = 0
+
+for j in rates_STR:
+    i = 5
+    rate_CTX = i*Hz
+    rate_STR = j*Hz
     CorticalGroup.rates = rate_CTX
     StriatalGroup.rates = rate_STR
     data_provv = getdata()
     data = np.vstack((data,data_provv))
-    print(f"Process {int(x)} finished.")
+    print(f"Process {k} finished.\n")
+    k += 1
 
 dataframe = DataFrame(data=data[1:], columns=data[0,:])
 dataframe.to_csv('/home/fvm/Scrivania/data.csv', index=False)

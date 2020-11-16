@@ -7,8 +7,6 @@ import numpy as np
 rate_CTX = 0*Hz
 rate_STR = 0*Hz
 
-rates_CTX = np.arange(0., 41., 1.)
-rates_STR = np.arange(0., 41., 1.)
 
 N_GPe = 153 # In realtà 152
 N_GPe_B = int(N_GPe * 0.85)
