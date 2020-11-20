@@ -6,6 +6,8 @@
     and it has been modified by Z. Fountas for a take on Action Selection modelling.
 """
 
+import argparse
+from os import path
 from brian2 import *
 import random as ran
 import numpy as np
@@ -18,6 +20,24 @@ from equations import *
 from groupsandsynapses import *
 from testfunctions import *
 
+parser = argparse.ArgumentParser(description="First loop simulation. GPe-STN")
+parser.add_argument("serverorlocal", help="Are you simulating on the server or in local machine?", type=str, choices=["server", "local"])
+parser.add_argument("-g", help="Use general paths.", action="count")
+parser.add_argument("-wherecsv", help="Where to save data?", type=str)
+parser.add_argument("-whereimgs", help="Where to save imgs?", type=str)
+args = parser.parse_args()
+
+if args.serverorlocal == "server":
+    gen_path = "/home/f_mastellone/"
+elif args.serverorlocal == "local":
+    gen_path = "/home/fvm/Scrivania/"
+
+if args.g == 1:
+    final_path_data = gen_path
+    final_path_images = gen_path
+else:
+    final_path_data = path.join(gen_path, args.wherecsv)
+    final_path_images = path.join(gen_path, args.whereimgs)
 
 def getdata():
     run(300*ms)
@@ -185,8 +205,18 @@ def getdata():
     plt.plot(fgpe, specgpe, 'r')
     plt.plot(fstn, specstn, 'g')
         
-    plt.savefig(f"/home/f_mastellone/Images/RateCTX{rate_CTX}RateSTR{rate_STR}.png")
+    plt.savefig(f"{final_path_images}/RateCTX{rate_CTX}RateSTR{rate_STR}.png")
     plt.close(fig='all')
+
+    plt.figure(1)
+    printpotential("Potenziale (1 neur) GPe B", statemonitorGPeB, "g", 2)
+    plt.savefig(f"{final_path_images}/potgpeb.png")
+    plt.close()
+
+    plt.figure(2)
+    printpotential("Potenziale (1 neur) STN RB", statemonitorSTNRB, "r", 3)
+    plt.savefig(f"{final_path_images}/potstnrb.png")
+    plt.close()
     
     data_provv = [rate_CTX, rate_STR, frGPeA, frGPeB, frGPeC, 
     frSTNRB, frSTNLLRS, frSTNNR, cv_gpea, cv_gpeb, cv_gpec, cv_stnrb, 
@@ -221,5 +251,5 @@ for i in rates_CTX:
         k += 1
 
 dataframe = DataFrame(data=data[1:], columns=data[0,:])
-dataframe.to_csv('/home/f_mastellone/Data/data.csv', index=False)
+dataframe.to_csv(f'{final_path_data}/data.csv', index=False)
 print("Process finished successfully.")
