@@ -88,14 +88,14 @@ def printcurrents(figure, title, currents, colors):
     
 
 
-def printpotential(title, statemonitor, color, whichneuron):
+def printpotential(title, statemonitor, color, whichneuron, label):
     """ Let you choose for which neuron it should plot
         its membrane potential during the simulation.
     """
     plt.title(title)
     plt.ylabel("Neuron membrane voltage")
     plt.xlabel("Time (ms)")
-    plt.plot(statemonitor.v[whichneuron]/mV, color)
+    plt.subplot(statemonitor.v[whichneuron]/mV, color, label=label)
 
 
 def printspikes(title, spikemonitors, colors):

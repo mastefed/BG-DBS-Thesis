@@ -27,6 +27,8 @@ parser.add_argument("-wherecsv", help="Where to save data?", type=str)
 parser.add_argument("-whereimgs", help="Where to save imgs?", type=str)
 args = parser.parse_args()
 
+print("Hey oh 1")
+
 if args.serverorlocal == "server":
     gen_path = "/home/f_mastellone/"
 elif args.serverorlocal == "local":
@@ -38,6 +40,9 @@ if args.g == 1:
 else:
     final_path_data = path.join(gen_path, args.wherecsv)
     final_path_images = path.join(gen_path, args.whereimgs)
+
+print("Hey oh 2")
+
 
 def getdata():
     run(300*ms)
@@ -207,16 +212,18 @@ def getdata():
         
     plt.savefig(f"{final_path_images}/RateCTX{rate_CTX}RateSTR{rate_STR}.png")
     plt.close(fig='all')
-
+    '''
     plt.figure(1)
     printpotential("Potenziale (1 neur) GPe B", statemonitorGPeB, "g", 2)
     plt.savefig(f"{final_path_images}/potgpeb.png")
     plt.close()
-
+    '''
     plt.figure(2)
-    printpotential("Potenziale (1 neur) STN RB", statemonitorSTNRB, "r", 3)
+    printpotential("Potenziale (1 neur) STN", statemonitorSTNRB, "r", 3, "STN RB")
+    printpotential("Potenziale (1 neur) STN", statemonitorSTNLLRS, "g", 2, "STN LLRS")
+    printpotential("Potenziale (1 neur) STN", statemonitorSTNNR, "b", 1, "STN NR")
     plt.savefig(f"{final_path_images}/potstnrb.png")
-    plt.close()
+    plt.show()
     
     data_provv = [rate_CTX, rate_STR, frGPeA, frGPeB, frGPeC, 
     frSTNRB, frSTNLLRS, frSTNNR, cv_gpea, cv_gpeb, cv_gpec, cv_stnrb, 
@@ -234,8 +241,10 @@ data = np.asarray(['Rate CTX','Rate STR','F.R. GPe A','F.R. GPe B','F.R. GPe C',
 'Sync. Param. STN RB', 'Sync. Param. STN LLRS', 'Sync. Param. STN NR', 'Sync. Param. STN',
 'Sync. Param. GPe A', 'Sync. Param. GPe B', 'Sync. Param. GPe C', 'Sync. Param. GPe'])
 
-rates_CTX = np.arange(0., 41., 1.)
-rates_STR = np.arange(0., 48., 1.)
+rates_CTX = np.arange(10.,10.,1.)       #(0., 41., 1.)
+rates_STR = np.arange(18.,18.,1.)       #(0., 48., 1.)
+
+print("Hey oh 3")
 
 k = 0
 
