@@ -15,6 +15,7 @@ from scipy.signal import butter, welch, filtfilt
 from scipy.integrate import simps
 from pandas import DataFrame
 from entropy import spectral_entropy
+
 from parameters import *
 from equations import *
 from groupsandsynapses import *
@@ -24,10 +25,7 @@ parser = argparse.ArgumentParser(description="First loop simulation. GPe-STN")
 parser.add_argument("serverorlocal", help="Are you simulating on the server or in local machine?", type=str, choices=["server", "local"])
 parser.add_argument("-g", help="Use general paths.", action="count")
 parser.add_argument("-wherecsv", help="Where to save data?", type=str)
-parser.add_argument("-whereimgs", help="Where to save imgs?", type=str)
 args = parser.parse_args()
-
-print("Hey oh 1")
 
 if args.serverorlocal == "server":
     gen_path = "/home/f_mastellone/"
@@ -36,12 +34,8 @@ elif args.serverorlocal == "local":
 
 if args.g == 1:
     final_path_data = gen_path
-    final_path_images = gen_path
 else:
     final_path_data = path.join(gen_path, args.wherecsv)
-    final_path_images = path.join(gen_path, args.whereimgs)
-
-print("Hey oh 2")
 
 
 def getdata():
@@ -71,17 +65,6 @@ def getdata():
 
     spikemonitorCTX = SpikeMonitor(CorticalGroup)
 
-    populationSTNRB = PopulationRateMonitor(STNRBGroup)
-    populationSTNLLRS = PopulationRateMonitor(STNLLRSGroup)
-    populationSTNNR = PopulationRateMonitor(STNNRGroup)
-
-    populationGPeA = PopulationRateMonitor(GPeAGroup)
-    populationGPeB = PopulationRateMonitor(GPeBGroup)
-    populationGPeC = PopulationRateMonitor(GPeCGroup)
-
-    populationCTX = PopulationRateMonitor(CorticalGroup)
-    populationSTR = PopulationRateMonitor(StriatalGroup)
-
     run(duration) # Run boy, run!
     
     """ Calculating the Firing Rates for the entire simulation
@@ -101,12 +84,14 @@ def getdata():
     frSTNNR = np.mean(frSTNNR)
     frSTNLLRS = np.mean(frSTNLLRS)
 
-    mean_isiGPeA, std_isiGPeA = isi_mean_std(spikemonitorGPeA, 0)
-    mean_isiGPeB, std_isiGPeB = isi_mean_std(spikemonitorGPeB, 2)
-    mean_isiGPeC, std_isiGPeC = isi_mean_std(spikemonitorGPeC, 1)
-    mean_isiSTNRB, std_isiSTNRB = isi_mean_std(spikemonitorSTNRB, 3)
-    mean_isiSTNLLRS, std_isiSTNLLRS = isi_mean_std(spikemonitorSTNLLRS, 0)
-    mean_isiSTNNR, std_isiSTNNR = isi_mean_std(spikemonitorSTNNR, 1)
+    isiGPeA, mean_isiGPeA, std_isiGPeA = isi_mean_std(spikemonitorGPeA, 0)
+    isiGPeB, mean_isiGPeB, std_isiGPeB = isi_mean_std(spikemonitorGPeB, 2)
+    isiGPeC, mean_isiGPeC, std_isiGPeC = isi_mean_std(spikemonitorGPeC, 1)
+    isiSTNRB, mean_isiSTNRB, std_isiSTNRB = isi_mean_std(spikemonitorSTNRB, 3)
+    isiSTNLLRS, mean_isiSTNLLRS, std_isiSTNLLRS = isi_mean_std(spikemonitorSTNLLRS, 0)
+    isiSTNNR, mean_isiSTNNR, std_isiSTNNR = isi_mean_std(spikemonitorSTNNR, 1)
+
+    print(f"ISI GPe A:\n{isiGPeA}\n")
 
     cv_gpea = std_isiGPeA/mean_isiGPeA
     cv_gpeb = std_isiGPeB/mean_isiGPeB
@@ -114,15 +99,6 @@ def getdata():
     cv_stnrb = std_isiSTNRB/mean_isiSTNRB
     cv_stnllrs = std_isiSTNLLRS/mean_isiSTNLLRS
     cv_stnnr = std_isiSTNNR/mean_isiSTNNR
-
-    """ Calculating the Population firing rate over time for STN and GPe
-    """
-    width = 2.*ms
-    populationSTNfr = np.mean([populationSTNRB.smooth_rate(width=width), populationSTNNR.smooth_rate(width=width), populationSTNLLRS.smooth_rate(width=width)], 0)
-    populationGPefr = np.mean([populationGPeA.smooth_rate(width=width), populationGPeB.smooth_rate(width=width), populationGPeC.smooth_rate(width=width)], 0)
-
-    print(f"Cortical Pop. Rate over time --> {populationCTX.smooth_rate(width=width)}\n")
-    print(f"Striatal Pop. Rate over time --> {populationSTR.smooth_rate(width=width)}\n")
 
     """ Calculating meaning currents: mean excitatory and inhibitory current and mean currents to STN and GPe
     """
@@ -164,67 +140,35 @@ def getdata():
     var_time_v_GPeA = variance_time_fluctuations_v(statemonitorGPeA)
     norm_GPeA = variance_time_flu_v_norm(N_GPe_A, statemonitorGPeA)
     sync_par_GPeA = sqrt(var_time_v_GPeA / norm_GPeA)
-    #print(f"Il parametro di sincronizzazione per il GPe A è {sync_par_GPeA}\n")
 
     var_time_v_GPeB = variance_time_fluctuations_v(statemonitorGPeB)
     norm_GPeB = variance_time_flu_v_norm(N_GPe_B, statemonitorGPeB)
     sync_par_GPeB = sqrt(var_time_v_GPeB / norm_GPeB)
-    #print(f"Il parametro di sincronizzazione per il GPe B è {sync_par_GPeB}\n")
 
     var_time_v_GPeC = variance_time_fluctuations_v(statemonitorGPeC)
     norm_GPeC = variance_time_flu_v_norm(N_GPe_C, statemonitorGPeC)
     sync_par_GPeC = sqrt(var_time_v_GPeC / norm_GPeC)
-    #print(f"Il parametro di sincronizzazione per il GPe C è {sync_par_GPeC}\n")
 
     var_time_v_STNRB = variance_time_fluctuations_v(statemonitorSTNRB)
     norm_STNRB = variance_time_flu_v_norm(N_STN_RB, statemonitorSTNRB)
     sync_par_STNRB = sqrt(var_time_v_STNRB / norm_STNRB)
-    #print(f"Il parametro di sincronizzazione per il STN RB è {sync_par_STNRB}\n")
 
     var_time_v_STNLLRS = variance_time_fluctuations_v(statemonitorSTNLLRS)
     norm_STNLLRS = variance_time_flu_v_norm(N_STN_LLRS, statemonitorSTNLLRS)
     sync_par_STNLLRS = sqrt(var_time_v_STNLLRS / norm_STNLLRS)
-    #print(f"Il parametro di sincronizzazione per il STN LLRS è {sync_par_STNLLRS}\n")
 
     var_time_v_STNNR = variance_time_fluctuations_v(statemonitorSTNNR)
     norm_STNNR = variance_time_flu_v_norm(N_STN_NR, statemonitorSTNNR)
     sync_par_STNNR = sqrt(var_time_v_STNNR / norm_STNNR)
-    #print(f"Il parametro di sincronizzazione per il STN NR è {sync_par_STNNR}\n")
 
     var_time_v_GPe = variance_time_fluctuations_v_3pop(statemonitorGPeA, statemonitorGPeB, statemonitorGPeC)
     norm_GPe = variance_time_flu_v_norm_3pop([N_GPe_A, N_GPe_B, N_GPe_C], [statemonitorGPeA, statemonitorGPeB, statemonitorGPeC])
     sync_par_GPe = var_time_v_GPe / norm_GPe
-    #print(f"Il parametro di sincronizzazione per l'intero GPe è {sync_par_GPe}\n")
 
     var_time_v_STN = variance_time_fluctuations_v_3pop(statemonitorSTNRB, statemonitorSTNLLRS, statemonitorSTNNR)
     norm_STN = variance_time_flu_v_norm_3pop([N_STN_RB, N_STN_LLRS, N_STN_NR], [statemonitorSTNRB, statemonitorSTNLLRS, statemonitorSTNNR])
     sync_par_STN = var_time_v_STN / norm_STN
-    #print(f"Il parametro di sincronizzazione per l'intero STN è {sync_par_STN}\n")
-    
-    plt.figure(f"{rate_CTX} + {rate_STR}")
-    plt.title(f"PSD LFP STN (g) LFP GPe (r) FR CTX = {rate_CTX} FR STR = {rate_STR}")
-    plt.xlabel("Frequencies (Hz)")
-    plt.xlim(0,100)
-    plt.fill_between(fstn, specstn, where=idx_beta_stn, color='c')
-    plt.fill_between(fgpe, specgpe, where=idx_beta_gpe, color='m')
-    plt.plot(fgpe, specgpe, 'r')
-    plt.plot(fstn, specstn, 'g')
-        
-    plt.savefig(f"{final_path_images}/RateCTX{rate_CTX}RateSTR{rate_STR}.png")
-    plt.close(fig='all')
-    '''
-    plt.figure(1)
-    printpotential("Potenziale (1 neur) GPe B", statemonitorGPeB, "g", 2)
-    plt.savefig(f"{final_path_images}/potgpeb.png")
-    plt.close()
-    '''
-    plt.figure(2)
-    printpotential("Potenziale (1 neur) STN", statemonitorSTNRB, "r", 3, "STN RB")
-    printpotential("Potenziale (1 neur) STN", statemonitorSTNLLRS, "g", 2, "STN LLRS")
-    printpotential("Potenziale (1 neur) STN", statemonitorSTNNR, "b", 1, "STN NR")
-    plt.savefig(f"{final_path_images}/potstnrb.png")
-    plt.show()
-    
+ 
     data_provv = [rate_CTX, rate_STR, frGPeA, frGPeB, frGPeC, 
     frSTNRB, frSTNLLRS, frSTNNR, cv_gpea, cv_gpeb, cv_gpec, cv_stnrb, 
     cv_stnllrs, cv_stnnr, beta_power_stn/total_power_stn, beta_power_gpe/total_power_gpe,
@@ -241,23 +185,24 @@ data = np.asarray(['Rate CTX','Rate STR','F.R. GPe A','F.R. GPe B','F.R. GPe C',
 'Sync. Param. STN RB', 'Sync. Param. STN LLRS', 'Sync. Param. STN NR', 'Sync. Param. STN',
 'Sync. Param. GPe A', 'Sync. Param. GPe B', 'Sync. Param. GPe C', 'Sync. Param. GPe'])
 
-rates_CTX = np.arange(10.,10.,1.)       #(0., 41., 1.)
-rates_STR = np.arange(18.,18.,1.)       #(0., 48., 1.)
-
-print("Hey oh 3")
+rates_CTX = np.arange(0., 41., 1.)
+rates_STR = np.arange(0., 48., 1.)
 
 k = 0
 
-for i in rates_CTX:
-    for j in rates_STR:
-        rate_CTX = i*Hz
-        rate_STR = j*Hz
-        CorticalGroup.rates = rate_CTX
-        StriatalGroup.rates = rate_STR
-        data_provv = getdata()
-        data = np.vstack((data,data_provv))
-        print(f"Process {k} finished.\n")
-        k += 1
+#for i in rates_CTX:
+    #for j in rates_STR:
+i = 10
+j = 18
+
+rate_CTX = i*Hz
+rate_STR = j*Hz
+CorticalGroup.rates = rate_CTX
+StriatalGroup.rates = rate_STR
+data_provv = getdata()
+data = np.vstack((data,data_provv))
+print(f"Process {k} finished.\n")
+k += 1
 
 dataframe = DataFrame(data=data[1:], columns=data[0,:])
 dataframe.to_csv(f'{final_path_data}/data.csv', index=False)

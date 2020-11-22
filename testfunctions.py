@@ -60,7 +60,7 @@ def isi_mean_std(spikemonitor, whichneuron):
     isi = np.asarray(isi)*second
     mean_isi = np.mean(isi)
     std_isi = np.std(isi)
-    return mean_isi, std_isi
+    return isi, mean_isi, std_isi
 
 def printpoprate(title, poprates, colors):
     """ This plots some Population Rates.
@@ -95,7 +95,7 @@ def printpotential(title, statemonitor, color, whichneuron, label):
     plt.title(title)
     plt.ylabel("Neuron membrane voltage")
     plt.xlabel("Time (ms)")
-    plt.subplot(statemonitor.v[whichneuron]/mV, color, label=label)
+    plt.plot(statemonitor.v[whichneuron]/mV, color, label=label)
 
 
 def printspikes(title, spikemonitors, colors):
