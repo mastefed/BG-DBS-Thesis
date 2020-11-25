@@ -7,21 +7,23 @@ import numpy as np
 rate_CTX = 0*Hz
 rate_STR = 0*Hz
 
-N_GPe = 153 # In realtà 152
-N_GPe_B = int(N_GPe * 0.85)
-N_GPe_A = int(N_GPe * 0.0405)
-N_GPe_C = int(N_GPe * 0.1095)
-N_STN = 45 # In realtà 44
-N_STN_RB = int(N_STN * 0.6)
-N_STN_LLRS = int(N_STN * 0.25)
-N_STN_NR = int(N_STN * 0.15)
+N_GPe_pap = 153 # In realtà 152
+N_GPe_B = int(N_GPe_pap * 0.85)
+N_GPe_A = int(N_GPe_pap * 0.0405)
+N_GPe_C = int(N_GPe_pap * 0.1095)
+    
+N_STN_pap = 45 # In realtà 44
+N_STN_RB = int(N_STN_pap * 0.6)
+N_STN_LLRS = int(N_STN_pap * 0.25)
+N_STN_NR = int(N_STN_pap * 0.15)
+
 N_input_CTX = 1000
 N_input_MSN2 = 9207/2
 
 deft = defaultclock.dt
 duration = 10000*ms
 
-sigma_stn = 0.5
+################################################ STN
 """ STN RB Neurons 
 """
 CSTN_RB = 23.*pfarad
@@ -40,6 +42,7 @@ dSTN2_RB = -68.4*mV/ms
 w1_RB = 0.1
 w2_RB = 0.
 ISTN_ext_RB = 56.1*pamp
+sigma_stn = 0.5
 
 """ STN LLRS Neurons 
 """
@@ -59,6 +62,7 @@ dSTN2_LLRS = 10*mV/ms
 w1_LLRS = 0.01
 w2_LLRS = 0.
 ISTN_ext_LLRS = 8.*pamp
+sigma_stn = 0.5
 
 """ STN NR Neurons 
 """
@@ -78,12 +82,12 @@ dSTN2_NR = 92*mV/ms
 w1_NR = 0.001
 w2_NR = 1.
 ISTN_ext_NR = -18.*pamp
+sigma_stn = 0.5
 
-""" The three populations of GPe
+######################################################## GPe
+""" GPe A
 """
-sigma_gpe = 3.
-
-CGPe_A = 55.*pfarad
+CGPe_A = 70.*pfarad
 v_thres_GPe_A = -42.*mV
 v_peak_GPe_A = 38.*mV
 v_rest_GPe_A = -50.7*mV
@@ -93,7 +97,10 @@ bGPe_A = 4.26*(1/ms)
 cGPe_A = -57.4*mV
 dGPe_A = 110*mV/ms
 IGPe_ext_A = 167*pamp
+sigma_GPe_A = 0.7
 
+""" GPe B
+"""
 CGPe_B = 68.*pfarad
 v_thres_GPe_B = -44.*mV
 v_peak_GPe_B = 25.*mV
@@ -104,8 +111,11 @@ bGPe_B = 3.895*(1/ms)
 cGPe_B = -58.36*mV
 dGPe_B = 0.353*mV/ms
 IGPe_ext_B = 64*pamp
+sigma_GPe_B = 1.6
 
-CGPe_C = 57.*pfarad
+""" GPe C
+"""
+CGPe_C = 65.*pfarad
 v_thres_GPe_C = -43.*mV
 v_peak_GPe_C = 34.5*mV
 v_rest_GPe_C = -54.*mV
@@ -115,16 +125,25 @@ bGPe_C = 7*(1/ms)
 cGPe_C = -52.*mV
 dGPe_C = 166*mV/ms
 IGPe_ext_C = 237.5*pamp
+sigma_GPe_C = 1.3
 
+##################################################################################################
 """ Synaptic characteristics from connectivity
     probabilities to synapses' parameters.
 """
+""" Synaptic efficacy
+"""
+gctxstn = 1*nsiemens
+ggpestn = 1*nsiemens
+gstngpe = 1*nsiemens
+ggpegpe = 1*nsiemens
+gstrgpe = 1*nsiemens
+
 p_GPe_GPe = 0.1
 p_GPe_STN = 0.1
 p_STN_GPe = 0.3
 p_CTX_STN = 0.03
 p_STR_GPe = 0.033
-
 
 """ Cortical Input
 """
@@ -135,23 +154,16 @@ f_spon = 3.*Hz
 phi = ran.uniform(0,2.*pi)
 input_rates = TimedArray(amplit*cos(2.*pi*freq*t_recorded + phi) + f_spon, dt = deft)
 lambda_ctx_stn = 2.5*ms
-G_ctx_stn = 0.388*nsiemens
+G_ctx_stn = 0.388
 E_ctx_stn = 0*mV
 tau_ctx_stn_ampa = 2.*ms
 tau_ctx_stn_nmda = 100.*ms
-
-""" Striatal Input
-"""
-lambda_str_gpe = 5.*ms
-G_str_gpe = 5.435*nsiemens
-E_str_gpe = -65.*mV
-tau_str_gpe = 6.*ms
 
 """ GPe to GPe
     Chemical
 """
 lambda_gpe_gpe = 1.*ms
-G_gpe_gpe = 0.765*nsiemens
+G_gpe_gpe = 0.765
 E_gpe_gpe = -65.*mV
 tau_gpe_gpe = 5.*ms
 
@@ -159,20 +171,23 @@ tau_gpe_gpe = 5.*ms
     Chemical
 """
 lambda_gpe_stn = 4.*ms
-G_gpe_stn = 0.518*nsiemens
+G_gpe_stn =  0.360 #0.518 
 E_gpe_stn = -64.*mV
 tau_gpe_stn = 8.*ms
 
 """ STN to GPe
     Chemical
 """
-
 lambda_stn_gpe = 2.*ms
-G_stn_gpe = 1.447*nsiemens
+G_stn_gpe = 1.447
 E_stn_gpe = 0.*mV
 tau_stn_gpe_ampa = 2.*ms
 tau_stn_gpe_nmda = 100.*ms
 
-""" Other Synaptic Parameters
+""" STR to GPe
+    Chemical
 """
-Dop1 = Dop2 = 0.8
+lambda_str_gpe = 5.*ms
+G_str_gpe = 5.435
+E_str_gpe = -65.*mV
+tau_str_gpe = 6.*ms

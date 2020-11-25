@@ -5,10 +5,11 @@
     The model proposed is inspired by Izhikevich 2003/2007a,
     and it has been modified by Z. Fountas for a take on Action Selection modelling.
 """
+from brian2 import *
+#clear_cache('cython')
 
 import argparse
 from os import path
-from brian2 import *
 import random as ran
 import numpy as np
 from scipy.signal import butter, welch, filtfilt
@@ -21,11 +22,15 @@ from equations import *
 from groupsandsynapses import *
 from testfunctions import *
 
+
+########################### My arguments ##################################################################################################
 parser = argparse.ArgumentParser(description="First loop simulation. GPe-STN")
 parser.add_argument("serverorlocal", help="Are you simulating on the server or in local machine?", type=str, choices=["server", "local"])
+parser.add_argument("controlorpd", help="Do you want to simulate control or pd state?", type=str, choices=["control", "pd"])
 parser.add_argument("-g", help="Use general paths.", action="count")
 parser.add_argument("-wherecsv", help="Where to save data?", type=str)
 args = parser.parse_args()
+###########################################################################################################################################
 
 if args.serverorlocal == "server":
     gen_path = "/home/f_mastellone/"
@@ -37,83 +42,108 @@ if args.g == 1:
 else:
     final_path_data = path.join(gen_path, args.wherecsv)
 
+if args.controlorpd == "control":
+    Dop1 = Dop2 = 0.
+elif args.controlorpd == "pd":
+    Dop1 = Dop2 = 0.8
+
 
 def getdata():
+    ########################## Initial time to make my network settle down ######################
     run(300*ms)
+    ##############################################################################################
 
-    print(f"Freq input STR = {rate_STR}, Freq input CTX = {rate_CTX}\n")
+    print(f"Freq input CTX = {rate_CTX} Hz\nFreq input STR = {rate_STR} Hz")
 
     """ Functions to monitor neurons' state
     """
+    spikemonitorSTN = SpikeMonitor(STNGroup, variables=['v'])
+    statemonitorSTN = StateMonitor(STNGroup, ['v','I_lfp_stn'], record=True)
+
+    statemonitorSTNRB = StateMonitor(STNRBGroup, ['v'], record=True)
     spikemonitorSTNRB = SpikeMonitor(STNRBGroup, variables=['v'])
-    statemonitorSTNRB = StateMonitor(STNRBGroup, ['v','I_lfp_stnrb'], record=True)
 
+    statemonitorSTNLLRS = StateMonitor(STNLLRSGroup, ['v'], record=True)
     spikemonitorSTNLLRS = SpikeMonitor(STNLLRSGroup, variables=['v'])
-    statemonitorSTNLLRS = StateMonitor(STNLLRSGroup, ['v','I_lfp_stnllrs'], record=True)
 
+    statemonitorSTNNR = StateMonitor(STNNRGroup, ['v'], record=True)
     spikemonitorSTNNR = SpikeMonitor(STNNRGroup, variables=['v'])
-    statemonitorSTNNR = StateMonitor(STNNRGroup, ['v','I_lfp_stnnr'], record=True)
-
+    
+    spikemonitorGPe = SpikeMonitor(GPeGroup, variables=['v'])
+    statemonitorGPe = StateMonitor(GPeGroup, ['v','I_lfp_gpe'], record=True)
+    
+    statemonitorGPeA = StateMonitor(GPeAGroup, variables=['v'], record=True)
     spikemonitorGPeA = SpikeMonitor(GPeAGroup, variables=['v'])
-    statemonitorGPeA = StateMonitor(GPeAGroup, ['v','I_lfp_gpea'], record=True)
-
+    
+    statemonitorGPeB = StateMonitor(GPeBGroup, variables=['v'], record=True)
     spikemonitorGPeB = SpikeMonitor(GPeBGroup, variables=['v'])
-    statemonitorGPeB = StateMonitor(GPeBGroup, ['v','I_lfp_gpeb'], record=True)
-
+    
+    statemonitorGPeC = StateMonitor(GPeCGroup, variables=['v'], record=True)
     spikemonitorGPeC = SpikeMonitor(GPeCGroup, variables=['v'])
-    statemonitorGPeC = StateMonitor(GPeCGroup, ['v','I_lfp_gpec'], record=True)
-
+    
     spikemonitorCTX = SpikeMonitor(CorticalGroup)
 
+    ##############################################################################################
     run(duration) # Run boy, run!
-    
+    ##############################################################################################
+
     """ Calculating the Firing Rates for the entire simulation
     """
+    frGPe = firingrate(spikemonitorGPe, duration)
     frGPeA = firingrate(spikemonitorGPeA, duration)
     frGPeB = firingrate(spikemonitorGPeB, duration)
     frGPeC = firingrate(spikemonitorGPeC, duration)
+    
+    frSTN = firingrate(spikemonitorSTN, duration)
     frSTNRB = firingrate(spikemonitorSTNRB, duration)
     frSTNLLRS = firingrate(spikemonitorSTNLLRS, duration)
     frSTNNR = firingrate(spikemonitorSTNNR, duration)
+
     frCTX = firingrate(spikemonitorCTX, duration)
 
+
+    frGPe = np.mean(frGPe)
     frGPeA = np.mean(frGPeA)
     frGPeB = np.mean(frGPeB)
     frGPeC = np.mean(frGPeC)
+    
+    frSTN = np.mean(frSTN)
     frSTNRB = np.mean(frSTNRB)
-    frSTNNR = np.mean(frSTNNR)
     frSTNLLRS = np.mean(frSTNLLRS)
+    frSTNNR = np.mean(frSTNNR)
 
-    isiGPeA, mean_isiGPeA, std_isiGPeA = isi_mean_std(spikemonitorGPeA, 0)
-    isiGPeB, mean_isiGPeB, std_isiGPeB = isi_mean_std(spikemonitorGPeB, 2)
-    isiGPeC, mean_isiGPeC, std_isiGPeC = isi_mean_std(spikemonitorGPeC, 1)
-    isiSTNRB, mean_isiSTNRB, std_isiSTNRB = isi_mean_std(spikemonitorSTNRB, 3)
-    isiSTNLLRS, mean_isiSTNLLRS, std_isiSTNLLRS = isi_mean_std(spikemonitorSTNLLRS, 0)
-    isiSTNNR, mean_isiSTNNR, std_isiSTNNR = isi_mean_std(spikemonitorSTNNR, 1)
+    
+    """ Calculating ISI, mean ISI and standard deviation of ISI
+        for each population.
+    """
+    isiSTNRB, mean_isiSTNRB, std_isiSTNRB = isi_mean_std(spikemonitorSTNRB)
+    isiSTNLLRS, mean_isiSTNLLRS, std_isiSTNLLRS = isi_mean_std(spikemonitorSTNLLRS)
+    isiSTNNR, mean_isiSTNNR, std_isiSTNNR = isi_mean_std(spikemonitorSTNNR)
+    isiGPeA, mean_isiGPeA, std_isiGPeA = isi_mean_std(spikemonitorGPeA)
+    isiGPeB, mean_isiGPeB, std_isiGPeB = isi_mean_std(spikemonitorGPeB)
+    isiGPeC, mean_isiGPeC, std_isiGPeC = isi_mean_std(spikemonitorGPeC)
+    
 
-    print(f"ISI GPe A:\n{isiGPeA}\n")
+    """ Calculating Coefficient of Variation:
+        How irregular is the firing of my network?
+    """
+    cv_gpea = coeffvar(std_isiGPeA, mean_isiGPeA)
+    cv_gpeb = coeffvar(std_isiGPeB ,mean_isiGPeB)
+    cv_gpec = coeffvar(std_isiGPeC, mean_isiGPeC)
+    cv_stnrb = coeffvar(std_isiSTNRB, mean_isiSTNRB)
+    cv_stnllrs = coeffvar(std_isiSTNLLRS, mean_isiSTNLLRS)
+    cv_stnnr = coeffvar(std_isiSTNNR, mean_isiSTNNR)
 
-    cv_gpea = std_isiGPeA/mean_isiGPeA
-    cv_gpeb = std_isiGPeB/mean_isiGPeB
-    cv_gpec = std_isiGPeC/mean_isiGPeC
-    cv_stnrb = std_isiSTNRB/mean_isiSTNRB
-    cv_stnllrs = std_isiSTNLLRS/mean_isiSTNLLRS
-    cv_stnnr = std_isiSTNNR/mean_isiSTNNR
 
     """ Calculating meaning currents: mean excitatory and inhibitory current and mean currents to STN and GPe
     """
-    mean_I_lfp_STNRB = np.mean(statemonitorSTNRB.I_lfp_stnrb, 0)
-    mean_I_lfp_STNLLRS = np.mean(statemonitorSTNLLRS.I_lfp_stnllrs, 0)
-    mean_I_lfp_STNNR = np.mean(statemonitorSTNNR.I_lfp_stnnr, 0)
-    mean_I_lfp_GPeA = np.mean(statemonitorGPeA.I_lfp_gpea, 0)
-    mean_I_lfp_GPeB = np.mean(statemonitorGPeB.I_lfp_gpeb, 0)
-    mean_I_lfp_GPeC = np.mean(statemonitorGPeC.I_lfp_gpec, 0)
+    mean_I_lfp_STN = np.mean(statemonitorSTN.I_lfp_stn, 0)
+    mean_I_lfp_GPe = np.mean(statemonitorGPe.I_lfp_gpe, 0)
 
-    mean_I_lfp_STN = np.vstack((mean_I_lfp_STNRB, mean_I_lfp_STNLLRS, mean_I_lfp_STNNR))
-    mean_I_lfp_STN = np.mean(mean_I_lfp_STN, 0)
-    mean_I_lfp_GPe = np.vstack((mean_I_lfp_GPeA, mean_I_lfp_GPeB, mean_I_lfp_GPeC))
-    mean_I_lfp_GPe = np.mean(mean_I_lfp_GPe, 0)
 
+    """ Calculating spectra of LFP currents I obtained before
+        This is done via scipy.signal.welch and scipy.integrate.simps
+    """
     filtered_lfp_STN = butter_bandpass_filter(mean_I_lfp_STN, 1, 100, 1/deft, order=3)
     filtered_lfp_GPe = butter_bandpass_filter(mean_I_lfp_GPe, 1, 100, 1/deft, order=3)
 
@@ -131,12 +161,26 @@ def getdata():
     beta_power_stn = simps(specstn[idx_beta_stn], dx=freq_res_stn)
     beta_power_gpe = simps(specgpe[idx_beta_gpe], dx=freq_res_gpe)
 
+
+    """ Spectral Entropy of nuclei:
+        How much peaked and concentrated is my beta band spectrum?
+    """
     specentropy_stn = spectral_entropy(filtered_lfp_STN, sf=1/deft, method='welch', nperseg=2/deft, normalize=True)
     specentropy_gpe = spectral_entropy(filtered_lfp_GPe, sf=1/deft, method='welch', nperseg=2/deft, normalize=True)
     
+
+
     """ Piece of code to calculate the synchronization between neuron in a single population
         and among the three populations of GPe and STN.
     """
+    var_time_v_GPe = variance_time_fluctuations_v(statemonitorGPe)
+    norm_GPe = variance_time_flu_v_norm(N_GPe, statemonitorGPe)
+    sync_par_GPe = sqrt(var_time_v_GPe / norm_GPe)
+
+    var_time_v_STN = variance_time_fluctuations_v(statemonitorSTN)
+    norm_STN = variance_time_flu_v_norm(N_STN, statemonitorSTN)
+    sync_par_STN = sqrt(var_time_v_STN / norm_STN)
+    
     var_time_v_GPeA = variance_time_fluctuations_v(statemonitorGPeA)
     norm_GPeA = variance_time_flu_v_norm(N_GPe_A, statemonitorGPeA)
     sync_par_GPeA = sqrt(var_time_v_GPeA / norm_GPeA)
@@ -160,16 +204,15 @@ def getdata():
     var_time_v_STNNR = variance_time_fluctuations_v(statemonitorSTNNR)
     norm_STNNR = variance_time_flu_v_norm(N_STN_NR, statemonitorSTNNR)
     sync_par_STNNR = sqrt(var_time_v_STNNR / norm_STNNR)
+    
+        
+    """ Space reserved to plot useful stuff down here.
+    """
 
-    var_time_v_GPe = variance_time_fluctuations_v_3pop(statemonitorGPeA, statemonitorGPeB, statemonitorGPeC)
-    norm_GPe = variance_time_flu_v_norm_3pop([N_GPe_A, N_GPe_B, N_GPe_C], [statemonitorGPeA, statemonitorGPeB, statemonitorGPeC])
-    sync_par_GPe = var_time_v_GPe / norm_GPe
-
-    var_time_v_STN = variance_time_fluctuations_v_3pop(statemonitorSTNRB, statemonitorSTNLLRS, statemonitorSTNNR)
-    norm_STN = variance_time_flu_v_norm_3pop([N_STN_RB, N_STN_LLRS, N_STN_NR], [statemonitorSTNRB, statemonitorSTNLLRS, statemonitorSTNNR])
-    sync_par_STN = var_time_v_STN / norm_STN
- 
-    data_provv = [rate_CTX, rate_STR, frGPeA, frGPeB, frGPeC, 
+    
+    """ Retrieving data I need for analysis
+    """
+    data_provv = [rate_CTX, rate_STR, frGPe, frGPeA, frGPeB, frGPeC, frSTN,
     frSTNRB, frSTNLLRS, frSTNNR, cv_gpea, cv_gpeb, cv_gpec, cv_stnrb, 
     cv_stnllrs, cv_stnnr, beta_power_stn/total_power_stn, beta_power_gpe/total_power_gpe,
     specentropy_stn, specentropy_gpe, sync_par_STNRB, sync_par_STNLLRS, sync_par_STNNR, sync_par_STN,
@@ -179,31 +222,36 @@ def getdata():
     return data_provv
     
     
-data = np.asarray(['Rate CTX','Rate STR','F.R. GPe A','F.R. GPe B','F.R. GPe C',
+    
+data = np.asarray(['Rate CTX', 'Rate STR', 'F.R. GPe', 'F.R. GPe A','F.R. GPe B','F.R. GPe C', 'F.R. STN',
 'F.R. STN RB','F.R. STN LLRS','F.R. STN NR','CV GPe A','CV GPe B','CV GPe C',
 'CV STN RB','CV STN LLRS','CV STN NR', 'Beta % STN', 'Beta % GPe', 'Spectral Entropy STN', 'Spectral Entropy GPe',
 'Sync. Param. STN RB', 'Sync. Param. STN LLRS', 'Sync. Param. STN NR', 'Sync. Param. STN',
 'Sync. Param. GPe A', 'Sync. Param. GPe B', 'Sync. Param. GPe C', 'Sync. Param. GPe'])
 
-rates_CTX = np.arange(0., 41., 1.)
-rates_STR = np.arange(0., 48., 1.)
+rates_CTX = np.arange(0., 11., 1.)
+rates_STR_1 = np.asarray([0., 0.01, 0.1, 0.5, 1., 1.5, 2.])
+rates_STR_2 = np.arange(17., 49., 1.)
+rates_STR = np.hstack((rates_STR_1, rates_STR_2))
 
-k = 0
+k = 1 # Index to watch my processes
 
-#for i in rates_CTX:
-    #for j in rates_STR:
-i = 10
-j = 18
+############################## Caratterizzazione BlackBox #######
+for i in rates_CTX:
+    for j in rates_STR:
+        rate_CTX = i*Hz
+        rate_STR = j*Hz
+        CorticalGroup.rates = rate_CTX
+        StriatalGroup.rates = rate_STR
 
-rate_CTX = i*Hz
-rate_STR = j*Hz
-CorticalGroup.rates = rate_CTX
-StriatalGroup.rates = rate_STR
-data_provv = getdata()
-data = np.vstack((data,data_provv))
-print(f"Process {k} finished.\n")
-k += 1
+        data_provv = getdata()
+        data = np.vstack((data,data_provv))
+        print(f"Process {k} finished.\n")
+        k += 1
+############################################################################
+
 
 dataframe = DataFrame(data=data[1:], columns=data[0,:])
 dataframe.to_csv(f'{final_path_data}/data.csv', index=False)
+
 print("Process finished successfully.")
