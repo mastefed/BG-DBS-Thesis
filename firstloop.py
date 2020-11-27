@@ -103,20 +103,20 @@ def getdata():
 
     frCTX = firingrate(spikemonitorCTX, duration)
 
-    frGPe_mean = np.mean(frGPe)
-    frGPeA_mean = np.mean(frGPeA)
-    frGPeB_mean = np.mean(frGPeB)
-    frGPeC_mean = np.mean(frGPeC)
+    frGPe = np.mean(frGPe)
+    frGPeA = np.mean(frGPeA)
+    frGPeB = np.mean(frGPeB)
+    frGPeC = np.mean(frGPeC)
 
     frGPe_std = np.std(frGPe)
     frGPeA_std = np.std(frGPeA)
     frGPeB_std = np.std(frGPeB)
     frGPeC_std = np.std(frGPeC)
 
-    frSTNm = np.mean(frSTN)
-    frSTNRBm = np.mean(frSTNRB)
-    frSTNLLRSm = np.mean(frSTNLLRS)
-    frSTNNRm = np.mean(frSTNNR)
+    frSTN = np.mean(frSTN)
+    frSTNRB = np.mean(frSTNRB)
+    frSTNLLRS = np.mean(frSTNLLRS)
+    frSTNNR = np.mean(frSTNNR)
 
     frSTNs = np.std(frSTN)
     frSTNRBs = np.std(frSTNRB)
@@ -126,7 +126,7 @@ def getdata():
     """ Calculating ISI, mean ISI and standard deviation of ISI
         for each population.
     """
-    isiSTN, mean_isiSTN, std_isiSTN = isi_mean_std(spikemonitor)
+    isiSTN, mean_isiSTN, std_isiSTN = isi_mean_std(spikemonitorSTN)
     isiSTNRB, mean_isiSTNRB, std_isiSTNRB = isi_mean_std(spikemonitorSTNRB)
     isiSTNLLRS, mean_isiSTNLLRS, std_isiSTNLLRS = isi_mean_std(spikemonitorSTNLLRS)
     isiSTNNR, mean_isiSTNNR, std_isiSTNNR = isi_mean_std(spikemonitorSTNNR)
