@@ -97,7 +97,7 @@ bGPe_A = 4.26*(1/ms)
 cGPe_A = -57.4*mV
 dGPe_A = 110*mV/ms
 IGPe_ext_A = 167*pamp
-sigma_GPe_A = 0.7
+sigma_GPe_A = 3 #0.7
 
 """ GPe B
 """
@@ -111,7 +111,7 @@ bGPe_B = 3.895*(1/ms)
 cGPe_B = -58.36*mV
 dGPe_B = 0.353*mV/ms
 IGPe_ext_B = 64*pamp
-sigma_GPe_B = 1.6
+sigma_GPe_B = 3 #1.6
 
 """ GPe C
 """
@@ -125,7 +125,7 @@ bGPe_C = 7*(1/ms)
 cGPe_C = -52.*mV
 dGPe_C = 166*mV/ms
 IGPe_ext_C = 237.5*pamp
-sigma_GPe_C = 1.3
+sigma_GPe_C = 3 #1.3
 
 ##################################################################################################
 """ Synaptic characteristics from connectivity
@@ -133,7 +133,7 @@ sigma_GPe_C = 1.3
 """
 """ Synaptic efficacy
 """
-gctxstn = 1*nsiemens
+gctxstn = 0.25*nsiemens
 ggpestn = 1*nsiemens
 gstngpe = 1*nsiemens
 ggpegpe = 1*nsiemens
@@ -154,7 +154,7 @@ f_spon = 3.*Hz
 phi = ran.uniform(0,2.*pi)
 input_rates = TimedArray(amplit*cos(2.*pi*freq*t_recorded + phi) + f_spon, dt = deft)
 lambda_ctx_stn = 2.5*ms
-G_ctx_stn = 0.388
+G_ctx_stn = 1.088 # Secondo ad essere modificato 0.388
 E_ctx_stn = 0*mV
 tau_ctx_stn_ampa = 2.*ms
 tau_ctx_stn_nmda = 100.*ms
@@ -163,7 +163,7 @@ tau_ctx_stn_nmda = 100.*ms
     Chemical
 """
 lambda_gpe_gpe = 1.*ms
-G_gpe_gpe = 0.765
+G_gpe_gpe = 0.205 #Ultimo ad essere modificato 0.765
 E_gpe_gpe = -65.*mV
 tau_gpe_gpe = 5.*ms
 
@@ -171,7 +171,7 @@ tau_gpe_gpe = 5.*ms
     Chemical
 """
 lambda_gpe_stn = 4.*ms
-G_gpe_stn =  0.360 #0.518 
+G_gpe_stn = 0.218 # Primo ad essere modificato 0.518
 E_gpe_stn = -64.*mV
 tau_gpe_stn = 8.*ms
 
@@ -179,7 +179,7 @@ tau_gpe_stn = 8.*ms
     Chemical
 """
 lambda_stn_gpe = 2.*ms
-G_stn_gpe = 1.447
+G_stn_gpe = 0.327 # Terzo ad essere modificato 1.447 
 E_stn_gpe = 0.*mV
 tau_stn_gpe_ampa = 2.*ms
 tau_stn_gpe_nmda = 100.*ms

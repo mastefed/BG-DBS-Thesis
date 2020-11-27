@@ -33,9 +33,9 @@ def isi_mean_std(spikemonitor):
     i = ran.randint(0,len(trains)-1)
     train = trains[i]
     if train.size == 0.:
-        isi = []
-        mean_isi = 0.*Hz
-        std_isi = 0.*Hz
+        isi = "not firing"
+        mean_isi = "not firing"
+        std_isi = "not firing"
     else:
         isi = np.diff(train)
         mean_isi = np.mean(isi)
@@ -58,8 +58,8 @@ def variance_time_flu_v_norm(N_neur, stmonit):
     return norm
 
 def coeffvar(stdisi, meanisi):
-    if stdisi == 0.:
-        cv = "indefinito"
+    if meanisi == "not firing":
+        cv = "not firing"
     else:
         cv = stdisi/meanisi
     return cv

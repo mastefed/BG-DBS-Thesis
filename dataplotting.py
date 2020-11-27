@@ -57,9 +57,11 @@ if args.fixwhat == "ctxrate":
     whatx = "Striatum"
     rateCTX = datas_from_csv["Rate CTX"]
     rateSTR = datas_from_csv["Rate STR"]
+    frgpe = datas_from_csv["F.R. GPe"]
     frgpea = datas_from_csv["F.R. GPe A"]
     frgpeb = datas_from_csv["F.R. GPe B"]
     frgpec = datas_from_csv["F.R. GPe C"]
+    frstn = datas_from_csv["F.R. STN"]
     frstnrb = datas_from_csv["F.R. STN RB"]
     frstnllrs = datas_from_csv["F.R. STN LLRS"]
     frstnnr = datas_from_csv["F.R. STN NR"]
@@ -83,7 +85,7 @@ if args.fixwhat == "ctxrate":
     syncstn = datas_from_csv["Sync. Param. STN"]
 
     i = int(input(f"Scegli la frequenza di input di {whichis}: "))
-    span = 48
+    span = 37
 
     xaxis = rateSTR.values[i*span:(i+1)*span]
 
@@ -117,7 +119,7 @@ elif args.fixwhat == "strrate":
     syncstn = datas_from_csv["Sync. Param. STN"]
 
     i = int(input(f"Scegli la frequenza di input di {whichis}: "))
-    span = 41
+    span = 8
 
     xaxis = rateCTX.values[i*span:(i+1)*span]
 
@@ -156,10 +158,6 @@ elif args.whattodo == "pivot":
     frstnrb_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["F.R. STN RB"]
     frstnllrs_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["F.R. STN LLRS"]
     frstnnr_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["F.R. STN NR"]
-
-    cvgpea_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["CV GPe A"]
-    cvgpeb_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["CV GPe B"]
-    cvgpec_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["CV GPe C"]
 
     cvstnrb_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["CV STN RB"]
     cvstnllrs_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["CV STN LLRS"]
@@ -206,18 +204,6 @@ elif args.whattodo == "pivot":
     plt.figure("Firing Rate STN NR")
     plt.title("Firing Rate STN NR [Hz]")
     ax6 = seaborn.heatmap(frstnnr_pivot, cmap=colors)
-    
-    plt.figure("CV GPe A")
-    plt.title("CV GPe A")
-    ax7 = seaborn.heatmap(cvgpea_pivot, cmap=colors)
-
-    plt.figure("CV GPe B")
-    plt.title("CV GPe B")
-    ax8 = seaborn.heatmap(cvgpeb_pivot, cmap=colors)
-
-    plt.figure("CV GPe C")
-    plt.title("CV GPe C")
-    ax9 = seaborn.heatmap(cvgpec_pivot, cmap=colors)
 
     plt.figure("CV STN RB")
     plt.title("CV STN RB")

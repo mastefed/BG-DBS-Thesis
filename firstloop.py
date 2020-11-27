@@ -16,6 +16,7 @@ from scipy.signal import butter, welch, filtfilt
 from scipy.integrate import simps
 from pandas import DataFrame
 from entropy import spectral_entropy
+import time
 
 from parameters import *
 from equations import *
@@ -53,12 +54,12 @@ def getdata():
     run(300*ms)
     ##############################################################################################
 
-    print(f"Freq input CTX = {rate_CTX} Hz\nFreq input STR = {rate_STR} Hz")
+    print(f"Freq input CTX = {rate_CTX} Hz\nFreq input STR = {rate_STR} Hz\n")
 
     """ Functions to monitor neurons' state
     """
     spikemonitorSTN = SpikeMonitor(STNGroup, variables=['v'])
-    statemonitorSTN = StateMonitor(STNGroup, ['v','I_lfp_stn'], record=True)
+    statemonitorSTN = StateMonitor(STNGroup, ['v','I_lfp_stn', 'I_chem_GPe_STN'], record=True)
 
     statemonitorSTNRB = StateMonitor(STNRBGroup, ['v'], record=True)
     spikemonitorSTNRB = SpikeMonitor(STNRBGroup, variables=['v'])
@@ -70,7 +71,7 @@ def getdata():
     spikemonitorSTNNR = SpikeMonitor(STNNRGroup, variables=['v'])
     
     spikemonitorGPe = SpikeMonitor(GPeGroup, variables=['v'])
-    statemonitorGPe = StateMonitor(GPeGroup, ['v','I_lfp_gpe'], record=True)
+    statemonitorGPe = StateMonitor(GPeGroup, ['v','I_lfp_gpe', 'I_chem_STN_GPe'], record=True)
     
     statemonitorGPeA = StateMonitor(GPeAGroup, variables=['v'], record=True)
     spikemonitorGPeA = SpikeMonitor(GPeAGroup, variables=['v'])
@@ -89,6 +90,7 @@ def getdata():
 
     """ Calculating the Firing Rates for the entire simulation
     """
+    
     frGPe = firingrate(spikemonitorGPe, duration)
     frGPeA = firingrate(spikemonitorGPeA, duration)
     frGPeB = firingrate(spikemonitorGPeB, duration)
@@ -101,24 +103,35 @@ def getdata():
 
     frCTX = firingrate(spikemonitorCTX, duration)
 
+    frGPe_mean = np.mean(frGPe)
+    frGPeA_mean = np.mean(frGPeA)
+    frGPeB_mean = np.mean(frGPeB)
+    frGPeC_mean = np.mean(frGPeC)
 
-    frGPe = np.mean(frGPe)
-    frGPeA = np.mean(frGPeA)
-    frGPeB = np.mean(frGPeB)
-    frGPeC = np.mean(frGPeC)
-    
-    frSTN = np.mean(frSTN)
-    frSTNRB = np.mean(frSTNRB)
-    frSTNLLRS = np.mean(frSTNLLRS)
-    frSTNNR = np.mean(frSTNNR)
+    frGPe_std = np.std(frGPe)
+    frGPeA_std = np.std(frGPeA)
+    frGPeB_std = np.std(frGPeB)
+    frGPeC_std = np.std(frGPeC)
 
+    frSTNm = np.mean(frSTN)
+    frSTNRBm = np.mean(frSTNRB)
+    frSTNLLRSm = np.mean(frSTNLLRS)
+    frSTNNRm = np.mean(frSTNNR)
+
+    frSTNs = np.std(frSTN)
+    frSTNRBs = np.std(frSTNRB)
+    frSTNLLRSs = np.std(frSTNLLRS)
+    frSTNNRs = np.std(frSTNNR)
     
     """ Calculating ISI, mean ISI and standard deviation of ISI
         for each population.
     """
+    isiSTN, mean_isiSTN, std_isiSTN = isi_mean_std(spikemonitor)
     isiSTNRB, mean_isiSTNRB, std_isiSTNRB = isi_mean_std(spikemonitorSTNRB)
     isiSTNLLRS, mean_isiSTNLLRS, std_isiSTNLLRS = isi_mean_std(spikemonitorSTNLLRS)
     isiSTNNR, mean_isiSTNNR, std_isiSTNNR = isi_mean_std(spikemonitorSTNNR)
+
+    isiGPe, mean_isiGPe, std_isiGPe = isi_mean_std(spikemonitorGPe)
     isiGPeA, mean_isiGPeA, std_isiGPeA = isi_mean_std(spikemonitorGPeA)
     isiGPeB, mean_isiGPeB, std_isiGPeB = isi_mean_std(spikemonitorGPeB)
     isiGPeC, mean_isiGPeC, std_isiGPeC = isi_mean_std(spikemonitorGPeC)
@@ -127,9 +140,12 @@ def getdata():
     """ Calculating Coefficient of Variation:
         How irregular is the firing of my network?
     """
+    cv_gpe = coeffvar(std_isiGPe, mean_isiGPe)
     cv_gpea = coeffvar(std_isiGPeA, mean_isiGPeA)
     cv_gpeb = coeffvar(std_isiGPeB ,mean_isiGPeB)
     cv_gpec = coeffvar(std_isiGPeC, mean_isiGPeC)
+
+    cv_stn = coeffvar(std_isiSTN, mean_isiSTN)
     cv_stnrb = coeffvar(std_isiSTNRB, mean_isiSTNRB)
     cv_stnllrs = coeffvar(std_isiSTNLLRS, mean_isiSTNLLRS)
     cv_stnnr = coeffvar(std_isiSTNNR, mean_isiSTNNR)
@@ -208,12 +224,58 @@ def getdata():
         
     """ Space reserved to plot useful stuff down here.
     """
+    '''
+    plt.figure(1)
+    plt.subplot(311)
+    plt.title(f'Membrane Potential; CTX: {rate_CTX} Hz STR: {rate_STR} Hz')
+    plt.ylabel('v [mV]')
+    plt.plot(t_recorded/ms, statemonitorSTNRB.v[0]/mV, 'r', label='STN RB')
+    plt.legend()
+    plt.subplot(312)
+    plt.ylabel('v [mV]')
+    plt.plot(t_recorded/ms, statemonitorSTNLLRS.v[0]/mV, 'g', label='STN LLRS')
+    plt.legend()
+    plt.subplot(313)
+    plt.ylabel('v [mV]')
+    plt.xlabel('Time [ms]')
+    plt.plot(t_recorded/ms, statemonitorSTNNR.v[0]/mV, 'b', label='STN NR')
+    plt.legend()
+
+    plt.figure(2)
+    plt.subplot(311)
+    plt.title(f'Membrane Potential; CTX: {rate_CTX} Hz STR: {rate_STR} Hz')
+    plt.ylabel('v [mV]')
+    plt.plot(t_recorded/ms, statemonitorGPeA.v[0]/mV, 'r', label='GPe A')
+    plt.legend()
+    plt.subplot(312)
+    plt.ylabel('v [mV]')
+    plt.plot(t_recorded/ms, statemonitorGPeB.v[0]/mV, 'g', label='GPe B')
+    plt.legend()
+    plt.subplot(313)
+    plt.ylabel('v [mV]')
+    plt.xlabel('Time [ms]')
+    plt.plot(t_recorded/ms, statemonitorGPeC.v[0]/mV, 'b', label='GPe C')
+    plt.legend()
+
+    
+    plt.figure(3)
+    plt.subplot(211)
+    plt.title(f'Plot Correnti; CTX: {rate_CTX} Hz STR: {rate_STR} Hz')
+    plt.ylabel('I [pA]')
+    plt.plot(t_recorded/ms, statemonitorSTN.I_chem_GPe_STN[22]/pamp, 'b', label='GPe --> STN')
+    plt.legend()
+    plt.subplot(212)
+    plt.ylabel('I [pA]')
+    plt.xlabel('t [ms]')
+    plt.plot(t_recorded/ms, statemonitorGPe.I_chem_STN_GPe[54]/pamp, 'g', label='STN --> GPe')
+    plt.legend()
+    '''
 
     
     """ Retrieving data I need for analysis
     """
     data_provv = [rate_CTX, rate_STR, frGPe, frGPeA, frGPeB, frGPeC, frSTN,
-    frSTNRB, frSTNLLRS, frSTNNR, cv_gpea, cv_gpeb, cv_gpec, cv_stnrb, 
+    frSTNRB, frSTNLLRS, frSTNNR, cv_gpe, cv_gpea, cv_gpeb, cv_gpec, cv_stn, cv_stnrb, 
     cv_stnllrs, cv_stnnr, beta_power_stn/total_power_stn, beta_power_gpe/total_power_gpe,
     specentropy_stn, specentropy_gpe, sync_par_STNRB, sync_par_STNLLRS, sync_par_STNNR, sync_par_STN,
     sync_par_GPeA, sync_par_GPeB, sync_par_GPeC, sync_par_GPe]
@@ -222,23 +284,28 @@ def getdata():
     return data_provv
     
     
-    
+
 data = np.asarray(['Rate CTX', 'Rate STR', 'F.R. GPe', 'F.R. GPe A','F.R. GPe B','F.R. GPe C', 'F.R. STN',
-'F.R. STN RB','F.R. STN LLRS','F.R. STN NR','CV GPe A','CV GPe B','CV GPe C',
+'F.R. STN RB','F.R. STN LLRS','F.R. STN NR','CV GPe', 'CV GPe A','CV GPe B','CV GPe C', 'CV STN',
 'CV STN RB','CV STN LLRS','CV STN NR', 'Beta % STN', 'Beta % GPe', 'Spectral Entropy STN', 'Spectral Entropy GPe',
 'Sync. Param. STN RB', 'Sync. Param. STN LLRS', 'Sync. Param. STN NR', 'Sync. Param. STN',
 'Sync. Param. GPe A', 'Sync. Param. GPe B', 'Sync. Param. GPe C', 'Sync. Param. GPe'])
 
-rates_CTX = np.arange(0., 11., 1.)
-rates_STR_1 = np.asarray([0., 0.01, 0.1, 0.5, 1., 1.5, 2.])
+rates_CTX = np.arange(3., 11., 1.)
+rates_STR_1 = np.array([0.01, 0.1, 0.5, 1., 1.5, 2.])
 rates_STR_2 = np.arange(17., 49., 1.)
 rates_STR = np.hstack((rates_STR_1, rates_STR_2))
 
 k = 1 # Index to watch my processes
 
-############################## Caratterizzazione BlackBox #######
+print("Processes started.\n")
+
+t1 = time.time()
+
+############################## Caratterizzazione BlackBox ################
 for i in rates_CTX:
     for j in rates_STR:
+        t2 = time.time()
         rate_CTX = i*Hz
         rate_STR = j*Hz
         CorticalGroup.rates = rate_CTX
@@ -246,7 +313,8 @@ for i in rates_CTX:
 
         data_provv = getdata()
         data = np.vstack((data,data_provv))
-        print(f"Process {k} finished.\n")
+        t3 = time.time()
+        print(f"Process {k} finished in {(t3 - t2)/60} minutes.\n\n\n")
         k += 1
 ############################################################################
 
@@ -254,4 +322,6 @@ for i in rates_CTX:
 dataframe = DataFrame(data=data[1:], columns=data[0,:])
 dataframe.to_csv(f'{final_path_data}/data.csv', index=False)
 
-print("Process finished successfully.")
+t4 = time.time()
+
+print(f"Process finished successfully in {(t4-t1)/60} minutes.")
