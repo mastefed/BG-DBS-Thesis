@@ -108,20 +108,10 @@ def getdata():
     frGPeB = np.mean(frGPeB)
     frGPeC = np.mean(frGPeC)
 
-    frGPe_std = np.std(frGPe)
-    frGPeA_std = np.std(frGPeA)
-    frGPeB_std = np.std(frGPeB)
-    frGPeC_std = np.std(frGPeC)
-
     frSTN = np.mean(frSTN)
     frSTNRB = np.mean(frSTNRB)
     frSTNLLRS = np.mean(frSTNLLRS)
     frSTNNR = np.mean(frSTNNR)
-
-    frSTNs = np.std(frSTN)
-    frSTNRBs = np.std(frSTNRB)
-    frSTNLLRSs = np.std(frSTNLLRS)
-    frSTNNRs = np.std(frSTNNR)
     
     """ Calculating ISI, mean ISI and standard deviation of ISI
         for each population.
