@@ -59,7 +59,7 @@ def variance_time_flu_v_norm(N_neur, stmonit):
 
 def coeffvar(stdisi, meanisi):
     if meanisi == "not firing":
-        cv = "not firing"
+        cv = "nan"
     else:
         cv = stdisi/meanisi
     return cv
