@@ -296,6 +296,7 @@ t1 = time.time()
 for i in rates_CTX:
     for j in rates_STR:
         t2 = time.time()
+        print(f"Process {k} started.\n")
         rate_CTX = i*Hz
         rate_STR = j*Hz
         CorticalGroup.rates = rate_CTX
