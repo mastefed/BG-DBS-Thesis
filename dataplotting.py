@@ -174,14 +174,22 @@ elif args.whattodo == "pivot":
     frgpea_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["F.R. GPe A"]
     frgpeb_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["F.R. GPe B"]
     frgpec_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["F.R. GPe C"]
+    frgpe_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["F.R. GPe"]
 
+    frstn_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["F.R. STN"]
     frstnrb_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["F.R. STN RB"]
     frstnllrs_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["F.R. STN LLRS"]
     frstnnr_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["F.R. STN NR"]
 
+    cvstn_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["CV STN"]
     cvstnrb_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["CV STN RB"]
     cvstnllrs_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["CV STN LLRS"]
     cvstnnr_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["CV STN NR"]
+
+    cvgpe_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["CV GPe"]
+    cvgpea_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["CV GPe A"]
+    cvgpeb_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["CV GPe B"]
+    cvgpec_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["CV GPe C"]
 
     betastn_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["Beta % STN"]
     betagpe_pivot = datas_from_csv.pivot(index="Rate CTX", columns="Rate STR")["Beta % GPe"]
@@ -224,6 +232,18 @@ elif args.whattodo == "pivot":
     plt.figure("Firing Rate STN NR")
     plt.title("Firing Rate STN NR [Hz]")
     ax6 = seaborn.heatmap(frstnnr_pivot, cmap=colors)
+
+    plt.figure("CV STN RB")
+    plt.title("CV STN RB")
+    ax10 = seaborn.heatmap(cvstnrb_pivot, cmap=colors)
+
+    plt.figure("CV STN LLRS")
+    plt.title("CV STN LLRS")
+    ax11 = seaborn.heatmap(cvstnllrs_pivot, cmap=colors)
+
+    plt.figure("CV STN NR")
+    plt.title("CV STN NR")
+    ax12 = seaborn.heatmap(cvstnnr_pivot, cmap=colors)
 
     plt.figure("CV STN RB")
     plt.title("CV STN RB")
@@ -285,6 +305,22 @@ elif args.whattodo == "pivot":
     plt.title("Sync. Parameter STN")
     ax24 = seaborn.heatmap(syncstn_pivot, cmap=colors)
     
+    plt.figure("CV STN")
+    plt.title("CV STN")
+    ax25 = seaborn.heatmap(cvstn_pivot, cmap=colors)
+
+    plt.figure("CV GPe")
+    plt.title("CV GPe")
+    ax26 = seaborn.heatmap(cvgpe_pivot, cmap=colors)
+
+    plt.figure("Firing Rate STN")
+    plt.title("Firing Rate STN [Hz]")
+    ax27 = seaborn.heatmap(frstn_pivot, cmap=colors)
+
+    plt.figure("Firing Rate GPe")
+    plt.title("Firing Rate GPe [Hz]")
+    ax28 = seaborn.heatmap(frgpe_pivot, cmap=colors)
+
     plt.show()
 
 """ Report con tutte le mappe, con caratterizzazione di input CTX STR
