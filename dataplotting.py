@@ -65,9 +65,11 @@ if args.fixwhat == "ctxrate":
     frstnrb = datas_from_csv["F.R. STN RB"]
     frstnllrs = datas_from_csv["F.R. STN LLRS"]
     frstnnr = datas_from_csv["F.R. STN NR"]
+    cvgpe = datas_from_csv["CV GPe"]
     cvgpea = datas_from_csv["CV GPe A"]
     cvgpeb = datas_from_csv["CV GPe B"]
     cvgpec = datas_from_csv["CV GPe C"]
+    cvstn = datas_from_csv["CV STN"]
     cvstnrb = datas_from_csv["CV STN RB"]
     cvstnllrs = datas_from_csv["CV STN LLRS"]
     cvstnnr = datas_from_csv["CV STN NR"]
@@ -85,7 +87,7 @@ if args.fixwhat == "ctxrate":
     syncstn = datas_from_csv["Sync. Param. STN"]
 
     i = int(input(f"Scegli la frequenza di input di {whichis}: "))
-    span = 37
+    span = 38
 
     xaxis = rateSTR.values[i*span:(i+1)*span]
 
@@ -93,6 +95,7 @@ elif args.fixwhat == "strrate":
     whichis = "Striatum"
     whatx = "Cortex"
     datas_from_csv = datas_from_csv.sort_values(["Rate STR","Rate CTX"])
+    datas_from_csv = datas_from_csv.reset_index(drop=True)
     rateCTX = datas_from_csv["Rate CTX"]
     rateSTR = datas_from_csv["Rate STR"]
     frgpea = datas_from_csv["F.R. GPe A"]
@@ -101,9 +104,11 @@ elif args.fixwhat == "strrate":
     frstnrb = datas_from_csv["F.R. STN RB"]
     frstnllrs = datas_from_csv["F.R. STN LLRS"]
     frstnnr = datas_from_csv["F.R. STN NR"]
+    cvgpe = datas_from_csv["CV GPe"]
     cvgpea = datas_from_csv["CV GPe A"]
     cvgpeb = datas_from_csv["CV GPe B"]
     cvgpec = datas_from_csv["CV GPe C"]
+    cvstn = datas_from_csv["CV STN"]
     cvstnrb = datas_from_csv["CV STN RB"]
     cvstnllrs = datas_from_csv["CV STN LLRS"]
     cvstnnr = datas_from_csv["CV STN NR"]
@@ -118,7 +123,22 @@ elif args.fixwhat == "strrate":
     syncstnnr = datas_from_csv["Sync. Param. STN NR"]
     syncstn = datas_from_csv["Sync. Param. STN"]
 
-    i = int(input(f"Scegli la frequenza di input di {whichis}: "))
+    i = float(input(f"Scegli la frequenza di input di {whichis}: "))
+    if i == 0.01:
+        i = 0
+    elif i == 0.1:
+        i = 1
+    elif i == 0.5:
+        i = 2
+    elif i == 1.:
+        i = 3
+    elif i == 1.5:
+        i = 4
+    elif i == 2.:
+        i = 5
+    else:
+        i = int( i - 11.)
+
     span = 8
 
     xaxis = rateCTX.values[i*span:(i+1)*span]
