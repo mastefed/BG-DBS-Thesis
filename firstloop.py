@@ -112,7 +112,7 @@ def getdata():
     frSTNRB = np.mean(frSTNRB)
     frSTNLLRS = np.mean(frSTNLLRS)
     frSTNNR = np.mean(frSTNNR)
-    
+
     """ Calculating ISI, mean ISI and standard deviation of ISI
         for each population.
     """
@@ -211,11 +211,10 @@ def getdata():
     norm_STNNR = variance_time_flu_v_norm(N_STN_NR, statemonitorSTNNR)
     sync_par_STNNR = sqrt(var_time_v_STNNR / norm_STNNR)
     
-        
+      
     """ Space reserved to plot useful stuff down here.
     """
-    '''
-    plt.figure(1)
+    plt.figure("Mem Pot STN")
     plt.subplot(311)
     plt.title(f'Membrane Potential; CTX: {rate_CTX} Hz STR: {rate_STR} Hz')
     plt.ylabel('v [mV]')
@@ -231,7 +230,7 @@ def getdata():
     plt.plot(t_recorded/ms, statemonitorSTNNR.v[0]/mV, 'b', label='STN NR')
     plt.legend()
 
-    plt.figure(2)
+    plt.figure("Mem Pot GPe")
     plt.subplot(311)
     plt.title(f'Membrane Potential; CTX: {rate_CTX} Hz STR: {rate_STR} Hz')
     plt.ylabel('v [mV]')
@@ -246,22 +245,9 @@ def getdata():
     plt.xlabel('Time [ms]')
     plt.plot(t_recorded/ms, statemonitorGPeC.v[0]/mV, 'b', label='GPe C')
     plt.legend()
+    plt.show()
 
-    
-    plt.figure(3)
-    plt.subplot(211)
-    plt.title(f'Plot Correnti; CTX: {rate_CTX} Hz STR: {rate_STR} Hz')
-    plt.ylabel('I [pA]')
-    plt.plot(t_recorded/ms, statemonitorSTN.I_chem_GPe_STN[22]/pamp, 'b', label='GPe --> STN')
-    plt.legend()
-    plt.subplot(212)
-    plt.ylabel('I [pA]')
-    plt.xlabel('t [ms]')
-    plt.plot(t_recorded/ms, statemonitorGPe.I_chem_STN_GPe[54]/pamp, 'g', label='STN --> GPe')
-    plt.legend()
-    '''
-
-    
+        
     """ Retrieving data I need for analysis
     """
     data_provv = [rate_CTX, rate_STR, frGPe, frGPeA, frGPeB, frGPeC, frSTN,
@@ -272,6 +258,7 @@ def getdata():
 
     data_provv = np.asarray(data_provv)
     return data_provv
+    
     
     
 
@@ -301,7 +288,7 @@ for i in rates_CTX:
         rate_STR = j*Hz
         CorticalGroup.rates = rate_CTX
         StriatalGroup.rates = rate_STR
-
+        
         data_provv = getdata()
         data = np.vstack((data,data_provv))
         t3 = time.time()
