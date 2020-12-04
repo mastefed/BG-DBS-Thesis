@@ -36,7 +36,7 @@ args = parser.parse_args()
 if args.serverorlocal == "server":
     gen_path = "/home/f_mastellone/"
 elif args.serverorlocal == "local":
-    gen_path = "/home/fvm/Scrivania/"
+    gen_path = "C:/Users/feder/OneDrive/Desktop"
 
 if args.g == 1:
     final_path_data = gen_path
