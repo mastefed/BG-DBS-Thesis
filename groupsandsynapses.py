@@ -30,7 +30,6 @@ STNRBGroup.w1 = w1_RB
 STNRBGroup.w2 = w2_RB
 STNRBGroup.ISTN_ext = ISTN_ext_RB
 
-
 STNLLRSGroup.CSTN = CSTN_LLRS
 STNLLRSGroup.v_peak_STN = v_peak_STN_LLRS
 STNLLRSGroup.v_thres_STN = v_thres_STN_LLRS

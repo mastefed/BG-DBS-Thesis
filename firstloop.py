@@ -175,7 +175,6 @@ def getdata():
     specentropy_gpe = spectral_entropy(filtered_lfp_GPe, sf=1/deft, method='welch', nperseg=2/deft, normalize=True)
     
 
-
     """ Piece of code to calculate the synchronization between neuron in a single population
         and among the three populations of GPe and STN.
     """
@@ -214,38 +213,7 @@ def getdata():
       
     """ Space reserved to plot useful stuff down here.
     """
-    plt.figure("Mem Pot STN")
-    plt.subplot(311)
-    plt.title(f'Membrane Potential; CTX: {rate_CTX} Hz STR: {rate_STR} Hz')
-    plt.ylabel('v [mV]')
-    plt.plot(t_recorded/ms, statemonitorSTNRB.v[0]/mV, 'r', label='STN RB')
-    plt.legend()
-    plt.subplot(312)
-    plt.ylabel('v [mV]')
-    plt.plot(t_recorded/ms, statemonitorSTNLLRS.v[0]/mV, 'g', label='STN LLRS')
-    plt.legend()
-    plt.subplot(313)
-    plt.ylabel('v [mV]')
-    plt.xlabel('Time [ms]')
-    plt.plot(t_recorded/ms, statemonitorSTNNR.v[0]/mV, 'b', label='STN NR')
-    plt.legend()
 
-    plt.figure("Mem Pot GPe")
-    plt.subplot(311)
-    plt.title(f'Membrane Potential; CTX: {rate_CTX} Hz STR: {rate_STR} Hz')
-    plt.ylabel('v [mV]')
-    plt.plot(t_recorded/ms, statemonitorGPeA.v[0]/mV, 'r', label='GPe A')
-    plt.legend()
-    plt.subplot(312)
-    plt.ylabel('v [mV]')
-    plt.plot(t_recorded/ms, statemonitorGPeB.v[0]/mV, 'g', label='GPe B')
-    plt.legend()
-    plt.subplot(313)
-    plt.ylabel('v [mV]')
-    plt.xlabel('Time [ms]')
-    plt.plot(t_recorded/ms, statemonitorGPeC.v[0]/mV, 'b', label='GPe C')
-    plt.legend()
-    plt.show()
 
         
     """ Retrieving data I need for analysis
@@ -269,9 +237,6 @@ data = np.asarray(['Rate CTX', 'Rate STR', 'F.R. GPe', 'F.R. GPe A','F.R. GPe B'
 'Sync. Param. GPe A', 'Sync. Param. GPe B', 'Sync. Param. GPe C', 'Sync. Param. GPe'])
 
 rates_CTX = np.arange(3., 11., 1.)
-rates_STR_1 = np.array([0.01, 0.1, 0.5, 1., 1.5, 2.])
-rates_STR_2 = np.arange(17., 49., 1.)
-rates_STR = np.hstack((rates_STR_1, rates_STR_2))
 
 k = 1 # Index to watch my processes
 
@@ -281,19 +246,18 @@ t1 = time.time()
 
 ############################## Caratterizzazione BlackBox ################
 for i in rates_CTX:
-    for j in rates_STR:
-        t2 = time.time()
-        print(f"Process {k} started.\n")
-        rate_CTX = i*Hz
-        rate_STR = j*Hz
-        CorticalGroup.rates = rate_CTX
-        StriatalGroup.rates = rate_STR
+    t2 = time.time()
+    print(f"Process {k} started.\n")
+    rate_CTX = i*Hz
+    rate_STR = j*Hz
+    CorticalGroup.rates = rate_CTX
+    StriatalGroup.rates = rate_STR
         
-        data_provv = getdata()
-        data = np.vstack((data,data_provv))
-        t3 = time.time()
-        print(f"Process {k} finished in {(t3 - t2)/60} minutes.\n\n\n")
-        k += 1
+    data_provv = getdata()
+    data = np.vstack((data,data_provv))
+    t3 = time.time()
+    print(f"Process {k} finished in {(t3 - t2)/60} minutes.\n\n\n")
+    k += 1
 ############################################################################
 
 

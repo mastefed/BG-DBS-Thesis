@@ -15,7 +15,7 @@ from brian2 import *
 
 """ Heaviside function
 """
-H = core.functions.DEFAULT_FUNCTIONS['int']
+H = DEFAULT_FUNCTIONS['int']
 adimvolt = 1/mV # I need this to make v_rest_STN2 - v adimensional, else Dimension Mismatch error will pop up.
 
 
