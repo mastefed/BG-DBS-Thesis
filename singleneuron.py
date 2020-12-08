@@ -189,8 +189,8 @@ def normalstate():
     I_tot = I_pulse(t) + IGPe_ext : amp
     '''
 
-    N_STN = N_STN_RB + N_STN_LLRS + N_STN_NR
-    N_GPe = N_GPe_A + N_GPe_B + N_GPe_C
+    N_STN = 3
+    N_GPe = 3
 
     STNGroup = NeuronGroup(N_STN, eqs_STN, threshold='v>v_peak_STN+U*u2*ms', reset='v=cSTN-U*u2*ms;u1=u1+dSTN1;u2=u2+dSTN2', method='euler')
     GPeGroup = NeuronGroup(N_GPe, eqs_GPe, threshold='v>v_peak_GPe', reset='v=cGPe;u=u+dGPe', method='euler')
@@ -241,8 +241,8 @@ def nou1():
     I_tot = I_pulse(t) + IGPe_ext : amp
     '''
 
-    N_STN = N_STN_RB + N_STN_LLRS + N_STN_NR
-    N_GPe = N_GPe_A + N_GPe_B + N_GPe_C
+    N_STN = 3
+    N_GPe = 3
 
     STNGroup = NeuronGroup(N_STN, eqs_STN, threshold='v>v_peak_STN', reset='v=cSTN;u1=u1+dSTN1', method='euler')
     GPeGroup = NeuronGroup(N_GPe, eqs_GPe, threshold='v>v_peak_GPe', reset='v=cGPe', method='euler')
@@ -292,8 +292,8 @@ def nouboth():
     I_tot = I_pulse(t) + IGPe_ext : amp
     '''
 
-    N_STN = N_STN_RB + N_STN_LLRS + N_STN_NR
-    N_GPe = N_GPe_A + N_GPe_B + N_GPe_C
+    N_STN = 3
+    N_GPe = 3
 
     STNGroup = NeuronGroup(N_STN, eqs_STN, threshold='v>v_peak_STN', reset='v=cSTN', method='euler')
     GPeGroup = NeuronGroup(N_GPe, eqs_GPe, threshold='v>v_peak_GPe', reset='v=cGPe', method='euler')
@@ -304,9 +304,9 @@ STNGroup, GPeGroup = normalstate()
 #STNGroup, GPeGroup = nou1()
 #STNGroup, GPeGroup = nouboth()
 
-STNRBGroup = STNGroup[:27]
-STNLLRSGroup = STNGroup[27:38]
-STNNRGroup = STNGroup[38:]
+STNRBGroup = STNGroup[0]
+STNLLRSGroup = STNGroup[1]
+STNNRGroup = STNGroup[2]
 
 STNRBGroup.v = v_rest_STN1_RB
 STNRBGroup.CSTN = CSTN_RB
@@ -368,9 +368,9 @@ STNNRGroup.w2 = w2_NR
 
 STNNRGroup.ISTN_ext = ISTN_ext_NR
 
-GPeAGroup = GPeGroup[:6]
-GPeBGroup = GPeGroup[6:136]
-GPeCGroup = GPeGroup[136:]
+GPeAGroup = GPeGroup[0]
+GPeBGroup = GPeGroup[1]
+GPeCGroup = GPeGroup[2]
 
 GPeAGroup.v = v_rest_GPe_A
 GPeAGroup.CGPe = CGPe_A
@@ -571,7 +571,7 @@ def pospulse():
     plt.legend()
     plt.subplot(312)
     plt.ylabel("v [mV]")
-    plt.plot(t/ms, statemonitorSTNLLRS.v[5]/mV, 'g', label="STN LLRS")
+    plt.plot(t/ms, statemonitorSTNLLRS.v[0]/mV, 'g', label="STN LLRS")
     plt.legend()
     plt.subplot(313)
     plt.ylabel("v [mV]")
@@ -599,6 +599,6 @@ def pospulse():
 sim_time = 1000*ms
 I = 0.
 pospulse()
-print(f"RB --> {np.mean(spikemonitorSTNRB.count)}")
-print(f"LLRS --> {np.mean(spikemonitorSTNLLRS.count)}")
-print(f"NR --> {np.mean(spikemonitorSTNNR.count)}")
+print(f"RB --> {spikemonitorSTNRB.count}")
+print(f"LLRS --> {spikemonitorSTNLLRS.count}")
+print(f"NR --> {spikemonitorSTNNR.count}")
