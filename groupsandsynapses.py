@@ -213,26 +213,22 @@ synd1pars = staticsyn['D1']
 # D1 --> D1
 weightd1d1 = synd1pars['D1']['weight']*b2.nsiemens
 d1tod1 = b2.Synapses(D1, D1, delay=synd1pars['D1']['delay']*b2.ms, on_pre='g_i += weightd1d1')
-# d1tod1.connect(p=synd1pars['D1']['prob'])
-d1tod1.connect(i=ran.sample(range(728), 728), j=ran.sample(range(728), 728))
+d1tod1.connect(i=ran.sample(range(5000), 728), j=ran.sample(range(5000), 728))
 
 # D2 --> D1
 weightd2d1 = synd1pars['D2']['weight']*b2.nsiemens
 d2tod1 = b2.Synapses(D2, D1, delay=synd1pars['D2']['delay']*b2.ms, on_pre='g_i += weightd2d1')
-# d2tod1.connect(p=synd1pars['D2']['prob'])
-d2tod1.connect(i=ran.sample(range(784), 784), j=ran.sample(range(784), 784))
+d2tod1.connect(i=ran.sample(range(5000), 784), j=ran.sample(range(5000), 784))
 
 # FSN --> D1
 weightfsnd1 = synd1pars['FSN']['weight']*b2.nsiemens
 fsntod1 = b2.Synapses(FSN, D1, delay=synd1pars['FSN']['delay']*b2.ms, on_pre='g_i += weightfsnd1')
-# fsntod1.connect(p=synd1pars['FSN']['prob'])
-fsntod1.connect(i=ran.sample(range(32), 32), j=ran.sample(range(32), 32))
+fsntod1.connect(i=ran.sample(range(210), 32), j=ran.sample(range(5000), 32))
 
 # GPTA --> D1
 weightgptad1 = synd1pars['GPTA']['weight']*b2.nsiemens
 gptatod1 = b2.Synapses(GPTA, D1, delay=synd1pars['GPTA']['delay']*b2.ms, on_pre='g_i += weightgptad1')
-# gptatod1.connect(p=synd1pars['GPTA']['prob'])
-gptatod1.connect(i=ran.sample(range(20), 20), j=ran.sample(range(20), 20))
+gptatod1.connect(i=ran.sample(range(658), 20), j=ran.sample(range(5000), 20))
 
 
 # Synapses to D2
@@ -241,26 +237,22 @@ synd2pars = staticsyn['D2']
 # D1 --> D2
 weightd1d2 = synd2pars['D1']['weight']*b2.nsiemens
 d1tod2 = b2.Synapses(D1, D2, delay=synd2pars['D1']['delay']*b2.ms, on_pre='g_i += weightd1d1')
-# d1tod2.connect(p=synd2pars['D1']['prob'])
-d1tod2.connect(i=ran.sample(range(168), 168), j=ran.sample(range(168), 168))
+d1tod2.connect(i=ran.sample(range(5000), 168), j=ran.sample(range(5000), 168))
 
 # D2 --> D2
 weightd2d2 = synd2pars['D2']['weight']*b2.nsiemens
 d2tod2 = b2.Synapses(D2, D2, delay=synd2pars['D2']['delay']*b2.ms, on_pre='g_i += weightd2d1')
-# d2tod2.connect(p=synd2pars['D2']['prob'])
-d2tod2.connect(i=ran.sample(range(1008), 1008), j=ran.sample(range(1008), 1008))
+d2tod2.connect(i=ran.sample(range(5000), 1008), j=ran.sample(range(5000), 1008))
 
 # FSN --> D2
 weightfsnd2 = synd2pars['FSN']['weight']*b2.nsiemens
 fsntod2 = b2.Synapses(FSN, D2, delay=synd2pars['FSN']['delay']*b2.ms, on_pre='g_i += weightfsnd1')
-# fsntod2.connect(p=synd2pars['FSN']['prob'])
-fsntod2.connect(i=ran.sample(range(22), 22), j=ran.sample(range(22), 22))
+fsntod2.connect(i=ran.sample(range(210), 22), j=ran.sample(range(5000), 22))
 
 # GPTA --> D2
 weightgptad2 = synd2pars['GPTA']['weight']*b2.nsiemens
 gptatod2 = b2.Synapses(GPTA, D2, delay=synd2pars['GPTA']['delay']*b2.ms, on_pre='g_i += weightgptad1')
-# gptatod2.connect(p=synd2pars['GPTA']['prob'])
-gptatod2.connect(i=ran.sample(range(20), 20), j=ran.sample(range(20), 20))
+gptatod2.connect(i=ran.sample(range(658), 20), j=ran.sample(range(5000), 20))
 
 
 # Synapses to FSN
@@ -269,70 +261,60 @@ synfsnpars = staticsyn['FSN']
 # FSN --> FSN
 weightfsnfsn = synfsnpars['FSN']['weight']*b2.nsiemens
 fsntofsn = b2.Synapses(FSN, FSN, delay=synfsnpars['FSN']['delay']*b2.ms, on_pre='g_i += weightfsnfsn')
-# fsntofsn.connect(p=synfsnpars['FSN']['prob'])
-fsntofsn.connect(i=ran.sample(range(20), 20), j=ran.sample(range(20), 20))
+fsntofsn.connect(i=ran.sample(range(210), 20), j=ran.sample(range(210), 20))
 
 # GPTA --> FSN
 weightgptafsn = synfsnpars['GPTA']['weight']*b2.nsiemens
 gptatofsn = b2.Synapses(GPTA, FSN, delay=synfsnpars['GPTA']['delay']*b2.ms, on_pre='g_i += weightgptafsn')
-# gptatofsn.connect(p=synfsnpars['GPTA']['prob'])
-gptatofsn.connect(i=ran.sample(range(20), 20), j=ran.sample(range(20), 20))
+gptatofsn.connect(i=ran.sample(range(658), 20), j=ran.sample(range(210), 20))
 
 # GPTI --> FSN
 weightgptifsn = synfsnpars['GPTI']['weight']*b2.nsiemens
 gptitofsn = b2.Synapses(GPTI, FSN, delay=synfsnpars['GPTI']['delay']*b2.ms, on_pre='g_i += weightgptifsn')
-# gptitofsn.connect(p=synfsnpars['GPTI']['prob'])
-gptitofsn.connect(i=ran.sample(range(20), 20), j=ran.sample(range(20), 20))
+gptitofsn.connect(i=ran.sample(range(1976), 20), j=ran.sample(range(210), 20))
 
 
-# Synapses to GPTA
+# Synapses to GPTA 
 syngptapars = staticsyn['GPTA']
 
 # GPTA --> GPTA
 weightgptagpta = syngptapars['GPTA']['weight']*b2.nsiemens
 gptatogpta = b2.Synapses(GPTA, GPTA, delay=syngptapars['GPTA']['delay']*b2.ms, on_pre='g_i += weightgptagpta')
-# gptatogpta.connect(p=syngptapars['GPTA']['prob'])
-gptatogpta.connect(i=ran.sample(range(10), 10), j=ran.sample(range(10), 10))
+gptatogpta.connect(i=ran.sample(range(658), 10), j=ran.sample(range(658), 10))
 
 # GPTI --> GPTA
 weightgptigpta = syngptapars['GPTI']['weight']*b2.nsiemens
 gptitogpta = b2.Synapses(GPTI, GPTA, delay=syngptapars['GPTI']['delay']*b2.ms, on_pre='g_i += weightgptigpta')
-# gptitogpta.connect(p=syngptapars['GPTI']['prob'])
-gptitogpta.connect(i=ran.sample(range(50), 50), j=ran.sample(range(50), 50))
+gptitogpta.connect(i=ran.sample(range(1976), 50), j=ran.sample(range(658), 50))
 
 # STN --> GPTA
 weightstngpta = syngptapars['STN']['weight']*b2.nsiemens
 stntogpta = b2.Synapses(STN, GPTA, delay=syngptapars['STN']['delay']*b2.ms, on_pre='g_e += weightstngpta')
-# stntogpta.connect(p=syngptapars['STN']['prob'])
-stntogpta.connect(i=ran.sample(range(60), 60), j=ran.sample(range(60), 60))
+stntogpta.connect(i=ran.sample(range(776), 60), j=ran.sample(range(658), 60))
 
 
-# Synapses to GPTI
+# Synapses to GPTI 
 syngptipars = staticsyn['GPTI']
 
 # D2 --> GPTI
 weightd2gpti = syngptipars['D2']['weight']*b2.nsiemens
 d2togpti = b2.Synapses(D2, GPTI, delay=syngptipars['D2']['delay']*b2.ms, on_pre='g_i += weightd2gpti')
-# d2togpti.connect(p=syngptipars['D2']['prob'])
-d2togpti.connect(i=ran.sample(range(1000), 1000), j=ran.sample(range(1000), 1000))
+d2togpti.connect(i=ran.sample(range(5000), 1000), j=ran.sample(range(1976), 1000))
 
 # GPTA --> GPTI
 weightgptagpti = syngptipars['GPTA']['weight']*b2.nsiemens
 gptatogpti = b2.Synapses(GPTA, GPTI, delay=syngptipars['GPTA']['delay']*b2.ms, on_pre='g_i += weightgptagpti')
-# gptatogpti.connect(p=syngptipars['GPTA']['prob'])
-gptatogpti.connect(i=ran.sample(range(10), 10), j=ran.sample(range(10), 10))
+gptatogpti.connect(i=ran.sample(range(658), 10), j=ran.sample(range(1976), 10))
 
 # GPTI --> GPTI
 weightgptigpti = syngptipars['GPTI']['weight']*b2.nsiemens
 gptitogpti = b2.Synapses(GPTI, GPTI, delay=syngptipars['GPTI']['delay']*b2.ms, on_pre='g_i += weightgptigpti')
-# gptitogpti.connect(p=syngptipars['GPTI']['prob'])
-gptitogpti.connect(i=ran.sample(range(50), 50), j=ran.sample(range(50), 50))
+gptitogpti.connect(i=ran.sample(range(1976), 50), j=ran.sample(range(1976), 50))
 
 # STN --> GPTI
 weightstngpti = syngptipars['STN']['weight']*b2.nsiemens
 stntogpti = b2.Synapses(STN, GPTI, delay=syngptipars['STN']['delay']*b2.ms, on_pre='g_e += weightstngpti')
-# stntogpti.connect(p=syngptipars['STN']['prob'])
-stntogpti.connect(i=ran.sample(range(60), 60), j=ran.sample(range(60), 60))
+stntogpti.connect(i=ran.sample(range(776), 60), j=ran.sample(range(1976), 60))
 
 
 # Synapses to STN
@@ -341,8 +323,7 @@ synstnpars = staticsyn['STN']
 # GPTI --> STN
 weightgptistn = synstnpars['GPTI']['weight']*b2.nsiemens
 gptitostn = b2.Synapses(GPTI, STN, delay=synstnpars['GPTI']['delay']*b2.ms, on_pre='g_i += weightgptistn')
-# gptitostn.connect(p=synstnpars['GPTI']['prob'])
-gptitostn.connect(i=ran.sample(range(60), 60), j=ran.sample(range(60), 60))
+gptitostn.connect(i=ran.sample(range(1976), 60), j=ran.sample(range(776), 60))
 
 
 # Synapses to GPi
@@ -351,17 +332,14 @@ syngpipars = staticsyn['GPI']
 # D1 --> GPi
 weightd1gpi = syngpipars['D1']['weight']*b2.nsiemens
 d1togpi = b2.Synapses(D1, GPI, delay=syngpipars['D1']['delay']*b2.ms, on_pre='g_i += weightd1gpi')
-# d1togpi.connect(p=syngpipars['D1']['prob'])
-d1togpi.connect(i=ran.sample(range(1000), 1000), j=ran.sample(range(1000), 1000))
+d1togpi.connect(i=ran.sample(range(5000), 1000), j=ran.sample(range(1508), 1000))
 
 # GPTI --> GPi
 weightgptigpi = syngpipars['GPTI']['weight']*b2.nsiemens
 gptitogpi = b2.Synapses(GPTI, GPI, delay=syngpipars['GPTI']['delay']*b2.ms, on_pre='g_i += weightgptigpi')
-# gptitogpi.connect(p=syngpipars['GPTI']['prob'])
-gptitogpi.connect(i=ran.sample(range(64), 64), j=ran.sample(range(64), 64))
+gptitogpi.connect(i=ran.sample(range(1976), 64), j=ran.sample(range(1508), 64))
 
 # STN --> GPi
 weightstngpi = syngpipars['STN']['weight']*b2.nsiemens
 stntogpi = b2.Synapses(STN, GPI, delay=syngpipars['STN']['delay']*b2.ms, on_pre='g_e += weightstngpi')
-# stntogpi.connect(p=syngpipars['STN']['prob'])
-stntogpi.connect(i=ran.sample(range(60), 60), j=ran.sample(range(60), 60))
+stntogpi.connect(i=ran.sample(range(776), 60), j=ran.sample(range(1508), 60))

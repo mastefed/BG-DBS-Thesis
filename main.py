@@ -6,6 +6,7 @@ from parameters import *
 from equations import *
 from groupsandsynapses import *
 
+
 duration = 1000*b2.ms
 deft = b2.defaultclock.dt
 t_recorded = np.arange(int(duration/deft))*deft
@@ -44,7 +45,7 @@ print(f'Firing rate GPTI: {np.mean(spikesgpti.count/duration)} spikes/second\n')
 print(f'Firing rate GPTA: {np.mean(spikesgpta.count/duration)} spikes/second\n')
 print(f'Firing rate GPI: {np.mean(spikesgpi.count/duration)} spikes/second\n')
 
-'''
+
 plt.figure('STN')
 plt.xlabel("t [ms]")
 plt.ylabel("V [mV]")
@@ -64,4 +65,3 @@ plt.plot(t_recorded/b2.ms, monitorgpti.V[3]/b2.mV, label='GPTI')
 plt.legend()
 
 plt.show()
-'''

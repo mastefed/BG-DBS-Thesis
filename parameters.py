@@ -39,57 +39,57 @@ neuronparameters = {
 
 # Poisson noise
 poissoninput = {
-  'FSN' : {'rate' : 1000., 'weight' : 1.45, 'delay' : 1.},
-  'D1' : {'rate' : 2930., 'weight' : 1.45, 'delay' : 1.},
-  'D2' : {'rate' : 2560., 'weight' : 1.45, 'delay' : 1.},
-  'STN' : {'rate' : 1690., 'weight' : 1.15, 'delay' : 1.},
-  'GPTI' : {'rate' : 1650., 'weight' : 1.25, 'delay' : 1.},
-  'GPTA' : {'rate' : 330., 'weight' : 0.6, 'delay' : 1.},
-  'GPI' : {'rate' : 1250., 'weight' : 3.45, 'delay' : 1.}
+  'FSN' : {'rate' : 400., 'weight' : 1.45, 'delay' : 1.}, # 1000
+  'D1' : {'rate' : 2390., 'weight' : 1.45, 'delay' : 1.}, # 2930
+  'D2' : {'rate' : 2610., 'weight' : 1.45, 'delay' : 1.}, # 2560
+  'STN' : {'rate' : 1100., 'weight' : 1.15, 'delay' : 1.}, # 1690
+  'GPTI' : {'rate' : 500., 'weight' : 1.25, 'delay' : 1.}, # 1650
+  'GPTA' : {'rate' : 300., 'weight' : 0.6, 'delay' : 1.}, # 330
+  'GPI' : {'rate' : 95., 'weight' : 3.45, 'delay' : 1.} # 1250
 }
 
-# Static syn parameters TARGET-SOURCE
+# Static syn parameters TARGET-SOURCES
 staticsyn = {   
                 'D1' : {
-                        'D1' : {'weight': -0.075, 'delay': 1.7, 'prob': 0.1456}, 
-                        'D2': {'weight': -0.150, 'delay': 1.7, 'prob': 0.1568}, 
-                        'FSN': {'weight': -1.2, 'delay': 1.7, 'prob': 0.0064}, 
-                        'GPTA': {'weight': -0.02, 'delay': 7.0, 'prob': 0.004}
+                        'D1' : {'weight': -0.075, 'delay': 1.7}, 
+                        'D2': {'weight': -0.150, 'delay': 1.7}, 
+                        'FSN': {'weight': -1.2, 'delay': 1.7}, 
+                        'GPTA': {'weight': -0.02, 'delay': 7.0}
                         }, 
 
                 'D2' : {
-                        'D1': {'weight': -0.150, 'delay': 1.7, 'prob': 0.0336}, 
-                        'D2': {'weight': -0.044, 'delay': 1.7, 'prob': 0.2016}, 
-                        'FSN': {'weight': -1.2, 'delay': 1.7, 'prob': 0.0044}, 
-                        'GPTA': {'weight': -0.4, 'delay': 7.0, 'prob': 0.0040}
+                        'D1': {'weight': -0.150, 'delay': 1.7}, 
+                        'D2': {'weight': -0.044, 'delay': 1.7}, 
+                        'FSN': {'weight': -1.2, 'delay': 1.7}, 
+                        'GPTA': {'weight': -0.4, 'delay': 7.0}
                         },
 
                 "FSN" : { 
-                        'FSN': {'weight': -0.5, 'delay': 1.7, 'prob': 0.0952}, 
-                        'GPTA': {'weight': -0.25, 'delay': 7.0, 'prob': 0.0952}, 
-                        'GPTI': {'weight': -1.0, 'delay': 7.0, 'prob': 0.0952}
+                        'FSN': {'weight': -0.5, 'delay': 1.7}, 
+                        'GPTA': {'weight': -0.25, 'delay': 7.0}, 
+                        'GPTI': {'weight': -1.0, 'delay': 7.0}
                         },
 
                 "GPTA" : { 
-                        'GPTA': {'weight': -0.07, 'delay': 1.0, 'prob': 0.0152}, 
-                        'GPTI': {'weight': -0.12, 'delay': 1.0, 'prob': 0.0760}, 
-                        'STN': {'weight': 0.06, 'delay': 2.0, 'prob': 0.0912}
+                        'GPTA': {'weight': -0.07, 'delay': 1.0}, 
+                        'GPTI': {'weight': -0.12, 'delay': 1.0}, 
+                        'STN': {'weight': 0.06, 'delay': 2.0}
                         },
 
                 "GPTI" : { 
-                        'D2': {'weight': -0.6, 'delay': 7.0, 'prob': 0.5061}, 
-                        'GPTA': {'weight': -0.9, 'delay': 1.0, 'prob': 0.0051}, 
-                        'GPTI': {'weight': -1.1, 'delay': 1.0, 'prob': 0.0253}, 
-                        'STN': {'weight': 0.37, 'delay': 10.0, 'prob': 0.0304}
+                        'D2': {'weight': -0.6, 'delay': 7.0}, 
+                        'GPTA': {'weight': -0.9, 'delay': 1.0}, 
+                        'GPTI': {'weight': -1.1, 'delay': 1.0}, 
+                        'STN': {'weight': 0.37, 'delay': 10.0}
                         },
 
                 "STN" : { 
-                        'GPTI': {'weight': -0.62, 'delay': 10.0, 'prob': 0.0773}
+                        'GPTI': {'weight': -0.62, 'delay': 10.0}
                         },
 
                 "GPI" :  {
-                        'D1': {'weight': -1.0, 'delay': 7.0, 'prob': 0.6631}, 
-                        'GPTI': {'weight': -20.0, 'delay': 3.0, 'prob': 0.0424}, 
-                        'STN': {'weight': 0.45, 'delay': 4.5, 'prob': 0.0398}
+                        'D1': {'weight': -1.0, 'delay': 7.0}, 
+                        'GPTI': {'weight': -20.0, 'delay': 3.0}, 
+                        'STN': {'weight': 0.45, 'delay': 4.5}
                         }
             }
