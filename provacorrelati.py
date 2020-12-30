@@ -9,8 +9,11 @@ seed(42)
 N_var = [10, 50, 150, 500, 1000]
 c_var = [0.0, 0.02, 0.04, 0.06, 0.08, 0.1]
 
+FF_for_N = {"Number of neurons" : "Array of Fano Factors"}
+
 for j, N in enumerate(N_var):
     # Vary the correlation within the group
+    fano_factors = []
     print(f'Il numero di neuroni è {N}')
     for i, c in enumerate(c_var):
 
@@ -35,7 +38,7 @@ for j, N in enumerate(N_var):
 
         # Definisco l'inizio e la fine del time bin
         start_interval = 0*ms
-        end_interval = 4*ms
+        end_interval = 2*ms
 
         # Definisco il range su cui iterare
         my_range = int(duration/(end_interval - start_interval))
@@ -56,5 +59,25 @@ for j, N in enumerate(N_var):
 
         fano_factor = np.var(average_firing_rates)/np.mean(average_firing_rates)
         print(f"Il fano factor calcolato con un time interval di {(end_interval-start_interval)/ms} ms è: {fano_factor}")
-
+        fano_factors.append(fano_factor)
+        FF_for_N[f"{N}"] = fano_factors
     print("\n")
+
+
+FF_for_10 = FF_for_N['10']
+FF_for_50 = FF_for_N['50']
+FF_for_150 = FF_for_N['150']
+FF_for_500 = FF_for_N['500']
+FF_for_1000 = FF_for_N['1000']
+
+plt.figure("Fano Factors")
+plt.title("FF for different Neuronal Populations and Correlation Factors")
+plt.plot(c_var, FF_for_10, label='10 neurons')
+plt.plot(c_var, FF_for_50, label='50 neurons')
+plt.plot(c_var, FF_for_150, label='150 neurons')
+plt.plot(c_var, FF_for_500, label='500 neurons')
+plt.plot(c_var, FF_for_1000, label='1000 neurons')
+plt.xlabel("Correlation Factor")
+plt.ylabel("Fano Factor")
+plt.legend()
+plt.show()
