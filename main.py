@@ -38,6 +38,8 @@ spikesgpi = b2.SpikeMonitor(GPI, variables=['V'])
 
 b2.run(duration)
 
+print(f"Correlation parameter: {c}")
+
 print(f'\nFiring rate D1: {np.mean(spikesd1.count/duration)} spikes/second\n')
 print(f'Firing rate D2: {np.mean(spikesd2.count/duration)} spikes/second\n')
 print(f'Firing rate FSN: {np.mean(spikesfsn.count/duration)} spikes/second\n')

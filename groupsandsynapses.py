@@ -170,9 +170,25 @@ ctxgptipars = poissoninput['GPTI']
 ctxgptapars = poissoninput['GPTA']
 ctxgpipars = poissoninput['GPI']
 
-ctxforfsn = b2.PoissonGroup(1, rates=ctxfsnpars['rate']*b2.Hz)
-ctxford1 = b2.PoissonGroup(1, rates=ctxd1pars['rate']*b2.Hz)
-ctxford2 = b2.PoissonGroup(1, rates=ctxd2pars['rate']*b2.Hz)
+"""ctxforfsn = b2.PoissonGroup(ctxfsnpars['num'], rates=ctxfsnpars['rate']*b2.Hz)
+ctxford1 = b2.PoissonGroup(ctxd1pars['num'], rates=ctxd1pars['rate']*b2.Hz)
+ctxford2 = b2.PoissonGroup(ctxd2pars['num'], rates=ctxd2pars['rate']*b2.Hz)"""
+
+c = 0.5
+correlation_factor = c
+
+ratectxfsn = ctxfsnpars['rate']*b2.Hz
+ctxforfsn = b2.NeuronGroup(ctxfsnpars['num'], 'v : 1 (shared)', threshold='((v < ratectxfsn*dt) and rand() < sqrt(c)) or rand() < ratectxfsn*(1 - sqrt(c))*dt')
+ctxforfsn.run_regularly('v = rand()')
+
+ratectxd1 = ctxd1pars['rate']*b2.Hz
+ctxford1 = b2.NeuronGroup(ctxd1pars['num'], 'v : 1 (shared)', threshold='((v < ratectxd1*dt) and rand() < sqrt(c)) or rand() < ratectxd1*(1 - sqrt(c))*dt')
+ctxford1.run_regularly('v = rand()')
+
+ratectxd2 = ctxd1pars['rate']*b2.Hz
+ctxford2 = b2.NeuronGroup(ctxd2pars['num'], 'v : 1 (shared)', threshold='((v < ratectxd2*dt) and rand() < sqrt(c)) or rand() < ratectxd2*(1 - sqrt(c))*dt')
+ctxford2.run_regularly('v = rand()')
+
 ctxforstn = b2.PoissonGroup(1, rates=ctxstnpars['rate']*b2.Hz)
 ctxforgpti = b2.PoissonGroup(1, rates=ctxgptipars['rate']*b2.Hz)
 ctxforgpta = b2.PoissonGroup(1, rates=ctxgptapars['rate']*b2.Hz)
