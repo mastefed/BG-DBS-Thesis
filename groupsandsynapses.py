@@ -5,7 +5,7 @@ import brian2 as b2
 import numpy as np
 import random as ran
 
-#b2.clear_cache('cython')
+# b2.clear_cache('cython')
 
 fsnpars = neuronparameters['FSN']
 d1pars = neuronparameters['D1']
@@ -174,7 +174,7 @@ ctxgpipars = poissoninput['GPI']
 ctxford1 = b2.PoissonGroup(ctxd1pars['num'], rates=ctxd1pars['rate']*b2.Hz)
 ctxford2 = b2.PoissonGroup(ctxd2pars['num'], rates=ctxd2pars['rate']*b2.Hz)"""
 
-c = 0.5
+c = 0.
 correlation_factor = c
 
 ratectxfsn = ctxfsnpars['rate']*b2.Hz

@@ -26,6 +26,7 @@ def fanofactor(S, start_interval, end_interval):
         end_interval += time_bin
 
     fano_factor = np.var(average_firing_rates)/np.mean(average_firing_rates)
+    return fano_factor
 
 # Fix seed for reproducible results
 seed(42)

@@ -6,6 +6,7 @@ import random as ran
 from parameters import *
 from equations import *
 from groupsandsynapses import *
+from test import *
 
 ran.seed(42)
 
@@ -48,3 +49,15 @@ print(f'Firing rate STN: {np.mean(spikesstn.count/duration)} spikes/second\n')
 print(f'Firing rate GPTI: {np.mean(spikesgpti.count/duration)} spikes/second\n')
 print(f'Firing rate GPTA: {np.mean(spikesgpta.count/duration)} spikes/second\n')
 print(f'Firing rate GPI: {np.mean(spikesgpi.count/duration)} spikes/second\n')
+
+ff_fsn = fanofactor(duration, spikesfsn, neuron['FSN'], 0*b2.ms, 2*b2.ms)
+ff_d1 = fanofactor(duration, spikesd1, neuron['D1'], 0*b2.ms, 2*b2.ms)
+ff_d2 = fanofactor(duration, spikesd2, neuron['D2'], 0*b2.ms, 2*b2.ms)
+
+"""sync_fsn = b2.sqrt(variance_time_fluctuations_v(monitorfsn)/variance_time_flu_v_norm(neuron['FSN'], monitorfsn))
+sync_d1 = b2.sqrt(variance_time_fluctuations_v(monitord1)/variance_time_flu_v_norm(neuron['D1'], monitord1))
+sync_d2 = b2.sqrt(variance_time_fluctuations_v(monitord2)/variance_time_flu_v_norm(neuron['D2'], monitord1))"""
+
+print(f"FF FSN: {ff_fsn}")
+print(f"FF D1: {ff_d1}")
+print(f"FF D2: {ff_d2}")
