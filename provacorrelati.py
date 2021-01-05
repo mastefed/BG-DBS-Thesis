@@ -32,7 +32,7 @@ def fanofactor(S, start_interval, end_interval):
 seed(42)
 
 N_var = [10, 50, 150, 500, 1000, 10000]
-c_var = [0.0, 0.02, 0.04, 0.06, 0.08, 0.1]
+c_var = [0., 0.2, 0.3, 0.4, 0.6]
 
 FF_for_N = {"Number of neurons" : "Array of Fano Factors"}
 
@@ -42,7 +42,6 @@ for j, N in enumerate(N_var):
     print(f'Il numero di neuroni è {N}')
     for i, c in enumerate(c_var):
 
-        # N = 10            # Number of neuron in the group
         rate = 10 * Hz    # Mean firing rate of each neuron
 
         # Homogeneous correlated spike trains using thinning of Poisson processes
@@ -62,8 +61,8 @@ for j, N in enumerate(N_var):
         print(f"Il valore di c è {c}")
 
         # Definisco l'inizio e la fine del time bin
-        start_interval = 0*ms
-        end_interval = 2*ms
+        start_interval = 0.
+        end_interval = 0.002
 
         # Definisco il range su cui iterare
         my_range = int(duration/(end_interval - start_interval))
@@ -74,9 +73,10 @@ for j, N in enumerate(N_var):
             # Definisco il time bin
             time_bin = end_interval - start_interval
             # Prendo tutti gli elementi presi tra due valori
-            time_stamps = S.t[(S.t>=start_interval)*(S.t<end_interval)]
+            S_no_time = S.t/second
+            time_stamps = S_no_time[np.where((S_no_time>=start_interval)&(S_no_time<end_interval))]
             # Mi calcolo il firing rate medio
-            average_firing_rate = len(time_stamps) / (N * time_bin)
+            average_firing_rate = len(time_stamps)/N
             average_firing_rates.append(average_firing_rate)
             # Aggiorno l'intervallo
             start_interval += time_bin
@@ -88,7 +88,6 @@ for j, N in enumerate(N_var):
         FF_for_N[f"{N}"] = fano_factors
     print("\n")
 
-
 FF_for_10 = FF_for_N['10']
 FF_for_50 = FF_for_N['50']
 FF_for_150 = FF_for_N['150']
@@ -96,7 +95,7 @@ FF_for_500 = FF_for_N['500']
 FF_for_1000 = FF_for_N['1000']
 FF_for_10000 = FF_for_N['10000']
 
-"""plt.figure("Fano Factors")
+plt.figure("Fano Factors")
 plt.title("FF for different Neuronal Populations and Correlation Factors")
 plt.plot(c_var, FF_for_10, label='10 neurons')
 plt.plot(c_var, FF_for_50, label='50 neurons')
@@ -106,15 +105,6 @@ plt.plot(c_var, FF_for_1000, label='1000 neurons')
 plt.plot(c_var, FF_for_10000, label='10000 neurons')
 plt.xlabel("Correlation Factor")
 plt.ylabel("Fano Factor")
-plt.legend()"""
+plt.legend()
 
-plt.figure()
-plt.plot(N_var[0], FF_for_10[0], 'o')
-plt.plot(N_var[1], FF_for_50[0], 'o')
-plt.plot(N_var[2], FF_for_150[0], 'o')
-plt.plot(N_var[3], FF_for_500[0], 'o')
-plt.plot(N_var[4], FF_for_1000[0], 'o')
-# plt.plot(N_var[5], FF_for_10000[0], 'o')
-plt.xlabel("Number of neurons")
-plt.ylabel("FF at c=0")
 plt.show()

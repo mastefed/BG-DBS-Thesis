@@ -2,6 +2,7 @@ import brian2 as b2
 import matplotlib.pyplot as plt
 import numpy as np
 import random as ran
+import os
 
 from parameters import *
 from equations import *
@@ -37,27 +38,40 @@ spikesgpta = b2.SpikeMonitor(GPTA, variables=['V'])
 monitorgpi = b2.StateMonitor(GPI, variables=['V'], record=True)
 spikesgpi = b2.SpikeMonitor(GPI, variables=['V'])
 
-b2.run(duration)
+c_var = [0., 0.2, 0.4, 0.6, 0.8]
 
-print(f"Correlation parameter: {c}")
+save_to_file = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'output.txt')
+text_file = open(save_to_file, "w")
 
-print(f'\nFiring rate D1: {np.mean(spikesd1.count/duration)} spikes/second\n')
-print(f'Firing rate D2: {np.mean(spikesd2.count/duration)} spikes/second\n')
-print(f'Firing rate FSN: {np.mean(spikesfsn.count/duration)} spikes/second\n')
+for i, c_i in enumerate(c_var):
+    c = c_i
+    b2.run(duration)
 
-print(f'Firing rate STN: {np.mean(spikesstn.count/duration)} spikes/second\n')
-print(f'Firing rate GPTI: {np.mean(spikesgpti.count/duration)} spikes/second\n')
-print(f'Firing rate GPTA: {np.mean(spikesgpta.count/duration)} spikes/second\n')
-print(f'Firing rate GPI: {np.mean(spikesgpi.count/duration)} spikes/second\n')
+    text_file.write(f"\nCorrelation parameter: {c}")
 
-ff_fsn = fanofactor(duration, spikesfsn, neuron['FSN'], 0*b2.ms, 2*b2.ms)
-ff_d1 = fanofactor(duration, spikesd1, neuron['D1'], 0*b2.ms, 2*b2.ms)
-ff_d2 = fanofactor(duration, spikesd2, neuron['D2'], 0*b2.ms, 2*b2.ms)
+    text_file.write(f'\nFiring rate D1: {np.mean(spikesd1.count/duration)} spikes/second\n')
+    text_file.write(f'Firing rate D2: {np.mean(spikesd2.count/duration)} spikes/second\n')
+    text_file.write(f'Firing rate FSN: {np.mean(spikesfsn.count/duration)} spikes/second\n')
 
-"""sync_fsn = b2.sqrt(variance_time_fluctuations_v(monitorfsn)/variance_time_flu_v_norm(neuron['FSN'], monitorfsn))
-sync_d1 = b2.sqrt(variance_time_fluctuations_v(monitord1)/variance_time_flu_v_norm(neuron['D1'], monitord1))
-sync_d2 = b2.sqrt(variance_time_fluctuations_v(monitord2)/variance_time_flu_v_norm(neuron['D2'], monitord1))"""
+    text_file.write(f'Firing rate STN: {np.mean(spikesstn.count/duration)} spikes/second\n')
+    text_file.write(f'Firing rate GPTI: {np.mean(spikesgpti.count/duration)} spikes/second\n')
+    text_file.write(f'Firing rate GPTA: {np.mean(spikesgpta.count/duration)} spikes/second\n')
+    text_file.write(f'Firing rate GPI: {np.mean(spikesgpi.count/duration)} spikes/second\n')
 
-print(f"FF FSN: {ff_fsn}")
-print(f"FF D1: {ff_d1}")
-print(f"FF D2: {ff_d2}")
+    """ff_fsn = fanofactor(duration, spikesfsn, neuron['FSN'], 0*b2.ms, 2*b2.ms, 2*b2.ms)
+    ff_d1 = fanofactor(duration, spikesd1, neuron['D1'], 0*b2.ms, 2*b2.ms, 2*b2.ms)
+    ff_d2 = fanofactor(duration, spikesd2, neuron['D2'], 0*b2.ms, 2*b2.ms, 2*b2.ms)
+
+    text_file.write(f"FF FSN: {ff_fsn}")
+    text_file.write(f"FF D1: {ff_d1}")
+    text_file.write(f"FF D2: {ff_d2}\n")"""
+
+    syncd1 = np.sqrt(variance_time_fluctuations_v(monitord1)/variance_time_flu_v_norm(5000, monitord1))
+    syncd2 = np.sqrt(variance_time_fluctuations_v(monitord2)/variance_time_flu_v_norm(5000, monitord2))
+    syncfsn = np.sqrt(variance_time_fluctuations_v(monitorfsn)/variance_time_flu_v_norm(5000, monitorfsn))
+
+    text_file.write(f"Sync FSN: {syncfsn}")
+    text_file.write(f"Sync D1: {syncd1}")
+    text_file.write(f"Sync D2: {syncd2}\n")
+
+text_file.close()

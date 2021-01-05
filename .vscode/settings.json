@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "C:\\Users\\feder\\anaconda3\\envs\\compneurosci\\python.exe"
+    "python.pythonPath": "C:\\Users\\feder\\anaconda3\\envs\\compneurosci\\python.exe",
+    "python.linting.enabled": false
 }

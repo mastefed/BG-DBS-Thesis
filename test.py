@@ -1,31 +1,33 @@
 import brian2 as b2
 import numpy as np
 
-def fanofactor(duration, spikemon, num_neur, start_interval, end_interval):
+def fanofactor(duration, spikemon, num_neur, start_interval, end_interval, time_span):
     """ Funzione per calcolare il Fano Factor
     """
-    # Definisco l'inizio e la fine del time bin
-    start_interval = start_interval
-    end_interval = end_interval
-
     # Definisco il range su cui iterare
     my_range = int(duration/(end_interval - start_interval))
 
-    average_firing_rates = []
+    # Definisco l'inizio e la fine del time bin
+    start_interval = start_interval/b2.second
+    end_interval = end_interval/b2.second
+    time_span = time_span/b2.second
+
+    spike_counts = []
 
     for k in range(my_range):
         # Definisco il time bin
         time_bin = end_interval - start_interval
+        spikemon_no_time = spikemon.t/b2.second
         # Prendo tutti gli elementi presi tra due valori
-        time_stamps = spikemon.t[(spikemon.t>=start_interval)*(spikemon.t<end_interval)]
+        time_stamps = spikemon_no_time[np.where((spikemon_no_time>=start_interval)&(spikemon_no_time<end_interval))]
         # Mi calcolo il firing rate medio
-        average_firing_rate = len(time_stamps) / (num_neur * time_bin)
-        average_firing_rates.append(average_firing_rate)
+        spike_count = len(time_stamps) / num_neur
+        spike_counts.append(spike_count)
         # Aggiorno l'intervallo
-        start_interval += time_bin
-        end_interval += time_bin
+        start_interval += time_span
+        end_interval += time_span
 
-    fano_factor = np.var(average_firing_rates)/np.mean(average_firing_rates)
+    fano_factor = np.var(spike_counts)/np.mean(spike_counts)
     return fano_factor
 
 def variance_time_fluctuations_v(stmonit):
