@@ -39,9 +39,9 @@ neuronparameters = {
 
 # Poisson noise
 poissoninput = {
-  'FSN' : {'num' : 210, 'rate' : 1000., 'weight' : 1.45, 'delay' : 1.}, # 1000 400
-  'D1' : {'num' : 5000, 'rate' : 2930., 'weight' : 1.45, 'delay' : 1.}, # 2930 2390 
-  'D2' : {'num' : 5000, 'rate' : 2560., 'weight' : 1.45, 'delay' : 1.}, # 2560 2610
+  'FSN' : {'num' : 210, 'rate' : 500., 'weight' : 1.45, 'delay' : 1.}, # 1000
+  'D1' : {'num' : 5000, 'rate' : 2000., 'weight' : 1.45, 'delay' : 1.}, # 2930 
+  'D2' : {'num' : 5000, 'rate' : 1900., 'weight' : 1.45, 'delay' : 1.}, # 2560
   'STN' : {'num' : 776, 'rate' : 1690., 'weight' : 1.15, 'delay' : 1.}, # 1690
   'GPTI' : {'num' : 1976, 'rate' : 1650., 'weight' : 1.25, 'delay' : 1.}, # 1650
   'GPTA' : {'num' : 658, 'rate' : 330., 'weight' : 0.6, 'delay' : 1.}, # 330

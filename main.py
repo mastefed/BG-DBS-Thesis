@@ -43,8 +43,9 @@ spikesgpi = b2.SpikeMonitor(GPI)
 
 c_var = [0.]
 
-save_to_file = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'output.txt')
-text_file = open(save_to_file, "w")
+file_path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'output.txt')
+file_path = "/home/f_mastellone/output.txt"
+text_file = open(file_path, "w")
 
 for i, c_i in enumerate(c_var):
     c = c_i
@@ -90,5 +91,4 @@ for i, c_i in enumerate(c_var):
     plt.xlim((0.+i*2000.,2000.+i*2000.))
     plt.legend()"""
 
-# plt.show()
 text_file.close()
