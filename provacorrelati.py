@@ -32,7 +32,7 @@ def fanofactor(S, start_interval, end_interval):
 seed(42)
 
 N_var = [10, 50, 150, 500, 1000, 10000]
-c_var = [0., 0.2, 0.3, 0.4, 0.6]
+c_var = [1.]
 
 FF_for_N = {"Number of neurons" : "Array of Fano Factors"}
 
