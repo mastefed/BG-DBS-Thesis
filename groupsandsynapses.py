@@ -1,12 +1,18 @@
+import brian2 as b2
+import random
+import numpy
+
 from parameters import *
 from equations import *
 
-import brian2 as b2
-import numpy as np
-import random
-
-
-# b2.clear_cache('cython')
+def connmatrix(num_postsyn, num_presyn, num_conn):
+    s = (num_presyn, num_postsyn)
+    connections = numpy.zeros(s)
+    for k, j in enumerate(random.sample(range(num_postsyn), num_postsyn)):
+        for h, i in enumerate(random.sample(range(num_presyn), num_conn)):
+            connections[i,j] = 1
+    sources, targets = connections.nonzero()
+    return targets, sources
 
 fsnpars = neuronparameters['FSN']
 d1pars = neuronparameters['D1']
@@ -219,7 +225,7 @@ weightctxgpi = ctxgpipars['weight']*b2.nsiemens
 cortextogpi = b2.Synapses(ctxforgpi, GPI, delay=ctxgpipars['delay']*b2.ms, on_pre='g_e += weightctxgpi')
 cortextogpi.connect(j='i')
 
-"""
+
 ##### Synapses
 # Synapses to D1
 synd1pars = staticsyn['D1']
@@ -227,30 +233,26 @@ synd1pars = staticsyn['D1']
 # D1 --> D1
 weightd1d1 = synd1pars['D1']['weight']*b2.nsiemens
 d1tod1 = b2.Synapses(D1, D1, delay=synd1pars['D1']['delay']*b2.ms, on_pre='g_i += weightd1d1')
-# d1tod1.connect(i=ran.sample(range(5000), 728), j=ran.sample(range(5000), 728))
-for k, j in enumerate(random.sample(range(5000), 5000)):
-    d1tod1.connect( i=random.sample(range(5000), 728), j=j)
+d1d1_targ, d1d1_sorg = connmatrix(neuron['D1'], neuron['D1'], synd1pars['D1']['degree'])
+d1tod1.connect(i = d1d1_sorg, j = d1d1_targ)
 
 # D2 --> D1
 weightd2d1 = synd1pars['D2']['weight']*b2.nsiemens
 d2tod1 = b2.Synapses(D2, D1, delay=synd1pars['D2']['delay']*b2.ms, on_pre='g_i += weightd2d1')
-# d2tod1.connect(i=ran.sample(range(5000), 784), j=ran.sample(range(5000), 784))
-for k, j in enumerate(random.sample(range(5000), 5000)):
-    d2tod1.connect( i=random.sample(range(5000), 784), j=j)
+d2d1_targ, d2d1_sorg = connmatrix(neuron['D1'], neuron['D2'], synd1pars['D2']['degree'])
+d2tod1.connect(i = d2d1_sorg, j = d2d1_targ)
 
 # FSN --> D1
 weightfsnd1 = synd1pars['FSN']['weight']*b2.nsiemens
 fsntod1 = b2.Synapses(FSN, D1, delay=synd1pars['FSN']['delay']*b2.ms, on_pre='g_i += weightfsnd1')
-# fsntod1.connect(i=ran.sample(range(210), 32), j=ran.sample(range(5000), 32))
-for k, j in enumerate(random.sample(range(5000), 5000)):
-    fsntod1.connect( i=random.sample(range(210), 32), j=j)
+fsnd1_targ, fsnd1_sorg = connmatrix(neuron['D1'], neuron['FSN'], synd1pars['FSN']['degree'])
+fsntod1.connect(i = fsnd1_sorg, j = fsnd1_targ)
 
 # GPTA --> D1
 weightgptad1 = synd1pars['GPTA']['weight']*b2.nsiemens
 gptatod1 = b2.Synapses(GPTA, D1, delay=synd1pars['GPTA']['delay']*b2.ms, on_pre='g_i += weightgptad1')
-# gptatod1.connect(i=ran.sample(range(658), 20), j=ran.sample(range(5000), 20))
-for k, j in enumerate(random.sample(range(5000), 5000)):
-    gptatod1.connect( i=random.sample(range(658), 20), j=j)
+gptad1_targ, gptad1_sorg = connmatrix(neuron['D1'], neuron['GPTA'], synd1pars['GPTA']['degree'])
+gptatod1.connect(i = gptad1_sorg, j = gptad1_targ)
 
 # Synapses to D2
 synd2pars = staticsyn['D2']
@@ -258,79 +260,87 @@ synd2pars = staticsyn['D2']
 # D1 --> D2
 weightd1d2 = synd2pars['D1']['weight']*b2.nsiemens
 d1tod2 = b2.Synapses(D1, D2, delay=synd2pars['D1']['delay']*b2.ms, on_pre='g_i += weightd1d1')
-# d1tod2.connect(i=ran.sample(range(5000), 168), j=ran.sample(range(5000), 168))
-for k, j in enumerate(random.sample(range(5000), 5000)):
-    d1tod2.connect( i=random.sample(range(5000), 168), j=j)
+d1d2_targ, d1d2_sorg = connmatrix(neuron['D2'], neuron['D1'], synd2pars['D1']['degree'])
+d1tod2.connect(i = d1d2_sorg, j = d1d2_targ)
 
 # D2 --> D2
 weightd2d2 = synd2pars['D2']['weight']*b2.nsiemens
 d2tod2 = b2.Synapses(D2, D2, delay=synd2pars['D2']['delay']*b2.ms, on_pre='g_i += weightd2d1')
-# d2tod2.connect(i=ran.sample(range(5000), 1008), j=ran.sample(range(5000), 1008))
-for k, j in enumerate(random.sample(range(5000), 5000)):
-    d2tod2.connect( i=random.sample(range(5000), 1008), j=j)
+d2d2_targ, d2d2_sorg = connmatrix(neuron['D2'], neuron['D2'], synd2pars['D2']['degree'])
+d2tod2.connect(i = d2d2_sorg, j = d2d2_targ)
 
 # FSN --> D2
 weightfsnd2 = synd2pars['FSN']['weight']*b2.nsiemens
 fsntod2 = b2.Synapses(FSN, D2, delay=synd2pars['FSN']['delay']*b2.ms, on_pre='g_i += weightfsnd1')
-# fsntod2.connect(i=ran.sample(range(210), 22), j=ran.sample(range(5000), 22))
-for k, j in enumerate(random.sample(range(5000), 5000)):
-    fsntod2.connect( i=random.sample(range(210), 22), j=j)
+fsnd2_targ, fsnd2_sorg = connmatrix(neuron['D2'], neuron['FSN'], synd2pars['FSN']['degree'])
+fsntod2.connect(i = fsnd2_sorg, j = fsnd2_targ)
 
 # GPTA --> D2
 weightgptad2 = synd2pars['GPTA']['weight']*b2.nsiemens
 gptatod2 = b2.Synapses(GPTA, D2, delay=synd2pars['GPTA']['delay']*b2.ms, on_pre='g_i += weightgptad1')
-# gptatod2.connect(i=ran.sample(range(658), 20), j=ran.sample(range(5000), 20))
-for k, j in enumerate(random.sample(range(5000), 5000)):
-    gptatod2.connect( i=random.sample(range(658), 20), j=j)
+gptad2_targ, gptad2_sorg = connmatrix(neuron['D2'], neuron['GPTA'], synd2pars['GPTA']['degree'])
+gptatod2.connect(i = gptad2_sorg, j = gptad2_targ)
 
 
 # Synapses to FSN
 synfsnpars = staticsyn['FSN']
 
+# D1 --> FSN
+weightd1fsn = synfsnpars['D1']['weight']*b2.nsiemens
+d1tofsn = b2.Synapses(D1, FSN, delay=synfsnpars['D1']['delay']*b2.ms, on_pre='g_i += weightd1fsn')
+d1fsn_targ, d1fsn_sorg = connmatrix(neuron['FSN'], neuron['D1'], synfsnpars['D1']['degree'])
+d1tofsn.connect(i = d1fsn_sorg, j = d1fsn_targ)
+
+# D2 --> FSN
+weightd2fsn = synfsnpars['D2']['weight']*b2.nsiemens
+d2tofsn = b2.Synapses(D2, FSN, delay=synfsnpars['D2']['delay']*b2.ms, on_pre='g_i += weightd2fsn')
+d2fsn_targ, d2fsn_sorg = connmatrix(neuron['FSN'], neuron['D2'], synfsnpars['D2']['degree'])
+d2tofsn.connect(i = d2fsn_sorg, j = d2fsn_targ)
+
 # FSN --> FSN
 weightfsnfsn = synfsnpars['FSN']['weight']*b2.nsiemens
 fsntofsn = b2.Synapses(FSN, FSN, delay=synfsnpars['FSN']['delay']*b2.ms, on_pre='g_i += weightfsnfsn')
-# fsntofsn.connect(i=ran.sample(range(210), 20), j=ran.sample(range(210), 20))
-for k, j in enumerate(random.sample(range(210), 210)):
-    fsntofsn.connect( i=random.sample(range(210), 20), j=j)
+fsnfsn_targ, fsnfsn_sorg = connmatrix(neuron['FSN'], neuron['FSN'], synfsnpars['FSN']['degree'])
+fsntofsn.connect(i = fsnfsn_sorg, j = fsnfsn_targ)
 
 # GPTA --> FSN
 weightgptafsn = synfsnpars['GPTA']['weight']*b2.nsiemens
 gptatofsn = b2.Synapses(GPTA, FSN, delay=synfsnpars['GPTA']['delay']*b2.ms, on_pre='g_i += weightgptafsn')
-# gptatofsn.connect(i=ran.sample(range(658), 20), j=ran.sample(range(210), 20))
-for k, j in enumerate(random.sample(range(210), 210)):
-    gptatofsn.connect( i=random.sample(range(658), 20), j=j)
+gptafsn_targ, gptafsn_sorg = connmatrix(neuron['FSN'], neuron['GPTA'], synfsnpars['GPTA']['degree'])
+gptatofsn.connect(i = gptafsn_sorg, j = gptafsn_targ)
 
 # GPTI --> FSN
 weightgptifsn = synfsnpars['GPTI']['weight']*b2.nsiemens
 gptitofsn = b2.Synapses(GPTI, FSN, delay=synfsnpars['GPTI']['delay']*b2.ms, on_pre='g_i += weightgptifsn')
-# gptitofsn.connect(i=ran.sample(range(1976), 20), j=ran.sample(range(210), 20))
-for k, j in enumerate(random.sample(range(210), 210)):
-    gptitofsn.connect( i=random.sample(range(1976), 20), j=j)
+gptifsn_targ, gptifsn_sorg = connmatrix(neuron['FSN'], neuron['GPTI'], synfsnpars['GPTI']['degree'])
+gptitofsn.connect(i = gptifsn_sorg, j = gptifsn_targ)
 
 # Synapses to GPTA 
 syngptapars = staticsyn['GPTA']
 
+# FSN --> GPTA
+weightfsngpta = syngptapars['FSN']['weight']*b2.nsiemens
+fsntogpta = b2.Synapses(FSN, GPTA, delay=syngptapars['FSN']['delay']*b2.ms, on_pre='g_i += weightfsngpta')
+fsngpta_targ, fsngpta_sorg = connmatrix(neuron['GPTA'], neuron['FSN'], syngptapars['FSN']['degree'])
+fsntogpta.connect(i = fsngpta_sorg, j = fsngpta_targ)
+
 # GPTA --> GPTA
 weightgptagpta = syngptapars['GPTA']['weight']*b2.nsiemens
 gptatogpta = b2.Synapses(GPTA, GPTA, delay=syngptapars['GPTA']['delay']*b2.ms, on_pre='g_i += weightgptagpta')
-# gptatogpta.connect(i=ran.sample(range(658), 10), j=ran.sample(range(658), 10))
-for k, j in enumerate(random.sample(range(658), 658)):
-    gptatogpta.connect( i=random.sample(range(658), 10), j=j)
+gptagpta_targ, gptagpta_sorg = connmatrix(neuron['GPTA'], neuron['GPTA'], syngptapars['GPTA']['degree'])
+gptatogpta.connect(i = gptagpta_sorg, j = gptagpta_targ)
 
 # GPTI --> GPTA
 weightgptigpta = syngptapars['GPTI']['weight']*b2.nsiemens
 gptitogpta = b2.Synapses(GPTI, GPTA, delay=syngptapars['GPTI']['delay']*b2.ms, on_pre='g_i += weightgptigpta')
-# gptitogpta.connect(i=ran.sample(range(1976), 50), j=ran.sample(range(658), 50))
-for k, j in enumerate(random.sample(range(658), 658)):
-    gptitogpta.connect( i=random.sample(range(1976), 50), j=j)
+gptigpta_targ, gptigpta_sorg = connmatrix(neuron['GPTA'], neuron['GPTI'], syngptapars['GPTI']['degree'])
+gptitogpta.connect(i = gptigpta_sorg, j = gptigpta_targ)
 
 # STN --> GPTA
 weightstngpta = syngptapars['STN']['weight']*b2.nsiemens
 stntogpta = b2.Synapses(STN, GPTA, delay=syngptapars['STN']['delay']*b2.ms, on_pre='g_e += weightstngpta')
-# stntogpta.connect(i=ran.sample(range(776), 60), j=ran.sample(range(658), 60))
-for k, j in enumerate(random.sample(range(658), 658)):
-    stntogpta.connect( i=random.sample(range(776), 60), j=j)
+stngpta_targ, stngpta_sorg = connmatrix(neuron['GPTA'], neuron['STN'], syngptapars['STN']['degree'])
+stntogpta.connect(i = stngpta_sorg, j = stngpta_targ)
 
 
 # Synapses to GPTI 
@@ -339,31 +349,32 @@ syngptipars = staticsyn['GPTI']
 # D2 --> GPTI
 weightd2gpti = syngptipars['D2']['weight']*b2.nsiemens
 d2togpti = b2.Synapses(D2, GPTI, delay=syngptipars['D2']['delay']*b2.ms, on_pre='g_i += weightd2gpti')
-# d2togpti.connect(i=ran.sample(range(5000), 1000), j=ran.sample(range(1976), 1000))
-for k, j in enumerate(random.sample(range(1976), 1976)):
-    d2togpti.connect( i=random.sample(range(5000), 1000), j=j)
-    
+d2gpti_targ, d2gpti_sorg = connmatrix(neuron['GPTI'], neuron['D2'], syngptipars['D2']['degree'])
+d2togpti.connect(i = d2gpti_sorg, j = d2gpti_targ)
+
+# FSN --> GPTI
+weightfsngpti = syngptipars['FSN']['weight']*b2.nsiemens
+fsntogpti = b2.Synapses(FSN, GPTI, delay=syngptipars['FSN']['delay']*b2.ms, on_pre='g_i += weightfsngpti')
+fsngpti_targ, fsngpti_sorg = connmatrix(neuron['GPTI'], neuron['FSN'], syngptipars['FSN']['degree'])
+fsntogpti.connect(i = fsngpti_sorg, j = fsngpti_targ)
 
 # GPTA --> GPTI
 weightgptagpti = syngptipars['GPTA']['weight']*b2.nsiemens
 gptatogpti = b2.Synapses(GPTA, GPTI, delay=syngptipars['GPTA']['delay']*b2.ms, on_pre='g_i += weightgptagpti')
-# gptatogpti.connect(i=ran.sample(range(658), 10), j=ran.sample(range(1976), 10))
-for k, j in enumerate(random.sample(range(1976), 1976)):
-    gptatogpti.connect( i=random.sample(range(658), 10), j=j)
+gptagpti_targ, gptagpti_sorg = connmatrix(neuron['GPTI'], neuron['GPTA'], syngptipars['GPTA']['degree'])
+gptatogpti.connect(i = gptagpti_sorg, j = gptagpti_targ)
 
 # GPTI --> GPTI
 weightgptigpti = syngptipars['GPTI']['weight']*b2.nsiemens
 gptitogpti = b2.Synapses(GPTI, GPTI, delay=syngptipars['GPTI']['delay']*b2.ms, on_pre='g_i += weightgptigpti')
-# gptitogpti.connect(i=ran.sample(range(1976), 50), j=ran.sample(range(1976), 50))
-for k, j in enumerate(random.sample(range(1976), 1976)):
-    gptitogpti.connect( i=random.sample(range(1976), 50), j=j)
+gptigpti_targ, gptigpti_sorg = connmatrix(neuron['GPTI'], neuron['GPTI'], syngptipars['GPTI']['degree'])
+gptitogpti.connect(i = gptigpti_sorg, j = gptigpti_targ)
 
 # STN --> GPTI
 weightstngpti = syngptipars['STN']['weight']*b2.nsiemens
 stntogpti = b2.Synapses(STN, GPTI, delay=syngptipars['STN']['delay']*b2.ms, on_pre='g_e += weightstngpti')
-# stntogpti.connect(i=ran.sample(range(776), 60), j=ran.sample(range(1976), 60))
-for k, j in enumerate(random.sample(range(1976), 1976)):
-    stntogpti.connect( i=random.sample(range(776), 60), j=j)
+stngpti_targ, stngpti_sorg = connmatrix(neuron['GPTI'], neuron['STN'], syngptipars['STN']['degree'])
+stntogpti.connect(i = stngpti_sorg, j = stngpti_targ)
 
 
 # Synapses to STN
@@ -372,9 +383,8 @@ synstnpars = staticsyn['STN']
 # GPTI --> STN
 weightgptistn = synstnpars['GPTI']['weight']*b2.nsiemens
 gptitostn = b2.Synapses(GPTI, STN, delay=synstnpars['GPTI']['delay']*b2.ms, on_pre='g_i += weightgptistn')
-# gptitostn.connect(i=ran.sample(range(1976), 60), j=ran.sample(range(776), 60))
-for k, j in enumerate(random.sample(range(776), 776)):
-    gptitostn.connect( i=random.sample(range(1976), 60), j=j)
+gptistn_targ, gptistn_sorg = connmatrix(neuron['STN'], neuron['GPTI'], synstnpars['GPTI']['degree'])
+gptitostn.connect(i = gptistn_sorg, j = gptistn_targ)
 
 
 # Synapses to GPi
@@ -383,21 +393,17 @@ syngpipars = staticsyn['GPI']
 # D1 --> GPi
 weightd1gpi = syngpipars['D1']['weight']*b2.nsiemens
 d1togpi = b2.Synapses(D1, GPI, delay=syngpipars['D1']['delay']*b2.ms, on_pre='g_i += weightd1gpi')
-# d1togpi.connect(i=ran.sample(range(5000), 1000), j=ran.sample(range(1508), 1000))
-for k, j in enumerate(random.sample(range(1508), 1508)):
-    d1togpi.connect( i=random.sample(range(5000), 1000), j=j)
+d1gpi_targ, d1gpi_sorg = connmatrix(neuron['GPI'], neuron['D1'], syngpipars['D1']['degree'])
+d1togpi.connect(i = d1gpi_sorg, j = d1gpi_targ)
 
 # GPTI --> GPi
 weightgptigpi = syngpipars['GPTI']['weight']*b2.nsiemens
 gptitogpi = b2.Synapses(GPTI, GPI, delay=syngpipars['GPTI']['delay']*b2.ms, on_pre='g_i += weightgptigpi')
-# gptitogpi.connect(i=ran.sample(range(1976), 64), j=ran.sample(range(1508), 64))
-for k, j in enumerate(random.sample(range(1508), 1508)):
-    gptitogpi.connect( i=random.sample(range(1976), 64), j=j)
+gptigpi_targ, gptigpi_sorg = connmatrix(neuron['GPI'], neuron['GPTI'], syngpipars['GPTI']['degree'])
+gptitogpi.connect(i = gptigpi_sorg, j = gptigpi_targ)
 
 # STN --> GPi
 weightstngpi = syngpipars['STN']['weight']*b2.nsiemens
 stntogpi = b2.Synapses(STN, GPI, delay=syngpipars['STN']['delay']*b2.ms, on_pre='g_e += weightstngpi')
-# stntogpi.connect(i=ran.sample(range(776), 60), j=ran.sample(range(1508), 60))
-for k, j in enumerate(random.sample(range(1508), 1508)):
-    stntogpi.connect( i=random.sample(range(776), 60), j=j)
-"""
+stngpi_targ, stngpi_sorg = connmatrix(neuron['GPI'], neuron['STN'], syngpipars['STN']['degree'])
+stntogpi.connect(i = stngpi_sorg, j = stngpi_targ)
