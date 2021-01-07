@@ -43,7 +43,7 @@ spikesgpi = b2.SpikeMonitor(GPI)
 
 c_var = [0.]
 
-file_path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'output.txt')
+# file_path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'output.txt')
 file_path = "/home/f_mastellone/output.txt"
 text_file = open(file_path, "w")
 

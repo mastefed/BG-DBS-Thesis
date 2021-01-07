@@ -219,6 +219,7 @@ weightctxgpi = ctxgpipars['weight']*b2.nsiemens
 cortextogpi = b2.Synapses(ctxforgpi, GPI, delay=ctxgpipars['delay']*b2.ms, on_pre='g_e += weightctxgpi')
 cortextogpi.connect(j='i')
 
+"""
 ##### Synapses
 # Synapses to D1
 synd1pars = staticsyn['D1']
@@ -399,3 +400,4 @@ stntogpi = b2.Synapses(STN, GPI, delay=syngpipars['STN']['delay']*b2.ms, on_pre=
 # stntogpi.connect(i=ran.sample(range(776), 60), j=ran.sample(range(1508), 60))
 for k, j in enumerate(random.sample(range(1508), 1508)):
     stntogpi.connect( i=random.sample(range(776), 60), j=j)
+"""
