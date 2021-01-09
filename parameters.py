@@ -51,49 +51,49 @@ poissoninput = {
 # Static syn parameters TARGET-SOURCES
 staticsyn = {   
                 'D1' : {
-                        'D1' : {'weight': -0.075, 'delay': 1.7, 'degree': 728}, 
-                        'D2': {'weight': -0.150, 'delay': 1.7, 'degree': 784}, 
-                        'FSN': {'weight': -1.2, 'delay': 1.7, 'degree': 32}, 
-                        'GPTA': {'weight': -0.02, 'delay': 7., 'degree': 20}
+                        'D1' : {'weight': .075, 'delay': 1.7, 'degree': 728}, 
+                        'D2': {'weight': .150, 'delay': 1.7, 'degree': 784}, 
+                        'FSN': {'weight': 1.2, 'delay': 1.7, 'degree': 32}, 
+                        'GPTA': {'weight': .02, 'delay': 7., 'degree': 20}
                         }, 
 
                 'D2' : {
-                        'D1': {'weight': -0.150, 'delay': 1.7, 'degree': 784}, 
-                        'D2': {'weight': -0.044, 'delay': 1.7, 'degree': 1008}, 
-                        'FSN': {'weight': -1.2, 'delay': 1.7, 'degree': 22}, 
-                        'GPTA': {'weight': -0.4, 'delay': 7., 'degree': 20}
+                        'D1': {'weight': .150, 'delay': 1.7, 'degree': 784}, 
+                        'D2': {'weight': .044, 'delay': 1.7, 'degree': 1008}, 
+                        'FSN': {'weight': .2, 'delay': 1.7, 'degree': 22}, 
+                        'GPTA': {'weight': .4, 'delay': 7., 'degree': 20}
                         },
 
                 "FSN" : { 
-                        'D1': {'weight': -1., 'delay': 1., 'degree': 32},
-                        'D2': {'weight': -1., 'delay': 1., 'degree': 22},
-                        'FSN': {'weight': -0.5, 'delay': 1.7, 'degree': 20}, 
-                        'GPTA': {'weight': -0.25, 'delay': 7., 'degree': 20}, 
-                        'GPTI': {'weight': -1.0, 'delay': 7., 'degree': 20}
+                        'D1': {'weight': 1., 'delay': 1., 'degree': 32},
+                        'D2': {'weight': 1., 'delay': 1., 'degree': 22},
+                        'FSN': {'weight': .5, 'delay': 1.7, 'degree': 20}, 
+                        'GPTA': {'weight': .25, 'delay': 7., 'degree': 20}, 
+                        'GPTI': {'weight': 1.0, 'delay': 7., 'degree': 20}
                         },
 
                 "GPTA" : {
-                        'FSN': {'weight': -2., 'delay': 1., 'degree': 20}, 
-                        'GPTA': {'weight': -0.07, 'delay': 1., 'degree': 10}, 
-                        'GPTI': {'weight': -0.12, 'delay': 1., 'degree': 50}, 
-                        'STN': {'weight': 0.06, 'delay': 2., 'degree': 60}
+                        'FSN': {'weight': 2., 'delay': 1., 'degree': 20}, 
+                        'GPTA': {'weight': .07, 'delay': 1., 'degree': 10}, 
+                        'GPTI': {'weight': .12, 'delay': 1., 'degree': 50}, 
+                        'STN': {'weight': .06, 'delay': 2., 'degree': 60}
                         },
 
                 "GPTI" : { 
-                        'D2': {'weight': -0.6, 'delay': 7.0, 'degree': 1000},
-                        'FSN': {'weight': -1., 'delay': 1., 'degree': 20}, 
-                        'GPTA': {'weight': -0.9, 'delay': 1., 'degree': 10}, 
-                        'GPTI': {'weight': -1.1, 'delay': 1., 'degree': 50}, 
-                        'STN': {'weight': 0.37, 'delay': 10., 'degree': 60}
+                        'D2': {'weight': .6, 'delay': 7.0, 'degree': 1000},
+                        'FSN': {'weight': 1., 'delay': 1., 'degree': 20}, 
+                        'GPTA': {'weight': .9, 'delay': 1., 'degree': 10}, 
+                        'GPTI': {'weight': 1.1, 'delay': 1., 'degree': 50}, 
+                        'STN': {'weight': .37, 'delay': 10., 'degree': 60}
                         },
 
                 "STN" : { 
-                        'GPTI': {'weight': -0.62, 'delay': 10., 'degree': 60}
+                        'GPTI': {'weight': .62, 'delay': 10., 'degree': 60}
                         },
 
                 "GPI" :  {
-                        'D1': {'weight': -1., 'delay': 7., 'degree': 1000}, 
-                        'GPTI': {'weight': -20., 'delay': 3., 'degree': 64}, 
-                        'STN': {'weight': 0.45, 'delay': 4.5, 'degree': 60}
+                        'D1': {'weight': 1., 'delay': 7., 'degree': 1000}, 
+                        'GPTI': {'weight': 20., 'delay': 3., 'degree': 64}, 
+                        'STN': {'weight': .45, 'delay': 4.5, 'degree': 60}
                         }
             }

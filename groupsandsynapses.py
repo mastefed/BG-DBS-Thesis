@@ -1,6 +1,7 @@
 import brian2 as b2
 import random
 import numpy
+from matplotlib import pyplot as plt
 
 from parameters import *
 from equations import *
@@ -13,6 +14,27 @@ def connmatrix(num_postsyn, num_presyn, num_conn):
             connections[i,j] = 1
     sources, targets = connections.nonzero()
     return targets, sources
+
+def visualise_connectivity(S, i, title):
+    Ns = len(S.source)
+    Nt = len(S.target)
+    plt.figure(i,figsize=(10, 4))
+    plt.title(title)
+    plt.subplot(121)
+    plt.plot(numpy.zeros(Ns), numpy.arange(Ns), 'ok', ms=1)
+    plt.plot(numpy.ones(Nt), numpy.arange(Nt), 'ok', ms=1)
+    for i, j in zip(S.i, S.j):
+        plt.plot([0, 1], [i, j], '-k')
+    plt.xticks([0, 1], ['Source', 'Target'])
+    plt.ylabel('Neuron index')
+    plt.xlim(-0.1, 1.1)
+    plt.ylim(-1, max(Ns, Nt))
+    plt.subplot(122)
+    plt.plot(S.i, S.j, 'ok')
+    plt.xlim(-1, Ns)
+    plt.ylim(-1, Nt)
+    plt.xlabel('Source neuron index')
+    plt.ylabel('Target neuron index')
 
 fsnpars = neuronparameters['FSN']
 d1pars = neuronparameters['D1']
@@ -407,3 +429,26 @@ weightstngpi = syngpipars['STN']['weight']*b2.nsiemens
 stntogpi = b2.Synapses(STN, GPI, delay=syngpipars['STN']['delay']*b2.ms, on_pre='g_e += weightstngpi')
 stngpi_targ, stngpi_sorg = connmatrix(neuron['GPI'], neuron['STN'], syngpipars['STN']['degree'])
 stntogpi.connect(i = stngpi_sorg, j = stngpi_targ)
+
+"""inp = b2.SpikeGeneratorGroup(1, numpy.array([0,0,0]), numpy.array([400,600,800])*b2.ms)
+
+feedforwardd1 = b2.Synapses(inp, D1, on_pre='g_e += 1*nS; g_i += -1*nS')
+feedforwardd1.connect()
+
+feedforwardd2 = b2.Synapses(inp, D2, on_pre='g_e += 1*nS; g_i += -1*nS')
+feedforwardd2.connect()
+
+feedforwardfsn = b2.Synapses(inp, FSN, on_pre='g_e += 1*nS; g_i += -1*nS')
+feedforwardfsn.connect()
+
+feedforwardgpta = b2.Synapses(inp, GPTA, on_pre='g_e += 1*nS; g_i += -1*nS')
+feedforwardgpta.connect()
+
+feedforwardgpti = b2.Synapses(inp, GPTI, on_pre='g_e += 1*nS; g_i += -1*nS')
+feedforwardgpti.connect()
+
+feedforwardstn = b2.Synapses(inp, STN, on_pre='g_e += 1*nS; g_i += -1*nS')
+feedforwardstn.connect()
+
+feedforwardgpi = b2.Synapses(inp, GPI, on_pre='g_e += 1*nS; g_i += -1*nS')
+feedforwardgpi.connect()"""

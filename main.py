@@ -14,37 +14,34 @@ from test import *
 
 ran.seed(42)
 
-duration = 2000*b2.ms
+duration = 1000*b2.ms
 deft = b2.defaultclock.dt
 t_recorded = np.arange(int(duration/deft))*deft
 
 b2.run(300*b2.ms)
 
-monitord1 = b2.StateMonitor(D1, variables=['V'], record=True)
+variables_to_record = ['g_e','g_i']
+
+monitord1 = b2.StateMonitor(D1, variables=variables_to_record, record=True)
+monitord2 = b2.StateMonitor(D2, variables=variables_to_record, record=True)
+monitorfsn = b2.StateMonitor(FSN, variables=variables_to_record, record=True)
+monitorstn = b2.StateMonitor(STN, variables=variables_to_record, record=True)
+monitorgpti = b2.StateMonitor(GPTI, variables=variables_to_record, record=True)
+monitorgpta = b2.StateMonitor(GPTA, variables=variables_to_record, record=True)
+monitorgpi = b2.StateMonitor(GPI, variables=variables_to_record, record=True)
+
 spikesd1 = b2.SpikeMonitor(D1)
-
-monitord2 = b2.StateMonitor(D2, variables=['V'], record=True)
 spikesd2 = b2.SpikeMonitor(D2)
-
-monitorfsn = b2.StateMonitor(FSN, variables=['V'], record=True)
 spikesfsn = b2.SpikeMonitor(FSN)
-
-monitorstn = b2.StateMonitor(STN, variables=['V'], record=True)
 spikesstn = b2.SpikeMonitor(STN)
-
-monitorgpti = b2.StateMonitor(GPTI, variables=['V'], record=True)
 spikesgpti = b2.SpikeMonitor(GPTI)
-
-monitorgpta = b2.StateMonitor(GPTA, variables=['V'], record=True)
 spikesgpta = b2.SpikeMonitor(GPTA)
-
-monitorgpi = b2.StateMonitor(GPI, variables=['V'], record=True)
 spikesgpi = b2.SpikeMonitor(GPI)
 
 c_var = [0.]
 
-# file_path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'output.txt')
-file_path = "/home/f_mastellone/output.txt"
+file_path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'frandff.txt')
+# file_path = "/home/f_mastellone/frandff.txt"
 text_file = open(file_path, "w")
 
 for i, c_i in enumerate(c_var):
@@ -69,26 +66,104 @@ for i, c_i in enumerate(c_var):
     text_file.write(f"FF FSN: {ff_fsn}\n")
     text_file.write(f"FF D1: {ff_d1}\n")
     text_file.write(f"FF D2: {ff_d2}\n")
-
-    """plt.figure(i)
-    plt.subplot(3,1,1)
-    plt.title(f"Raster Plot c={c}")
-    plt.plot(spikesd1.t/b2.ms, spikesd1.i, 'o', ms=0.5, label='D1')
-    plt.ylabel('indices')
-    plt.xlim((0.+i*2000.,2000.+i*2000.))
-    plt.legend()
-
-    plt.subplot(3,1,2)
-    plt.plot(spikesd2.t/b2.ms, spikesd2.i, 'o', ms=0.5, label='D2')
-    plt.ylabel('indices')
-    plt.xlim((0.+i*2000.,2000.+i*2000.))
-    plt.legend()
-
-    plt.subplot(3,1,3)
-    plt.plot(spikesfsn.t/b2.ms, spikesfsn.i, 'o', ms=0.5, label='FSN')
-    plt.xlabel('time [ms]')
-    plt.ylabel('indices')
-    plt.xlim((0.+i*2000.,2000.+i*2000.))
-    plt.legend()"""
-
 text_file.close()
+"""
+plt.figure(1)
+plt.title('D1')
+plt.plot(monitord1.t/b2.ms, monitord1.g_e[10]/b2.nsiemens, label='g_e')
+plt.plot(monitord1.t/b2.ms, monitord1.g_i[10]/b2.nsiemens, label='g_i')
+plt.xlabel('t [ms]')
+plt.ylabel('g [nS]')
+plt.legend()
+
+plt.figure(2)
+plt.title('D2')
+plt.plot(monitord2.t/b2.ms, monitord2.g_e[10]/b2.nsiemens, label='g_e')
+plt.plot(monitord2.t/b2.ms, monitord2.g_i[10]/b2.nsiemens, label='g_i')
+plt.xlabel('t [ms]')
+plt.ylabel('g [nS]')
+plt.legend()
+
+plt.figure(3)
+plt.title('FSN')
+plt.plot(monitorfsn.t/b2.ms, monitorfsn.g_e[10]/b2.nsiemens, label='g_e')
+plt.plot(monitorfsn.t/b2.ms, monitorfsn.g_i[10]/b2.nsiemens, label='g_i')
+plt.xlabel('t [ms]')
+plt.ylabel('g [nS]')
+plt.legend()
+
+plt.figure(4)
+plt.title('GPTA')
+plt.plot(monitorgpta.t/b2.ms, monitorgpta.g_e[10]/b2.nsiemens, label='g_e')
+plt.plot(monitorgpta.t/b2.ms, monitorgpta.g_i[10]/b2.nsiemens, label='g_i')
+plt.xlabel('t [ms]')
+plt.ylabel('g [nS]')
+plt.legend()
+
+plt.figure(5)
+plt.title('GPTI')
+plt.plot(monitorgpti.t/b2.ms, monitorgpti.g_e[10]/b2.nsiemens, label='g_e')
+plt.plot(monitorgpti.t/b2.ms, monitorgpti.g_i[10]/b2.nsiemens, label='g_i')
+plt.xlabel('t [ms]')
+plt.ylabel('g [nS]')
+plt.legend()
+
+plt.figure(6)
+plt.title('STN')
+plt.plot(monitorstn.t/b2.ms, monitorstn.g_e[10]/b2.nsiemens, label='g_e')
+plt.plot(monitorstn.t/b2.ms, monitorstn.g_i[10]/b2.nsiemens, label='g_i')
+plt.xlabel('t [ms]')
+plt.ylabel('g [nS]')
+plt.legend()
+
+plt.figure(7)
+plt.title('GPi')
+plt.plot(monitorgpi.t/b2.ms, monitorgpi.g_e[10]/b2.nsiemens, label='g_e')
+plt.plot(monitorgpi.t/b2.ms, monitorgpi.g_i[10]/b2.nsiemens, label='g_i')
+plt.xlabel('t [ms]')
+plt.ylabel('g [nS]')
+plt.legend()
+
+plt.figure(1)
+plt.title('D1')
+plt.plot(spikesd1.t/b2.ms, spikesd1.i, 'o', ms=0.5)
+plt.xlabel('t [ms]')
+plt.ylabel('index')
+
+plt.figure(2)
+plt.title('D2')
+plt.plot(spikesd2.t/b2.ms, spikesd2.i, 'o', ms=0.5)
+plt.xlabel('t [ms]')
+plt.ylabel('index')
+
+plt.figure(3)
+plt.title('FSN')
+plt.plot(spikesfsn.t/b2.ms, spikesfsn.i, 'o', ms=0.5)
+plt.xlabel('t [ms]')
+plt.ylabel('index')
+
+plt.figure(4)
+plt.title('GPTA')
+plt.plot(spikesgpta.t/b2.ms, spikesgpta.i, 'o', ms=0.5)
+plt.xlabel('t [ms]')
+plt.ylabel('index')
+
+plt.figure(5)
+plt.title('GPTI')
+plt.plot(spikesgpti.t/b2.ms, spikesgpti.i, 'o', ms=0.5)
+plt.xlabel('t [ms]')
+plt.ylabel('index')
+
+plt.figure(6)
+plt.title('STN')
+plt.plot(spikesstn.t/b2.ms, spikesstn.i, 'o', ms=0.5)
+plt.xlabel('t [ms]')
+plt.ylabel('index')
+
+plt.figure(7)
+plt.title('GPi')
+plt.plot(spikesgpi.t/b2.ms, spikesgpi.i, 'o', ms=0.5)
+plt.xlabel('t [ms]')
+plt.ylabel('index')"""
+
+plt.show()
