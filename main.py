@@ -49,15 +49,23 @@ for i, c_i in enumerate(c_var):
     b2.run(duration)
 
     text_file.write(f"Correlation parameter: {c}\n")
+    print(f"Correlation parameter: {c}\n")
 
     text_file.write(f'Firing rate D1: {np.mean(spikesd1.count/duration)} spikes/second\n')
     text_file.write(f'Firing rate D2: {np.mean(spikesd2.count/duration)} spikes/second\n')
     text_file.write(f'Firing rate FSN: {np.mean(spikesfsn.count/duration)} spikes/second\n')
+    print(f'Firing rate D1: {np.mean(spikesd1.count/duration)} spikes/second\n')
+    print(f'Firing rate D2: {np.mean(spikesd2.count/duration)} spikes/second\n')
+    print(f'Firing rate FSN: {np.mean(spikesfsn.count/duration)} spikes/second\n')
 
     text_file.write(f'Firing rate STN: {np.mean(spikesstn.count/duration)} spikes/second\n')
     text_file.write(f'Firing rate GPTI: {np.mean(spikesgpti.count/duration)} spikes/second\n')
     text_file.write(f'Firing rate GPTA: {np.mean(spikesgpta.count/duration)} spikes/second\n')
     text_file.write(f'Firing rate GPI: {np.mean(spikesgpi.count/duration)} spikes/second\n')
+    print(f'Firing rate STN: {np.mean(spikesstn.count/duration)} spikes/second\n')
+    print(f'Firing rate GPTI: {np.mean(spikesgpti.count/duration)} spikes/second\n')
+    print(f'Firing rate GPTA: {np.mean(spikesgpta.count/duration)} spikes/second\n')
+    print(f'Firing rate GPI: {np.mean(spikesgpi.count/duration)} spikes/second\n')
 
     ff_fsn = fanofactor(duration, spikesfsn, neuron['FSN'], 0*b2.ms, 2*b2.ms, 2*b2.ms)
     ff_d1 = fanofactor(duration, spikesd1, neuron['D1'], 0*b2.ms, 2*b2.ms, 2*b2.ms)
