@@ -38,10 +38,10 @@ spikesgpti = b2.SpikeMonitor(GPTI)
 spikesgpta = b2.SpikeMonitor(GPTA)
 spikesgpi = b2.SpikeMonitor(GPI)
 
-c_var = [0.]
+c_var = [0., 0.1, 0.2, 0.5]
 
-file_path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'frandff.txt')
-# file_path = "/home/f_mastellone/frandff.txt"
+# file_path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'frandff.txt')
+file_path = "/home/f_mastellone/frandff.txt"
 text_file = open(file_path, "w")
 
 for i, c_i in enumerate(c_var):
@@ -54,26 +54,30 @@ for i, c_i in enumerate(c_var):
     text_file.write(f'Firing rate D1: {np.mean(spikesd1.count/duration)} spikes/second\n')
     text_file.write(f'Firing rate D2: {np.mean(spikesd2.count/duration)} spikes/second\n')
     text_file.write(f'Firing rate FSN: {np.mean(spikesfsn.count/duration)} spikes/second\n')
-    print(f'Firing rate D1: {np.mean(spikesd1.count/duration)} spikes/second\n')
-    print(f'Firing rate D2: {np.mean(spikesd2.count/duration)} spikes/second\n')
+    print(f'Firing rate D1: {np.mean(spikesd1.count/duration)} spikes/second')
+    print(f'Firing rate D2: {np.mean(spikesd2.count/duration)} spikes/second')
     print(f'Firing rate FSN: {np.mean(spikesfsn.count/duration)} spikes/second\n')
 
     text_file.write(f'Firing rate STN: {np.mean(spikesstn.count/duration)} spikes/second\n')
     text_file.write(f'Firing rate GPTI: {np.mean(spikesgpti.count/duration)} spikes/second\n')
     text_file.write(f'Firing rate GPTA: {np.mean(spikesgpta.count/duration)} spikes/second\n')
     text_file.write(f'Firing rate GPI: {np.mean(spikesgpi.count/duration)} spikes/second\n')
-    print(f'Firing rate STN: {np.mean(spikesstn.count/duration)} spikes/second\n')
-    print(f'Firing rate GPTI: {np.mean(spikesgpti.count/duration)} spikes/second\n')
-    print(f'Firing rate GPTA: {np.mean(spikesgpta.count/duration)} spikes/second\n')
+    print(f'Firing rate STN: {np.mean(spikesstn.count/duration)} spikes/second')
+    print(f'Firing rate GPTI: {np.mean(spikesgpti.count/duration)} spikes/second')
+    print(f'Firing rate GPTA: {np.mean(spikesgpta.count/duration)} spikes/second')
     print(f'Firing rate GPI: {np.mean(spikesgpi.count/duration)} spikes/second\n')
 
     ff_fsn = fanofactor(duration, spikesfsn, neuron['FSN'], 0*b2.ms, 2*b2.ms, 2*b2.ms)
     ff_d1 = fanofactor(duration, spikesd1, neuron['D1'], 0*b2.ms, 2*b2.ms, 2*b2.ms)
     ff_d2 = fanofactor(duration, spikesd2, neuron['D2'], 0*b2.ms, 2*b2.ms, 2*b2.ms)
 
+    print(f'FF D1: {ff_d1}')
+    print(f'FF D2: {ff_d2}')
+    print(f'FF FSN: {ff_fsn}\n')
     text_file.write(f"FF FSN: {ff_fsn}\n")
     text_file.write(f"FF D1: {ff_d1}\n")
     text_file.write(f"FF D2: {ff_d2}\n")
+
 text_file.close()
 """
 plt.figure(1)
