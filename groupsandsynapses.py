@@ -205,6 +205,8 @@ noisegptipars = poissoninput['GPTI']
 noisegptapars = poissoninput['GPTA']
 noisegpipars = poissoninput['GPI']
 
+c = 0.
+
 ratenoisefsn = noisefsnpars['rate']*b2.Hz
 noisefsn = b2.NeuronGroup(noisefsnpars['num'], 'v : 1 (shared)', threshold='((v < ratenoisefsn*dt) and rand() < sqrt(c)) or rand() < ratenoisefsn*(1 - sqrt(c))*dt')
 noisefsn.run_regularly('v = rand()')
@@ -338,7 +340,7 @@ connections['gptifsn'] = np.array([pre_idx, post_idx])
 # D1 --> FSN
 weightd1fsn = synfsnpars['D1']['weight']*b2.nsiemens
 d1tofsn = b2.Synapses(D1, FSN, delay=synfsnpars['D1']['delay']*b2.ms, on_pre='g_i += weightd1fsn')
-d1tofsn.connect(i=connections['d1fsn'][0], j=connections['d1fsn'][1])'
+d1tofsn.connect(i=connections['d1fsn'][0], j=connections['d1fsn'][1])
 
 # D2 --> FSN
 weightd2fsn = synfsnpars['D2']['weight']*b2.nsiemens

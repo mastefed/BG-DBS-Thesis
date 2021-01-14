@@ -40,13 +40,16 @@ spikesgpti = b2.SpikeMonitor(GPTI)
 spikesgpta = b2.SpikeMonitor(GPTA)
 spikesgpi = b2.SpikeMonitor(GPI)
 
+b2.store()
+
 c_var = [0.]
 
-file_path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'frandff.txt')
-# file_path = "/home/f_mastellone/frandff.txt"
+# file_path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'frandff.txt')
+file_path = "/home/f_mastellone/frandff.txt"
 text_file = open(file_path, "w")
 
 for i, c_i in enumerate(c_var):
+    b2.restore()
     c = c_i
     b2.run(duration)
 
