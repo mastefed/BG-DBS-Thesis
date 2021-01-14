@@ -227,46 +227,39 @@ noisegpi = b2.PoissonGroup(noisegpipars['num'], rates=noisegpipars['rate']*b2.Hz
 mulval = 0.1*b2.nsiemens
 
 weightnoisefsn = noisefsnpars['weight']*b2.nsiemens
-noisetofsn = b2.Synapses(noisefsn, FSN, delay=noisefsnpars['delay']*b2.ms, model='''w : siemens''', on_pre='g_e += w')
+noisetofsn = b2.Synapses(noisefsn, FSN, delay=noisefsnpars['delay']*b2.ms, model='''k : siemens''', on_pre='g_e += k')
 noisetofsn.connect(j='i')
-for k in range(neuron['FSN']):
-    noisetofsn.w[k:k] = weightnoisefsn + mulval*random.random() 
+noisetofsn.k = 'weightnoisefsn + mulval*rand()'
 
 weightnoised1 = noised1pars['weight']*b2.nsiemens
-noisetod1 = b2.Synapses(noised1, D1, delay=noised1pars['delay']*b2.ms, model='''w : siemens''', on_pre='g_e += w')
+noisetod1 = b2.Synapses(noised1, D1, delay=noised1pars['delay']*b2.ms, model='''k : siemens''', on_pre='g_e += k')
 noisetod1.connect(j='i')
-for k in range(neuron['D1']):
-    noisetod1.w[k:k] = weightnoised1 + mulval*random.random() 
+noisetod1.k = 'weightnoised1 + mulval*rand()'
 
 weightnoised2 = noised2pars['weight']*b2.nsiemens
-noisetod2 = b2.Synapses(noised2, D2, delay=noised2pars['delay']*b2.ms, model='''w : siemens''', on_pre='g_e += w')
+noisetod2 = b2.Synapses(noised2, D2, delay=noised2pars['delay']*b2.ms, model='''k : siemens''', on_pre='g_e += k')
 noisetod2.connect(j='i')
-for k in range(neuron['D2']):
-    noisetod2.w[k:k] = weightnoised2 + mulval*random.random() 
+noisetod2.k = 'weightnoised2 + mulval*rand()'
 
 weightnoisestn = noisestnpars['weight']*b2.nsiemens
-noisetostn = b2.Synapses(noisestn, STN, delay=noisestnpars['delay']*b2.ms, model='''w : siemens''', on_pre='g_e += w')
+noisetostn = b2.Synapses(noisestn, STN, delay=noisestnpars['delay']*b2.ms, model='''k : siemens''', on_pre='g_e += k')
 noisetostn.connect(j='i')
-for k in range(neuron['STN']):
-    noisetostn.w[k:k] = weightnoisestn + mulval*random.random() 
+noisetostn.k = 'weightnoisestn + mulval*rand()'
 
 weightnoisegpti = noisegptipars['weight']*b2.nsiemens
-noisetogpti = b2.Synapses(noisegpti, GPTI, delay=noisegptipars['delay']*b2.ms, model='''w : siemens''', on_pre='g_e += w')
+noisetogpti = b2.Synapses(noisegpti, GPTI, delay=noisegptipars['delay']*b2.ms, model='''k : siemens''', on_pre='g_e += k')
 noisetogpti.connect(j='i')
-for k in range(neuron['GPTI']):
-    noisetogpti.w[k:k] = weightnoisegpti + mulval*random.random() 
+noisetogpti.k = 'weightnoisegpti + mulval*rand()'
 
 weightnoisegpta = noisegptapars['weight']*b2.nsiemens
-noisetogpta = b2.Synapses(noisegpta, GPTA, delay=noisegptapars['delay']*b2.ms, model='''w : siemens''', on_pre='g_e += w')
+noisetogpta = b2.Synapses(noisegpta, GPTA, delay=noisegptapars['delay']*b2.ms, model='''k : siemens''', on_pre='g_e += k')
 noisetogpta.connect(j='i')
-for k in range(neuron['GPTA']):
-    noisetogpta.w[k:k] = weightnoisegpta + mulval*random.random() 
+noisetogpta.k = 'weightnoisegpta + mulval*rand()'
 
 weightnoisegpi = noisegpipars['weight']*b2.nsiemens
-noisetogpi = b2.Synapses(noisegpi, GPI, delay=noisegpipars['delay']*b2.ms, model='''w : siemens''', on_pre='g_e += w')
+noisetogpi = b2.Synapses(noisegpi, GPI, delay=noisegpipars['delay']*b2.ms, model='''k : siemens''', on_pre='g_e += k')
 noisetogpi.connect(j='i')
-for k in range(neuron['GPI']):
-    noisetogpi.w[k:k] = weightnoisegpi + mulval*random.random() 
+noisetogpi.k = 'weightnoisegpi + mulval*rand()'
 
 
 ##### Synapses
