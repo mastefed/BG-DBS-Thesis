@@ -4,48 +4,48 @@ neuron = {'D1': 5000, 'D2': 5000, 'FSN': 210, 'GPTA': 658, 'GPTI': 1976, 'GPI': 
 # Neuron Parameters
 neuronparameters = {
 "GPTI" : {"a" : 2.5, "b" : 70.0, "Delta_T" : 1.7, "tau_w": 20.0,
-          "E_L": -55.1, "g_L": 1.0,  "C_m": 40.0,"I_e":12.0, "V_peak":15.00,
+          "E_L": -55.1, "g_L": 1.0,  "C_m": 40.0,"I_e":0.0, "V_peak":15.00,
             "V_reset": -60.0, "V_th": -50.7,
             "tau_syn_ex":2.0, "tau_syn_in":4.0 ,'V_m': -55.1, 'E_in' : -65.0, 'E_ex': 0.0
             },
             
 "GPTA" : {"a" : 2.5, "b" : 105.0, "Delta_T" : 2.55, "tau_w": 20.0,
-          "E_L": -55.1, "g_L": 1.0,  "C_m": 60.0,"I_e":1.0, "V_peak":15.0,
+          "E_L": -55.1, "g_L": 1.0,  "C_m": 60.0,"I_e":0.0, "V_peak":15.0,
             "V_reset": -60.0, "V_th": -50.7,
             "tau_syn_ex":2.0, "tau_syn_in":4.0 , 'V_m' : -55.1, 'E_in' : -65.0, 'E_ex': 0.0
             },
 
 "GPI" : {"a" : 3.0, "b" : 200.0, "Delta_T" : 1.8, "tau_w": 20.0,
-          "E_L": -55.8, "g_L": 3.0,  "C_m": 80.0,"I_e":15.0, "V_peak":20.0,
+          "E_L": -55.8, "g_L": 3.0,  "C_m": 80.0,"I_e":0.0, "V_peak":20.0,
             "V_reset": -65.0, "V_th": -50.2,
             "tau_syn_ex":8.0, "tau_syn_in":2.0 , 'V_m' : -55.8, 'E_in' : -80.0, 'E_ex': 0.0
             },
 
 "STN" : {"a" : 2.5, "b" : 70.0, "Delta_T" : 1.7, "tau_w": 20.0,
-          "E_L": -80.2, "g_L": 10.0, "C_m": 60.0, "I_e":5.0,
+          "E_L": -80.2, "g_L": 10.0, "C_m": 60.0, "I_e":0.0,
             "V_reset": -70.0, "V_th": -64.0, "V_peak": 15.0,
             "tau_syn_ex":2.0, "tau_syn_in":4.0, 'V_m' :  -80.2, 'E_in' : -84.0, 'E_ex': 0.0
             },
 
 "FSN" : {"V_m" : -80.0, "E_ex" : 0.0, "E_in": -76.0, "V_th": -50.0, "tau_syn_ex":2.0, "tau_syn_in":4.0,
-            "C_m": 80.0, "g_L": 20.0, "I_e" : 500.0,"E_L":-80.0, "V_reset":-60, "t_ref":2},
+            "C_m": 80.0, "g_L": 20.0, "I_e" : 0.0,"E_L":-80.0, "V_reset":-60, "t_ref":2},
 
 "D1" : {"V_m" : -78.2, "E_ex" : 0.0, "E_in": -74.0, "V_th": -29.7, "tau_syn_ex":2.0, "tau_syn_in":4.0,
-            "C_m": 200.0, "g_L": 12.5, "I_e":350.0,"E_L":-78.2, "V_reset":-60, "t_ref":2},
+            "C_m": 200.0, "g_L": 12.5, "I_e":0.0,"E_L":-78.2, "V_reset":-60, "t_ref":2},
 
 "D2" : {"V_m" : -80.0, "E_ex" : 0.0, "E_in": -74.0, "V_th": -29.7, "tau_syn_ex":2.0, "tau_syn_in":4.0,
-            "C_m": 200.0, "g_L": 12.5, "I_e": 350.0,"E_L":-80.0, "V_reset":-60, "t_ref":2}
+            "C_m": 200.0, "g_L": 12.5, "I_e": 0.0,"E_L":-80.0, "V_reset":-60, "t_ref":2}
 }
 
 # Poisson noise
 poissoninput = {
-  'FSN' : {'num' : 210, 'rate' : 850., 'weight' : 1.45, 'delay' : 1.}, # 1000
-  'D1' : {'num' : 5000, 'rate' : 4000., 'weight' : 1.45, 'delay' : 1.}, # 2930 3480
-  'D2' : {'num' : 5000, 'rate' : 2560., 'weight' : 1.45, 'delay' : 1.}, # 2560
-  'STN' : {'num' : 776, 'rate' : 1730., 'weight' : 1.15, 'delay' : 1.}, # 1690
-  'GPTI' : {'num' : 1976, 'rate' : 1800., 'weight' : 1.25, 'delay' : 1.}, # 1650
-  'GPTA' : {'num' : 658, 'rate' : 900., 'weight' : 0.6, 'delay' : 1.}, # 330
-  'GPI' : {'num' : 1508, 'rate' : 1440., 'weight' : 3.45, 'delay' : 1.} # 1250
+  'FSN' : {'num' : 210, 'rate' : 600., 'weight' : 1.4, 'delay' : 1.}, # 1000 850
+  'D1' : {'num' : 5000, 'rate' : 1859., 'weight' : 1.4, 'delay' : 1.}, # 2930 4000
+  'D2' : {'num' : 5000, 'rate' : 1600., 'weight' : 1.4, 'delay' : 1.}, # 2560 2560
+  'STN' : {'num' : 776, 'rate' : 1650., 'weight' : 1.1, 'delay' : 1.}, # 1690 1730
+  'GPTI' : {'num' : 1976, 'rate' : 1850., 'weight' : 1.2, 'delay' : 1.}, # 1650 1800
+  'GPTA' : {'num' : 658, 'rate' : 330., 'weight' : 0.6, 'delay' : 1.}, # 330 900
+  'GPI' : {'num' : 1508, 'rate' : 1100., 'weight' : 3.4, 'delay' : 1.} # 1250 1440
 }
 
 # Static syn parameters TARGET-SOURCES
