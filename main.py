@@ -40,6 +40,17 @@ spikesgpti = b2.SpikeMonitor(GPTI)
 spikesgpta = b2.SpikeMonitor(GPTA)
 spikesgpi = b2.SpikeMonitor(GPI)
 
+spikemonitors = [spikesd1, spikesd2, spikesfsn, spikesgpi, spikesgpta, spikesgpti, spikesstn]
+nuclei = ['D1', 'D2', 'FSN','GPi', 'GPeTA', 'GPeTI', 'STN']
+
+firingratesd1 = []
+firingratesd2 = []
+firingratesfsn = []
+firingratesgpi = []
+firingratesgpta = []
+firingratesgpti = []
+firingratesstn = []
+
 b2.store()
 
 c_var1 = np.arange(0., 0.1, 0.01)
@@ -56,68 +67,52 @@ for i, c_i in enumerate(c_var):
     b2.run(duration)
 
     text_file.write(f"Correlation parameter: {c}\n")
+
     print(f"Correlation parameter: {c}\n")
 
     text_file.write(f'Firing rate D1: {np.mean(spikesd1.count/duration)} spikes/second\n')
+    firingratesd1.append(np.mean(spikesd1.count/duration))
     text_file.write(f'Firing rate D2: {np.mean(spikesd2.count/duration)} spikes/second\n')
+    firingratesd2.append(np.mean(spikesd2.count/duration))
     text_file.write(f'Firing rate FSN: {np.mean(spikesfsn.count/duration)} spikes/second\n')
+    firingratesfsn.append(np.mean(spikesfsn.count/duration))
+
     print(f'Firing rate D1: {np.mean(spikesd1.count/duration)} spikes/second')
     print(f'Firing rate D2: {np.mean(spikesd2.count/duration)} spikes/second')
     print(f'Firing rate FSN: {np.mean(spikesfsn.count/duration)} spikes/second\n')
 
     text_file.write(f'Firing rate STN: {np.mean(spikesstn.count/duration)} spikes/second\n')
+    firingratesstn.append(np.mean(spikesstn.count/duration))
     text_file.write(f'Firing rate GPTI: {np.mean(spikesgpti.count/duration)} spikes/second\n')
+    firingratesgpti.append(np.mean(spikesgpti.count/duration))
     text_file.write(f'Firing rate GPTA: {np.mean(spikesgpta.count/duration)} spikes/second\n')
+    firingratesgpta.append(np.mean(spikesgpta.count/duration))
     text_file.write(f'Firing rate GPI: {np.mean(spikesgpi.count/duration)} spikes/second\n')
+    firingratesgpi.append(np.mean(spikesgpi.count/duration))
+
     print(f'Firing rate STN: {np.mean(spikesstn.count/duration)} spikes/second')
     print(f'Firing rate GPTI: {np.mean(spikesgpti.count/duration)} spikes/second')
     print(f'Firing rate GPTA: {np.mean(spikesgpta.count/duration)} spikes/second')
     print(f'Firing rate GPI: {np.mean(spikesgpi.count/duration)} spikes/second\n')
-
 text_file.close()
 
-"""
-plt.figure(1)
-plt.title('D1')
-plt.plot(spikesd1.t/b2.ms, spikesd1.i, 'o', ms=0.5)
-plt.xlabel('t [ms]')
-plt.ylabel('index')
+###### Save Raster Plots
+save_path = '/home/f_mastellone/rasterplots'
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
+for spkmon, nuclues in zip(spikemonitors, nuclei):
+    rasterplot(spkmon, f'Raster Plot {nucleus}', save_path)
 
-plt.figure(2)
-plt.title('D2')
-plt.plot(spikesd2.t/b2.ms, spikesd2.i, 'o', ms=0.5)
-plt.xlabel('t [ms]')
-plt.ylabel('index')
+###### Save Plots of Firing Rates against Correlation parameters
+froverc = [firingratesd1, firingratesd2, firingratesfsn, firingratesgpi, firingratesgpta, firingratesgpti, firingratesstn]
+save_path = '/home/f_mastellone/fragainstc'
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
 
-plt.figure(3)
-plt.title('FSN')
-plt.plot(spikesfsn.t/b2.ms, spikesfsn.i, 'o', ms=0.5)
-plt.xlabel('t [ms]')
-plt.ylabel('index')
-
-plt.figure(4)
-plt.title('GPTA')
-plt.plot(spikesgpta.t/b2.ms, spikesgpta.i, 'o', ms=0.5)
-plt.xlabel('t [ms]')
-plt.ylabel('index')
-
-plt.figure(5)
-plt.title('GPTI')
-plt.plot(spikesgpti.t/b2.ms, spikesgpti.i, 'o', ms=0.5)
-plt.xlabel('t [ms]')
-plt.ylabel('index')
-
-plt.figure(6)
-plt.title('STN')
-plt.plot(spikesstn.t/b2.ms, spikesstn.i, 'o', ms=0.5)
-plt.xlabel('t [ms]')
-plt.ylabel('index')
-
-plt.figure(7)
-plt.title('GPi')
-plt.plot(spikesgpi.t/b2.ms, spikesgpi.i, 'o', ms=0.5)
-plt.xlabel('t [ms]')
-plt.ylabel('index')
-
-plt.show()
-"""
+for firingrate, nucleus in zip(froverc, nuclei):
+    plt.figure(frvc)
+    plt.title(f'FR against c for {nucleus}')
+    plt.plot(c_var, firingrate)
+    plt.xlabel('c')
+    plt.ylabel('Firing Rate [spikes/second]')
+    plt.savefig(save_path, bbox_inches='tight')

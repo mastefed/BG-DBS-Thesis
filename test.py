@@ -1,6 +1,16 @@
 import brian2 as b2
 import numpy as np
 
+def rasterplot(spikemonitor, title, save_path):
+    plt.figure()
+    plt.title(title)
+    plt.plot(spikemonitor.t/b2.ms, spikemonitor.i, 'o', ms=0.5)
+    plt.xlabel('t [ms]')
+    plt.ylabel('index')
+    plt.savefig(save_path, bbox_inches='tight')
+
+
+
 def fanofactor(duration, spikemon, num_neur, start_interval, end_interval, time_span):
     """ Funzione per calcolare il Fano Factor
     """
