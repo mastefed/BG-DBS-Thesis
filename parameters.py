@@ -39,13 +39,13 @@ neuronparameters = {
 
 # Poisson noise
 poissoninput = {
-  'FSN' : {'num' : 210, 'rate' : 850., 'weight' : 1.4, 'delay' : 1.}, # 1000 850
-  'D1' : {'num' : 5000, 'rate' : 0., 'weight' : 1.4, 'delay' : 1.}, # 2930 4000
-  'D2' : {'num' : 5000, 'rate' : 5000., 'weight' : 1.4, 'delay' : 1.}, # 2560 2560
-  'STN' : {'num' : 776, 'rate' : 1730., 'weight' : 1.1, 'delay' : 1.}, # 1690 1730
-  'GPTI' : {'num' : 1976, 'rate' : 1800., 'weight' : 1.2, 'delay' : 1.}, # 1650 1800
+  'FSN' : {'num' : 210, 'rate' : 3750., 'weight' : 1.4, 'delay' : 1.}, # 1000 850
+  'D1' : {'num' : 5000, 'rate' : 7800., 'weight' : 1.4, 'delay' : 1.}, # 2930 4000
+  'D2' : {'num' : 5000, 'rate' : 8020., 'weight' : 1.4, 'delay' : 1.}, # 2560 2560
+  'STN' : {'num' : 776, 'rate' : 1750., 'weight' : 1.1, 'delay' : 1.}, # 1690 1730
+  'GPTI' : {'num' : 1976, 'rate' : 2200., 'weight' : 1.2, 'delay' : 1.}, # 1650 1800
   'GPTA' : {'num' : 658, 'rate' : 900., 'weight' : 0.6, 'delay' : 1.}, # 330 900
-  'GPI' : {'num' : 1508, 'rate' : 1440., 'weight' : 3.4, 'delay' : 1.} # 1250 1440
+  'GPI' : {'num' : 1508, 'rate' : 1240., 'weight' : 3.4, 'delay' : 1.} # 1250 1440
 }
 
 # Static syn parameters TARGET-SOURCES

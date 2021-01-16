@@ -42,10 +42,12 @@ spikesgpi = b2.SpikeMonitor(GPI)
 
 b2.store()
 
-c_var = [0.]
+c_var1 = np.arange(0., 0.1, 0.01)
+c_var2 = np.arange(0.1, 1.1, 0.1)
+c_var = np.concatenate((c_var1,c_var2))
 
 # file_path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'frandff.txt')
-file_path = "/home/f_mastellone/frandff.txt"
+file_path = '/home/f_mastellone/frandff.txt'
 text_file = open(file_path, "w")
 
 for i, c_i in enumerate(c_var):
