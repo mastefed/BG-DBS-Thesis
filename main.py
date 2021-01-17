@@ -18,8 +18,6 @@ duration = 3000*b2.ms
 deft = b2.defaultclock.dt
 t_recorded = np.arange(int(duration/deft))*deft
 
-# b2.run(300*b2.ms)
-
 variables_to_record = ['V']
 
 spikesd1 = b2.SpikeMonitor(D1)
@@ -52,6 +50,13 @@ text_file = open(file_path, "w")
 for i, c_i in enumerate(c_var):
     b2.restore()
     c = c_i
+    
+    for spikemonitor in spikemonitors:
+        spikemonitor.active = False
+    be.run(300*b2.ms)
+
+    for spikemonitor in spikemonitors:
+        spikemonitor.active = True
     b2.run(duration)
 
     text_file.write(f"Correlation parameter: {c}\n")
