@@ -14,13 +14,25 @@ from test import *
 
 ran.seed(42)
 
-duration = 2000*b2.ms
+duration = 3000*b2.ms
 deft = b2.defaultclock.dt
 t_recorded = np.arange(int(duration/deft))*deft
 
+# b2.run(300*b2.ms)
+
 variables_to_record = ['V']
 
+spikesd1 = b2.SpikeMonitor(D1)
+spikesd2 = b2.SpikeMonitor(D2)
+spikesfsn = b2.SpikeMonitor(FSN)
+spikesstn = b2.SpikeMonitor(STN)
+spikesgpti = b2.SpikeMonitor(GPTI)
+spikesgpta = b2.SpikeMonitor(GPTA)
+spikesgpi = b2.SpikeMonitor(GPI)
+
+spikemonitors = [spikesd1, spikesd2, spikesfsn, spikesgpi, spikesgpta, spikesgpti, spikesstn]
 nuclei = ['D1', 'D2', 'FSN','GPi', 'GPeTA', 'GPeTI', 'STN']
+
 firingratesd1 = []
 firingratesd2 = []
 firingratesfsn = []
@@ -29,31 +41,18 @@ firingratesgpta = []
 firingratesgpti = []
 firingratesstn = []
 
+b2.store()
+
+c_var = np.arange(0., 0.1, 0.01)
+
 # file_path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'frandff.txt')
 file_path = '/home/f_mastellone/frandff.txt'
 text_file = open(file_path, "w")
 
-net = b2.Network(b2.collect())
-net.store()
-
-c_var = np.arange(0., 0.11, 0.01)
 for i, c_i in enumerate(c_var):
-    net.restore()
+    b2.restore()
     c = c_i
-
-    net.run(300*b2.ms)
-
-    spikesd1 = b2.SpikeMonitor(D1)
-    spikesd2 = b2.SpikeMonitor(D2)
-    spikesfsn = b2.SpikeMonitor(FSN)
-    spikesstn = b2.SpikeMonitor(STN)
-    spikesgpti = b2.SpikeMonitor(GPTI)
-    spikesgpta = b2.SpikeMonitor(GPTA)
-    spikesgpi = b2.SpikeMonitor(GPI)
-
-    spikemonitors = [spikesd1, spikesd2, spikesfsn, spikesgpi, spikesgpta, spikesgpti, spikesstn]
-
-    net.run(duration)
+    b2.run(duration)
 
     text_file.write(f"Correlation parameter: {c}\n")
 
