@@ -33,7 +33,7 @@ firingratesstn = []
 file_path = '/home/f_mastellone/frandff.txt'
 text_file = open(file_path, "w")
 
-net = b2.Network(collect())
+net = b2.Network(b2.collect())
 net.store()
 
 c_var = np.arange(0., 0.11, 0.01)
