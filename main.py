@@ -13,34 +13,14 @@ from groupsandsynapses import *
 from test import *
 
 ran.seed(42)
+b2.store()
 
 duration = 2000*b2.ms
 deft = b2.defaultclock.dt
 t_recorded = np.arange(int(duration/deft))*deft
 
-b2.run(300*b2.ms)
-
 variables_to_record = ['V']
 
-'''
-monitord1 = b2.StateMonitor(D1, variables=variables_to_record, record=True)
-monitord2 = b2.StateMonitor(D2, variables=variables_to_record, record=True)
-monitorfsn = b2.StateMonitor(FSN, variables=variables_to_record, record=True)
-monitorstn = b2.StateMonitor(STN, variables=variables_to_record, record=True)
-monitorgpti = b2.StateMonitor(GPTI, variables=variables_to_record, record=True)
-monitorgpta = b2.StateMonitor(GPTA, variables=variables_to_record, record=True)
-monitorgpi = b2.StateMonitor(GPI, variables=variables_to_record, record=True)
-'''
-
-spikesd1 = b2.SpikeMonitor(D1)
-spikesd2 = b2.SpikeMonitor(D2)
-spikesfsn = b2.SpikeMonitor(FSN)
-spikesstn = b2.SpikeMonitor(STN)
-spikesgpti = b2.SpikeMonitor(GPTI)
-spikesgpta = b2.SpikeMonitor(GPTA)
-spikesgpi = b2.SpikeMonitor(GPI)
-
-spikemonitors = [spikesd1, spikesd2, spikesfsn, spikesgpi, spikesgpta, spikesgpti, spikesstn]
 nuclei = ['D1', 'D2', 'FSN','GPi', 'GPeTA', 'GPeTI', 'STN']
 
 firingratesd1 = []
@@ -51,19 +31,27 @@ firingratesgpta = []
 firingratesgpti = []
 firingratesstn = []
 
-#b2.store()
-
-c_var = np.arange(0., 0.11, 0.01)
-# c_var2 = np.arange(0.1, 1.1, 0.1)
-# c_var = np.concatenate((c_var1,c_var2))
-
 # file_path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'frandff.txt')
 file_path = '/home/f_mastellone/frandff.txt'
 text_file = open(file_path, "w")
 
+c_var = np.arange(0., 0.11, 0.01)
 for i, c_i in enumerate(c_var):
-    #b2.restore()
+    b2.restore()
     c = c_i
+
+    b2.run(300*b2.ms)
+
+    spikesd1 = b2.SpikeMonitor(D1)
+    spikesd2 = b2.SpikeMonitor(D2)
+    spikesfsn = b2.SpikeMonitor(FSN)
+    spikesstn = b2.SpikeMonitor(STN)
+    spikesgpti = b2.SpikeMonitor(GPTI)
+    spikesgpta = b2.SpikeMonitor(GPTA)
+    spikesgpi = b2.SpikeMonitor(GPI)
+
+    spikemonitors = [spikesd1, spikesd2, spikesfsn, spikesgpi, spikesgpta, spikesgpti, spikesstn]
+
     b2.run(duration)
 
     text_file.write(f"Correlation parameter: {c}\n")
