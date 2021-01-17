@@ -50,13 +50,16 @@ gptipars = neuronparameters['GPTI']
 gptapars = neuronparameters['GPTA']
 gpipars = neuronparameters['GPI']
 
+method1 = 'rk4'
+method2 = 'exponential_euler'
+
 ##### Neuron Populations ---------->
 ##### D1 Population
 t_ref_d1 = d1pars['t_ref']*b2.ms
 V_th_d1 = d1pars['V_th']*b2.mV
 V_reset_d1 = d1pars['V_reset']*b2.mV
 
-D1 = b2.NeuronGroup(neuron['D1'], leakyif, method='exponential_euler', threshold='V>V_th_d1', reset='V=V_reset_d1',
+D1 = b2.NeuronGroup(neuron['D1'], leakyif, method=method1, threshold='V>V_th_d1', reset='V=V_reset_d1',
 refractory=t_ref_d1)
 
 D1.C_m = d1pars['C_m']*b2.pfarad
@@ -75,7 +78,7 @@ t_ref_d2 = d2pars['t_ref']*b2.ms
 V_th_d2 = d2pars['V_th']*b2.mV
 V_reset_d2 = d2pars['V_reset']*b2.mV
 
-D2 = b2.NeuronGroup(neuron['D2'], leakyif, method='exponential_euler', threshold='V>V_th_d2', reset='V=V_reset_d2',
+D2 = b2.NeuronGroup(neuron['D2'], leakyif, method=method1, threshold='V>V_th_d2', reset='V=V_reset_d2',
 refractory=t_ref_d2)
 
 D2.C_m = d2pars['C_m']*b2.pfarad
@@ -94,7 +97,7 @@ t_ref_fsn = fsnpars['t_ref']*b2.ms
 V_th_fsn = fsnpars['V_th']*b2.mV
 V_reset_fsn = fsnpars['V_reset']*b2.mV
 
-FSN = b2.NeuronGroup(neuron['FSN'], leakyif, method='exponential_euler', threshold='V>V_th_fsn', reset='V=V_reset_fsn',
+FSN = b2.NeuronGroup(neuron['FSN'], leakyif, method=method1, threshold='V>V_th_fsn', reset='V=V_reset_fsn',
 refractory=t_ref_fsn)
 
 FSN.C_m = fsnpars['C_m']*b2.pfarad
@@ -113,7 +116,7 @@ V_peak_stn = stnpars['V_peak']*b2.mV
 V_reset_stn = stnpars['V_reset']*b2.mV
 b_stn = stnpars['b']*b2.pamp
 
-STN = b2.NeuronGroup(neuron['STN'], adexif, method='exponential_euler', threshold='V>V_peak_stn', reset='V=V_reset_stn;w=w+b_stn')
+STN = b2.NeuronGroup(neuron['STN'], adexif, method=method2, threshold='V>V_peak_stn', reset='V=V_reset_stn;w=w+b_stn')
 
 STN.C_m = stnpars['C_m']*b2.pfarad
 STN.g_L = stnpars['g_L']*b2.nsiemens
@@ -135,7 +138,7 @@ V_peak_gpti = gptipars['V_peak']*b2.mV
 V_reset_gpti = gptipars['V_reset']*b2.mV
 b_gpti = gptipars['b']*b2.pamp
 
-GPTI = b2.NeuronGroup(neuron['GPTI'], adexif, method='exponential_euler', threshold='V>V_peak_gpti', reset='V=V_reset_gpti;w=w+b_gpti')
+GPTI = b2.NeuronGroup(neuron['GPTI'], adexif, method=method2, threshold='V>V_peak_gpti', reset='V=V_reset_gpti;w=w+b_gpti')
 
 GPTI.C_m = gptipars['C_m']*b2.pfarad
 GPTI.g_L = gptipars['g_L']*b2.nsiemens
@@ -157,7 +160,7 @@ V_peak_gpta = gptapars['V_peak']*b2.mV
 V_reset_gpta = gptapars['V_reset']*b2.mV
 b_gpta = gptapars['b']*b2.pamp
 
-GPTA = b2.NeuronGroup(neuron['GPTA'], adexif, method='exponential_euler', threshold='V>V_peak_gpta', reset='V=V_reset_gpta;w=w+b_gpta')
+GPTA = b2.NeuronGroup(neuron['GPTA'], adexif, method=method2, threshold='V>V_peak_gpta', reset='V=V_reset_gpta;w=w+b_gpta')
 
 GPTA.C_m = gptapars['C_m']*b2.pfarad
 GPTA.g_L = gptapars['g_L']*b2.nsiemens
@@ -179,7 +182,7 @@ V_peak_gpi = gpipars['V_peak']*b2.mV
 V_reset_gpi = gpipars['V_reset']*b2.mV
 b_gpi = gpipars['b']*b2.pamp
 
-GPI = b2.NeuronGroup(neuron['GPI'], adexif, method='exponential_euler', threshold='V>V_peak_gpi', reset='V=V_reset_gpi;w=w+b_gpi')
+GPI = b2.NeuronGroup(neuron['GPI'], adexif, method=method2, threshold='V>V_peak_gpi', reset='V=V_reset_gpi;w=w+b_gpi')
 
 GPI.C_m = gpipars['C_m']*b2.pfarad
 GPI.g_L = gpipars['g_L']*b2.nsiemens
