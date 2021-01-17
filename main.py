@@ -53,9 +53,9 @@ firingratesstn = []
 
 b2.store()
 
-c_var1 = np.arange(0., 0.1, 0.01)
-c_var2 = np.arange(0.1, 1.1, 0.1)
-c_var = np.concatenate((c_var1,c_var2))
+c_var = np.arange(0., 0.1, 0.01)
+# c_var2 = np.arange(0.1, 1.1, 0.1)
+# c_var = np.concatenate((c_var1,c_var2))
 
 # file_path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'frandff.txt')
 file_path = '/home/f_mastellone/frandff.txt'
@@ -94,14 +94,16 @@ for i, c_i in enumerate(c_var):
     print(f'Firing rate GPTI: {np.mean(spikesgpti.count/duration)} spikes/second')
     print(f'Firing rate GPTA: {np.mean(spikesgpta.count/duration)} spikes/second')
     print(f'Firing rate GPI: {np.mean(spikesgpi.count/duration)} spikes/second\n')
-text_file.close()
 
-###### Save Raster Plots
-save_path = '/home/f_mastellone/rasterplots'
-if not os.path.exists(save_path):
-    os.makedirs(save_path)
-for spkmon, nuclues in zip(spikemonitors, nuclei):
-    rasterplot(spkmon, f'Raster Plot {nucleus}', save_path)
+    ###### Save Raster Plots
+    save_path = '/home/f_mastellone/rasterplots'
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    for spkmon, nucleus in zip(spikemonitors, nuclei):
+        save_path_f = os.path.join(save_path, f'{nucleus}c{c}.png')
+        rasterplot(spkmon, f'Raster Plot {nucleus} c:{c}', save_path_f)
+
+text_file.close()
 
 ###### Save Plots of Firing Rates against Correlation parameters
 froverc = [firingratesd1, firingratesd2, firingratesfsn, firingratesgpi, firingratesgpta, firingratesgpti, firingratesstn]
@@ -110,9 +112,11 @@ if not os.path.exists(save_path):
     os.makedirs(save_path)
 
 for firingrate, nucleus in zip(froverc, nuclei):
-    plt.figure(frvc)
+    save_path_f = os.path.join(save_path, f'frc{nucleus}.png')
+    plt.figure()
     plt.title(f'FR against c for {nucleus}')
-    plt.plot(c_var, firingrate)
+    plt.plot(c_var, firingrate, '.-')
     plt.xlabel('c')
     plt.ylabel('Firing Rate [spikes/second]')
-    plt.savefig(save_path, bbox_inches='tight')
+    plt.savefig(save_path_f, bbox_inches='tight')
+    plt.close()
