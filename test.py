@@ -1,5 +1,6 @@
 import brian2 as b2
 import numpy as np
+import matplotlib.pyplot as plt
 
 def rasterplot(spikemonitor, title, save_path):
     plt.figure()
@@ -8,6 +9,7 @@ def rasterplot(spikemonitor, title, save_path):
     plt.xlabel('t [ms]')
     plt.ylabel('index')
     plt.savefig(save_path, bbox_inches='tight')
+    plt.close()
 
 
 
