@@ -41,7 +41,7 @@ firingratesstn = []
 
 b2.store()
 
-c_var = np.arange(0., 0.11, 0.01)
+c_var = np.arange(0., 1.1, 0.2)
 
 # file_path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'frandff.txt')
 file_path = '/home/f_mastellone/frandff.txt'
