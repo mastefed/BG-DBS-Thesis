@@ -53,7 +53,7 @@ for i, c_i in enumerate(c_var):
     
     for spikemonitor in spikemonitors:
         spikemonitor.active = False
-    be.run(300*b2.ms)
+    b2.run(300*b2.ms)
 
     for spikemonitor in spikemonitors:
         spikemonitor.active = True
