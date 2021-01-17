@@ -33,10 +33,12 @@ firingratesstn = []
 file_path = '/home/f_mastellone/frandff.txt'
 text_file = open(file_path, "w")
 
-b2.store()
+net = b2.Network(collect())
+net.store()
+
 c_var = np.arange(0., 0.11, 0.01)
 for i, c_i in enumerate(c_var):
-    b2.restore()
+    net.restore()
     c = c_i
 
     b2.run(300*b2.ms)
