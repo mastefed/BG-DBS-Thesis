@@ -41,7 +41,7 @@ for i, c_i in enumerate(c_var):
     net.restore()
     c = c_i
 
-    b2.run(300*b2.ms)
+    net.run(300*b2.ms)
 
     spikesd1 = b2.SpikeMonitor(D1)
     spikesd2 = b2.SpikeMonitor(D2)
@@ -53,7 +53,7 @@ for i, c_i in enumerate(c_var):
 
     spikemonitors = [spikesd1, spikesd2, spikesfsn, spikesgpi, spikesgpta, spikesgpti, spikesstn]
 
-    b2.run(duration)
+    net.run(duration)
 
     text_file.write(f"Correlation parameter: {c}\n")
 
